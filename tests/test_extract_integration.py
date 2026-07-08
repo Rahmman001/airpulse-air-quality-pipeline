@@ -38,6 +38,62 @@ def test_extract_locations_end_to_end_writes_valid_parquet(tmp_path):
     assert (tmp_path / "locations" / "ingest_date=2026-07-01" / "raw.json").exists()
 
 
+def test_extract_locations_limits_to_most_sensor_rich_locations_per_country():
+    fake_client = object.__new__(extract_locations.OpenAQClient)  # bypass __init__/API key check
+
+    def location_fixture(location_id: int, iso: str, sensor_count: int) -> dict:
+        sensors = []
+        for sensor_idx in range(sensor_count):
+            sensors.append(
+                {
+                    "id": location_id * 100 + sensor_idx,
+                    "name": f"sensor-{sensor_idx}",
+                    "parameter": {
+                        "id": sensor_idx + 1,
+                        "name": f"param{sensor_idx}",
+                        "units": "µg/m³",
+                        "displayName": f"Param {sensor_idx}",
+                    },
+                }
+            )
+        return {
+            **LOCATION_EXAMPLE,
+            "id": location_id,
+            "name": f"{iso}-{location_id}",
+            "country": {**LOCATION_EXAMPLE["country"], "code": iso, "name": iso},
+            "sensors": sensors,
+        }
+
+    def fake_get_locations(self, iso, **kwargs):
+        del self, kwargs
+        return iter(
+            [
+                location_fixture(
+                    location_id=country_offset + sensor_count, iso=iso, sensor_count=sensor_count
+                )
+                for country_offset in [1000 if iso == "US" else 2000]
+                for sensor_count in range(12)
+            ]
+        )
+
+    with patch.object(extract_locations.OpenAQClient, "get_locations", fake_get_locations):
+        records = extract_locations.fetch_locations(
+            fake_client,
+            iso_codes=["US", "IN"],
+            limit_locations_per_country=10,
+        )
+
+    assert len(records) == 20
+    assert {record["_ingested_iso"] for record in records} == {"US", "IN"}
+    assert min(len(record["sensors"]) for record in records) == 2
+    assert {len(record["sensors"]) for record in records if record["_ingested_iso"] == "US"} == set(
+        range(2, 12)
+    )
+    assert {len(record["sensors"]) for record in records if record["_ingested_iso"] == "IN"} == set(
+        range(2, 12)
+    )
+
+
 def test_extract_measurements_end_to_end_reads_locations_and_writes_parquet(tmp_path):
     # Step 1: seed a fake locations snapshot, exactly like extract_locations would.
     locations_records = [{**LOCATION_EXAMPLE, "_ingested_iso": "IN"}]

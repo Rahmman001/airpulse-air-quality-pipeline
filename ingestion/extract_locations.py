@@ -5,6 +5,7 @@ the bronze layer as partitioned Parquet (plus the raw JSON, for auditability).
 Run:
     python -m ingestion.extract_locations
     python -m ingestion.extract_locations --countries US IN
+    python -m ingestion.extract_locations --limit-locations-per-country 10
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ import json
 import logging
 from datetime import date
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 
@@ -25,12 +27,31 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 
-def fetch_locations(client: OpenAQClient, iso_codes: list[str]) -> list[dict]:
+def location_importance_key(location: dict) -> tuple[int, int, int, str]:
+    """
+    Prefer fixed monitoring locations with broad sensor coverage.
+
+    OpenAQ locations can represent different kinds of collection points. For
+    a compact scheduled refresh, the most useful rows are usually stationary
+    monitors with the most sensors, because they cover more pollutants and
+    produce a richer dashboard from fewer API calls.
+    """
+    return (
+        len(location.get("sensors") or []),
+        int(bool(location.get("isMonitor"))),
+        int(not bool(location.get("isMobile"))),
+        location.get("name") or "",
+    )
+
+
+def fetch_locations(
+    client: OpenAQClient, iso_codes: list[str], limit_locations_per_country: Optional[int] = None
+) -> list[dict]:
     """Pull + schema-validate locations for each target country."""
     all_locations: list[dict] = []
     for iso in iso_codes:
         logger.info("Fetching locations for country=%s", iso)
-        count = 0
+        country_locations: list[dict] = []
         for raw in client.get_locations(iso=iso, limit=100):
             # Validate at the ingestion boundary. If OpenAQ changes their
             # response shape, we find out here -- not three layers downstream
@@ -38,9 +59,23 @@ def fetch_locations(client: OpenAQClient, iso_codes: list[str]) -> list[dict]:
             validated = Location.model_validate(raw)
             record = validated.model_dump(mode="json")
             record["_ingested_iso"] = iso
-            all_locations.append(record)
-            count += 1
-        logger.info("  -> %d locations for %s", count, iso)
+            country_locations.append(record)
+
+        fetched_count = len(country_locations)
+        if limit_locations_per_country is not None:
+            country_locations = sorted(country_locations, key=location_importance_key, reverse=True)[
+                :limit_locations_per_country
+            ]
+            logger.info(
+                "  -> selected %d of %d locations for %s",
+                len(country_locations),
+                fetched_count,
+                iso,
+            )
+        else:
+            logger.info("  -> %d locations for %s", fetched_count, iso)
+
+        all_locations.extend(country_locations)
     return all_locations
 
 
@@ -63,10 +98,20 @@ def write_bronze(records: list[dict], ingest_date: date, bronze_dir: Path = BRON
 def main() -> None:
     parser = argparse.ArgumentParser(description="Extract OpenAQ locations to the bronze layer")
     parser.add_argument("--countries", nargs="*", default=TARGET_COUNTRY_ISO_CODES)
+    parser.add_argument(
+        "--limit-locations-per-country",
+        type=int,
+        default=None,
+        help="Keep only the most sensor-rich N locations per country for faster scheduled refreshes",
+    )
     args = parser.parse_args()
 
     client = OpenAQClient()
-    records = fetch_locations(client, args.countries)
+    records = fetch_locations(
+        client,
+        args.countries,
+        limit_locations_per_country=args.limit_locations_per_country,
+    )
     write_bronze(records, ingest_date=date.today())
 
 

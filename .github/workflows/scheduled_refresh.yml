@@ -39,7 +39,7 @@ jobs:
         env:
           OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
         run: |
-          python -m ingestion.extract_locations
+          python -m ingestion.extract_locations --limit-locations-per-country 10
           python -m ingestion.extract_measurements
 
       - name: Load raw + build dbt models
