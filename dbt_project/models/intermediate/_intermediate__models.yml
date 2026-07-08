@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_measurements_unit_normalized
+    description: Every measurement with a display-friendly ug/m3 value added alongside the original.
+    columns:
+      - name: value_ugm3
+        description: value converted to ug/m3 for consistent display, regardless of source unit.
+
+  - name: int_measurements_aqi
+    description: Every measurement with its computed AQI (see macros/calculate_aqi.sql for methodology and known simplifications).
+    columns:
+      - name: aqi
+        description: >
+          EPA-style Air Quality Index, computed per-reading (an hourly
+          approximation, not the regulatory rolling-window figure). Null for
+          any pollutant not covered by calculate_aqi() or missing a source value.

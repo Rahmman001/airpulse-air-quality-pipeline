@@ -1,0 +1,15 @@
+# Minimal dependency set for the DEPLOYED dashboard only.
+#
+# The root requirements.txt has everything needed to develop this whole
+# project (ingestion, dbt, Dagster, testing). Streamlit Community Cloud only
+# ever runs app/streamlit_app.py, which -- traced through its actual imports,
+# including warehouse/db.py and ingestion/config.py -- needs none of that:
+# no dbt-core, no dagster, no requests/tenacity/pydantic for API calls it
+# never makes on the deployed side. Point Streamlit Cloud's "Advanced
+# settings -> requirements file" at this file specifically, so the deployed
+# build stays fast and doesn't install packages that only matter locally.
+streamlit>=1.32
+duckdb>=0.10
+pandas>=2.2
+pydeck>=0.8
+altair>=5.2

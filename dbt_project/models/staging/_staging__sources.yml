@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: >
+      Tables loaded verbatim from bronze-layer Parquet by warehouse/load_raw.py.
+      Nothing here is cleaned, deduped, or reshaped -- that's the job of the
+      staging models below. See warehouse/load_raw.py for how these get populated.
+    tables:
+      - name: locations
+        description: >
+          One row per OpenAQ location, as returned by GET /v3/locations.
+          The `sensors` column is a nested array (one entry per sensor at that
+          location) -- it gets flattened out in stg_openaq__sensors.
+        columns:
+          - name: id
+            description: OpenAQ's location ID. Not guaranteed unique in this raw
+              table if the same location was re-pulled across ingest_date
+              partitions -- dedup happens in staging.
+      - name: measurements
+        description: >
+          One row per (sensor, hour) reading, as returned by
+          GET /v3/sensors/{id}/hours. Can legitimately contain the same
+          (sensor_id, measured hour) more than once, since overlapping
+          lookback windows mean a given hour gets re-pulled on consecutive
+          ingestion runs -- deduped in stg_openaq__measurements.
+        columns:
+          - name: sensor_id
+            description: FK to a sensor nested inside raw.locations.sensors.

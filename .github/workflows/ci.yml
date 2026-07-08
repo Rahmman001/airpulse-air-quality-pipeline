@@ -1,0 +1,40 @@
+name: CI
+
+# Runs on every PR and every push to main. Deliberately does NOT have a
+# separate "run dbt build" step -- tests/test_orchestration.py and
+# tests/test_streamlit_app.py already run the full dbt build (models,
+# snapshot, and all 29 dbt tests) as part of exercising the pipeline
+# end-to-end, so `pytest tests/` alone already covers it. This is the payoff
+# of investing in thorough integration tests during Phase 4/5: CI doesn't
+# need to duplicate that work in a separate step.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint (ruff)
+        run: ruff check . --exclude dbt_project
+
+      - name: Format check (black)
+        run: black --check --line-length 110 . --exclude '/dbt_project/'
+
+      - name: Run full test suite (pytest + dbt build + dbt test, transitively)
+        run: pytest tests/ -v

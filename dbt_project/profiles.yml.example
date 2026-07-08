@@ -1,0 +1,14 @@
+# Copy this to `profiles.yml` in this same directory, then run dbt with:
+#   export DBT_PROFILES_DIR=$(pwd)   (run from inside dbt_project/)
+#
+# Unlike a real warehouse profile, there are no credentials here -- DuckDB is
+# just a local file -- so keeping profiles.yml in-repo (rather than the usual
+# ~/.dbt/profiles.yml) is safe and makes the project fully self-contained.
+
+airpulse:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '../airpulse.duckdb'
+      threads: 4

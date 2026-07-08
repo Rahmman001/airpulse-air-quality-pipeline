@@ -1,0 +1,33 @@
+name: 'airpulse'
+version: '1.0.0'
+config-version: 2
+
+profile: 'airpulse'
+
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Layer-level materialization + schema strategy:
+#   staging / intermediate -> views. They're cheap to recompute, and keeping
+#     them as views means there's no duplicated storage for data that's
+#     really just "raw, but typed and renamed."
+#   marts -> tables. These are what Streamlit queries directly, so they're
+#     materialized for read speed rather than recomputed on every query.
+models:
+  airpulse:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: mart

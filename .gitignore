@@ -1,0 +1,46 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# data (bronze/raw is regenerable from the API -- don't bloat the repo)
+data/bronze/
+# NOTE: data/gold_snapshot/ is deliberately NOT ignored -- see the "streamlit"
+# section further down for why it needs to be committed.
+*.duckdb
+*.duckdb.wal
+
+# dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+
+# dagster
+orchestration/storage/
+.dagster_home/
+
+# streamlit
+.streamlit/secrets.toml
+
+# os
+.DS_Store
+
+# dbt-generated local files
+dbt_project/.user.yml
+dbt_project/profiles.yml
+
+# dagster
+.dagster_home/
+
+# streamlit
+# data/gold_snapshot/ is intentionally tracked, not ignored: it's what the
+# deployed Streamlit Community Cloud app actually reads (see Phase 5/6 in
+# the README) since Cloud has no access to a live airpulse.duckdb file.
+# Refreshed on a schedule by .github/workflows/scheduled_refresh.yml.

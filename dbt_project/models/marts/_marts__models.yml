@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: dim_location
+    description: SCD Type 2 location dimension, built on top of dim_location_snapshot.
+    columns:
+      - name: location_key
+        tests:
+          - unique
+          - not_null
+      - name: location_id
+        tests:
+          - not_null
+
+  - name: dim_pollutant
+    description: Conformed dimension for pollutants (parameters) seen in the data.
+    columns:
+      - name: pollutant_key
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: Standard calendar spine, 2020-01-01 through 2030-12-31.
+    columns:
+      - name: date_key
+        tests:
+          - unique
+          - not_null
+      - name: date_day
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_air_quality_hourly
+    description: Grain -- one row per (sensor, hour). The atomic fact table everything else rolls up from.
+    columns:
+      - name: measurement_key
+        tests:
+          - unique
+          - not_null
+      - name: location_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_key
+      - name: pollutant_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_pollutant')
+                field: pollutant_key
+      - name: aqi
+        description: Null for pollutants calculate_aqi() doesn't cover, or missing source values. Range (0-500) is enforced by the assert_aqi_within_valid_range singular test.
+      - name: risk_tier
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - 'Good'
+                  - 'Moderate'
+                  - 'Unhealthy for Sensitive Groups'
+                  - 'Unhealthy'
+                  - 'Very Unhealthy'
+                  - 'Hazardous'
+              config:
+                where: "risk_tier is not null"
+
+  - name: fact_daily_city_aqi
+    description: One row per (day, location, pollutant) -- the table the dashboard actually queries.
+    columns:
+      - name: location_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_key
+      - name: avg_aqi
+        tests:
+          - not_null

@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_openaq__locations
+    description: One row per location, deduped to the most recently ingested version.
+    columns:
+      - name: location_id
+        description: Primary key -- one row per location after dedup.
+        tests:
+          - unique
+          - not_null
+      - name: country_code
+        tests:
+          - not_null
+
+  - name: stg_openaq__sensors
+    description: One row per sensor, flattened out of each location's nested sensors array.
+    columns:
+      - name: sensor_id
+        description: Primary key -- OpenAQ sensor IDs are globally unique.
+        tests:
+          - unique
+          - not_null
+      - name: location_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_openaq__locations')
+                field: location_id
+
+  - name: stg_openaq__measurements
+    description: One row per (sensor, hour), deduped to the most recently ingested reading.
+    columns:
+      - name: sensor_id
+        tests:
+          - not_null
+      - name: measured_at_utc
+        tests:
+          - not_null
+      - name: value
+        description: Can legitimately be null -- represents a sensor outage/gap for that hour.

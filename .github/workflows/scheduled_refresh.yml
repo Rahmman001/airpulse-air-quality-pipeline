@@ -1,0 +1,65 @@
+name: Scheduled Data Refresh
+
+# This is the free-tier substitute for a persistent orchestrator (Dagster)
+# running the pipeline against a live, always-on database -- something
+# neither GitHub Actions nor Streamlit Community Cloud can do for free.
+# Instead: run the full pipeline here on a schedule, export the mart tables
+# to Parquet, and commit that snapshot back to the repo. The deployed
+# Streamlit app (Phase 5) reads whatever this last committed, which is the
+# same "print run" pattern a newspaper site uses instead of live-updating
+# every second.
+#
+# Requires one repo secret: OPENAQ_API_KEY (Settings -> Secrets and
+# variables -> Actions -> New repository secret). Get a free key at
+# https://explore.openaq.org/register
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # every 6 hours, matching orchestration/schedules.py
+  workflow_dispatch: {} # allows manually clicking "Run workflow" too
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pull fresh data from OpenAQ
+        env:
+          OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
+        run: |
+          python -m ingestion.extract_locations
+          python -m ingestion.extract_measurements
+
+      - name: Load raw + build dbt models
+        run: |
+          python -m warehouse.load_raw
+          cd dbt_project
+          cp profiles.yml.example profiles.yml
+          export DBT_PROFILES_DIR=$(pwd)
+          dbt build
+
+      - name: Export gold snapshot
+        run: python -m warehouse.export_gold_snapshot
+
+      - name: Commit refreshed snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gold_snapshot/
+          # [skip ci] stops this commit from re-triggering the CI workflow --
+          # without it, every scheduled refresh would kick off a full lint +
+          # test run for a data-only change that doesn't need one.
+          git diff --staged --quiet || git commit -m "chore: refresh gold snapshot [skip ci]"
+          git push
