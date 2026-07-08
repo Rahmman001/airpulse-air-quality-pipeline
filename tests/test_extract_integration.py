@@ -38,7 +38,7 @@ def test_extract_locations_end_to_end_writes_valid_parquet(tmp_path):
     assert (tmp_path / "locations" / "ingest_date=2026-07-01" / "raw.json").exists()
 
 
-def test_extract_locations_limits_to_most_sensor_rich_locations_per_country():
+def test_extract_locations_limits_to_moderate_sensor_locations_per_country():
     fake_client = object.__new__(extract_locations.OpenAQClient)  # bypass __init__/API key check
 
     def location_fixture(location_id: int, iso: str, sensor_count: int) -> dict:
@@ -66,13 +66,16 @@ def test_extract_locations_limits_to_most_sensor_rich_locations_per_country():
 
     def fake_get_locations(self, iso, **kwargs):
         del self, kwargs
+        sensor_counts = [1, 2, 3, 4, 5, 6, 7, 8, 25, 50, 75, 100]
+        country_offset = 1000 if iso == "US" else 2000
         return iter(
             [
                 location_fixture(
-                    location_id=country_offset + sensor_count, iso=iso, sensor_count=sensor_count
+                    location_id=country_offset + sensor_count,
+                    iso=iso,
+                    sensor_count=sensor_count,
                 )
-                for country_offset in [1000 if iso == "US" else 2000]
-                for sensor_count in range(12)
+                for sensor_count in sensor_counts
             ]
         )
 
@@ -80,17 +83,17 @@ def test_extract_locations_limits_to_most_sensor_rich_locations_per_country():
         records = extract_locations.fetch_locations(
             fake_client,
             iso_codes=["US", "IN"],
-            limit_locations_per_country=10,
+            limit_locations_per_country=5,
         )
 
-    assert len(records) == 20
+    assert len(records) == 10
     assert {record["_ingested_iso"] for record in records} == {"US", "IN"}
-    assert min(len(record["sensors"]) for record in records) == 2
+    assert max(len(record["sensors"]) for record in records) == 8
     assert {len(record["sensors"]) for record in records if record["_ingested_iso"] == "US"} == set(
-        range(2, 12)
+        range(4, 9)
     )
     assert {len(record["sensors"]) for record in records if record["_ingested_iso"] == "IN"} == set(
-        range(2, 12)
+        range(4, 9)
     )
 
 
@@ -136,6 +139,44 @@ def test_extract_measurements_end_to_end_reads_locations_and_writes_parquet(tmp_
     df = pd.read_parquet(out_path)
     assert len(df) == 1
     assert df.iloc[0]["sensor_id"] == 23534
+
+
+def test_extract_measurements_caps_sensors_per_location_with_pollutant_diversity(tmp_path):
+    def sensor(sensor_id: int, parameter_name: str) -> dict:
+        return {
+            "id": sensor_id,
+            "name": f"{parameter_name}-{sensor_id}",
+            "parameter": {
+                "id": sensor_id,
+                "name": parameter_name,
+                "units": "µg/m³",
+                "displayName": parameter_name.upper(),
+            },
+        }
+
+    locations_records = [
+        {
+            **LOCATION_EXAMPLE,
+            "_ingested_iso": "IN",
+            "sensors": [
+                sensor(1, "co"),
+                sensor(2, "co"),
+                sensor(3, "pm25"),
+                sensor(4, "pm10"),
+                sensor(5, "no2"),
+                sensor(6, "o3"),
+            ],
+        }
+    ]
+    extract_locations.write_bronze(locations_records, ingest_date=date(2026, 7, 1), bronze_dir=tmp_path)
+
+    locations_path = extract_measurements.latest_locations_snapshot(bronze_dir=tmp_path)
+    sensors = extract_measurements.sensor_ids_from_locations(
+        locations_path,
+        max_sensors_per_location=4,
+    )
+
+    assert [sensor["parameter_name"] for sensor in sensors] == ["pm25", "pm10", "no2", "o3"]
 
 
 def test_extract_measurements_one_bad_sensor_does_not_kill_the_run(tmp_path):

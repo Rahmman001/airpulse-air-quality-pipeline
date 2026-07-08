@@ -9,6 +9,7 @@ pull measurements for.
 Run:
     python -m ingestion.extract_measurements
     python -m ingestion.extract_measurements --lookback-days 7 --limit-sensors 25
+    python -m ingestion.extract_measurements --max-sensors-per-location 5
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ import argparse
 import logging
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 
@@ -26,6 +28,9 @@ from ingestion.schemas import HourlyData
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
+
+PREFERRED_PARAMETER_ORDER = ["pm25", "pm10", "no2", "o3", "so2", "co"]
+PREFERRED_PARAMETER_RANK = {parameter: rank for rank, parameter in enumerate(PREFERRED_PARAMETER_ORDER)}
 
 
 def latest_locations_snapshot(bronze_dir: Path = BRONZE_DIR) -> Path:
@@ -38,7 +43,43 @@ def latest_locations_snapshot(bronze_dir: Path = BRONZE_DIR) -> Path:
     return snapshots[-1] / "locations.parquet"
 
 
-def sensor_ids_from_locations(locations_path: Path) -> list[dict]:
+def sensor_priority_key(sensor: dict) -> tuple[int, str, int]:
+    parameter_name = sensor.get("parameter", {}).get("name") or ""
+    return (
+        PREFERRED_PARAMETER_RANK.get(parameter_name, len(PREFERRED_PARAMETER_RANK)),
+        parameter_name,
+        sensor.get("id", 0),
+    )
+
+
+def select_sensors_for_location(sensors: list[dict], max_sensors: Optional[int] = None) -> list[dict]:
+    if max_sensors is None or len(sensors) <= max_sensors:
+        return sorted(sensors, key=sensor_priority_key)
+
+    selected: list[dict] = []
+    seen_parameters: set[str] = set()
+    for sensor in sorted(sensors, key=sensor_priority_key):
+        parameter_name = sensor.get("parameter", {}).get("name") or ""
+        if parameter_name in seen_parameters:
+            continue
+        selected.append(sensor)
+        seen_parameters.add(parameter_name)
+        if len(selected) == max_sensors:
+            return selected
+
+    for sensor in sorted(sensors, key=sensor_priority_key):
+        if sensor in selected:
+            continue
+        selected.append(sensor)
+        if len(selected) == max_sensors:
+            return selected
+
+    return selected
+
+
+def sensor_ids_from_locations(
+    locations_path: Path, max_sensors_per_location: Optional[int] = None
+) -> list[dict]:
     """Flatten the nested `sensors` array out of the locations snapshot."""
     df = pd.read_parquet(locations_path)
     sensor_rows = []
@@ -46,7 +87,7 @@ def sensor_ids_from_locations(locations_path: Path) -> list[dict]:
         sensors = row.get("sensors")
         if sensors is None:
             continue
-        for sensor in sensors:
+        for sensor in select_sensors_for_location(sensors, max_sensors=max_sensors_per_location):
             sensor_rows.append(
                 {
                     "sensor_id": sensor["id"],
@@ -108,10 +149,19 @@ def main() -> None:
     parser.add_argument(
         "--limit-sensors", type=int, default=None, help="Cap sensor count for a quick test run"
     )
+    parser.add_argument(
+        "--max-sensors-per-location",
+        type=int,
+        default=None,
+        help="Cap each location to a diverse set of N pollutant sensors",
+    )
     args = parser.parse_args()
 
     locations_path = latest_locations_snapshot()
-    sensors = sensor_ids_from_locations(locations_path)
+    sensors = sensor_ids_from_locations(
+        locations_path,
+        max_sensors_per_location=args.max_sensors_per_location,
+    )
     if args.limit_sensors:
         sensors = sensors[: args.limit_sensors]
     logger.info("Fetching hourly measurements for %d sensors", len(sensors))

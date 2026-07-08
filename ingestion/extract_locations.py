@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
 
@@ -27,19 +27,40 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 
-def location_importance_key(location: dict) -> tuple[int, int, int, str]:
-    """
-    Prefer fixed monitoring locations with broad sensor coverage.
+def _datetime_last_timestamp(location: dict) -> float:
+    datetime_last = location.get("datetimeLast") or {}
+    utc_value = datetime_last.get("utc")
+    if not utc_value:
+        return 0.0
+    try:
+        return datetime.fromisoformat(utc_value.replace("Z", "+00:00")).timestamp()
+    except ValueError:
+        return 0.0
 
-    OpenAQ locations can represent different kinds of collection points. For
-    a compact scheduled refresh, the most useful rows are usually stationary
-    monitors with the most sensors, because they cover more pollutants and
-    produce a richer dashboard from fewer API calls.
+
+def location_importance_key(location: dict) -> tuple[int, int, int, float, int, int, int, str]:
     """
+    Prefer active fixed monitors with useful, not excessive, sensor coverage.
+
+    Ranking purely by "most sensors" can select locations with hundreds of
+    duplicate/noisy sensors, which makes scheduled refreshes slow without
+    improving the dashboard much. Moderate sensor counts usually give enough
+    pollutant coverage while keeping API calls predictable.
+    """
+    sensors = location.get("sensors") or []
+    sensor_count = len(sensors)
+    pollutant_count = len({sensor.get("parameter", {}).get("name") for sensor in sensors})
+    moderate_sensor_coverage = int(2 <= sensor_count <= 8)
+    excessive_sensor_penalty = -max(sensor_count - 8, 0)
+
     return (
-        len(location.get("sensors") or []),
         int(bool(location.get("isMonitor"))),
         int(not bool(location.get("isMobile"))),
+        moderate_sensor_coverage,
+        _datetime_last_timestamp(location),
+        pollutant_count,
+        min(sensor_count, 8),
+        excessive_sensor_penalty,
         location.get("name") or "",
     )
 
@@ -102,7 +123,7 @@ def main() -> None:
         "--limit-locations-per-country",
         type=int,
         default=None,
-        help="Keep only the most sensor-rich N locations per country for faster scheduled refreshes",
+        help="Keep only the most useful N locations per country for faster scheduled refreshes",
     )
     args = parser.parse_args()
 
