@@ -10,7 +10,10 @@ renamed as (
     select
         sensor_id,
         location_id,
-        value,
+        -- Negative concentrations are physically impossible sensor/provider
+        -- artifacts. Keep the row for lineage, but null the value so it does
+        -- not produce negative AQI or enter dashboard aggregates.
+        case when value < 0 then null else value end as value,
         "flagInfo__hasFlags"        as has_flags,
         parameter__id                as parameter_id,
         parameter__name              as parameter_name,
