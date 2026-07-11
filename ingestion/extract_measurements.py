@@ -99,11 +99,94 @@ def sensor_ids_from_locations(
     return sensor_rows
 
 
+def _sorted_pollutants(parameters: set[str]) -> list[str]:
+    return sorted(
+        parameters,
+        key=lambda parameter: (
+            PREFERRED_PARAMETER_RANK.get(parameter, len(PREFERRED_PARAMETER_RANK)),
+            parameter,
+        ),
+    )
+
+
+def build_data_availability_report(
+    sensors: list[dict], sensor_statuses: dict[int, dict[str, int | bool]]
+) -> list[dict]:
+    """Summarize how much measurement data each selected location actually returned."""
+    grouped: dict[tuple[int, str], dict] = {}
+    for sensor in sensors:
+        location_id = sensor["location_id"]
+        location_name = sensor.get("location_name") or "Unknown location"
+        parameter_name = sensor.get("parameter_name") or "unknown"
+        status = sensor_statuses.get(sensor["sensor_id"], {})
+        hourly_records = int(status.get("hourly_records", 0))
+        failed = bool(status.get("failed", False))
+
+        row = grouped.setdefault(
+            (location_id, location_name),
+            {
+                "location_id": location_id,
+                "location_name": location_name,
+                "sensors_checked": 0,
+                "sensors_with_data": 0,
+                "failed_sensors": 0,
+                "hourly_records": 0,
+                "_pollutants_checked": set(),
+                "_pollutants_with_data": set(),
+            },
+        )
+        row["sensors_checked"] += 1
+        row["hourly_records"] += hourly_records
+        row["_pollutants_checked"].add(parameter_name)
+        if hourly_records > 0:
+            row["sensors_with_data"] += 1
+            row["_pollutants_with_data"].add(parameter_name)
+        if failed:
+            row["failed_sensors"] += 1
+
+    report = []
+    for row in grouped.values():
+        report.append(
+            {
+                "location_id": row["location_id"],
+                "location_name": row["location_name"],
+                "sensors_checked": row["sensors_checked"],
+                "sensors_with_data": row["sensors_with_data"],
+                "failed_sensors": row["failed_sensors"],
+                "hourly_records": row["hourly_records"],
+                "pollutants_checked": _sorted_pollutants(row["_pollutants_checked"]),
+                "pollutants_with_data": _sorted_pollutants(row["_pollutants_with_data"]),
+            }
+        )
+    return report
+
+
+def log_data_availability_report(report: list[dict]) -> None:
+    if not report:
+        logger.info("Data availability by location: no sensors were checked")
+        return
+
+    logger.info("Data availability by location:")
+    for row in report:
+        logger.info(
+            "  %s: %d sensors checked, %d with data, %d failed, %d hourly records "
+            "(pollutants checked: %s; with data: %s)",
+            row["location_name"],
+            row["sensors_checked"],
+            row["sensors_with_data"],
+            row["failed_sensors"],
+            row["hourly_records"],
+            ", ".join(row["pollutants_checked"]) or "none",
+            ", ".join(row["pollutants_with_data"]) or "none",
+        )
+
+
 def fetch_measurements(client: OpenAQClient, sensors: list[dict], lookback_days: int) -> list[dict]:
     datetime_from = (datetime.now(timezone.utc) - timedelta(days=lookback_days)).strftime(
         "%Y-%m-%dT%H:%M:%SZ"
     )
     all_measurements: list[dict] = []
+    sensor_statuses: dict[int, dict[str, int | bool]] = {}
     for sensor in sensors:
         sensor_id = sensor["sensor_id"]
         try:
@@ -124,11 +207,14 @@ def fetch_measurements(client: OpenAQClient, sensors: list[dict], lookback_days:
                 sensor["location_name"],
                 count,
             )
+            sensor_statuses[sensor_id] = {"hourly_records": count, "failed": False}
         except Exception:
             # One bad sensor shouldn't kill a multi-hour ingestion run. In
             # Phase 4 (Dagster) this becomes a per-asset failure with proper
             # observability instead of a log line -- logged loudly for now.
             logger.exception("Failed to fetch measurements for sensor_id=%s", sensor_id)
+            sensor_statuses[sensor_id] = {"hourly_records": 0, "failed": True}
+    log_data_availability_report(build_data_availability_report(sensors, sensor_statuses))
     return all_measurements
 
 

@@ -241,6 +241,44 @@ def test_extract_measurements_caps_sensors_per_location_with_pollutant_diversity
     assert [sensor["parameter_name"] for sensor in sensors] == ["pm25", "pm10", "no2", "o3"]
 
 
+def test_extract_measurements_builds_location_availability_report():
+    sensors = [
+        {"sensor_id": 1, "location_id": 100, "location_name": "Delhi", "parameter_name": "pm25"},
+        {"sensor_id": 2, "location_id": 100, "location_name": "Delhi", "parameter_name": "pm10"},
+        {"sensor_id": 3, "location_id": 200, "location_name": "Mumbai", "parameter_name": "no2"},
+    ]
+    sensor_statuses = {
+        1: {"hourly_records": 24, "failed": False},
+        2: {"hourly_records": 0, "failed": False},
+        3: {"hourly_records": 0, "failed": True},
+    }
+
+    report = extract_measurements.build_data_availability_report(sensors, sensor_statuses)
+
+    assert report == [
+        {
+            "location_id": 100,
+            "location_name": "Delhi",
+            "sensors_checked": 2,
+            "sensors_with_data": 1,
+            "failed_sensors": 0,
+            "hourly_records": 24,
+            "pollutants_checked": ["pm25", "pm10"],
+            "pollutants_with_data": ["pm25"],
+        },
+        {
+            "location_id": 200,
+            "location_name": "Mumbai",
+            "sensors_checked": 1,
+            "sensors_with_data": 0,
+            "failed_sensors": 1,
+            "hourly_records": 0,
+            "pollutants_checked": ["no2"],
+            "pollutants_with_data": [],
+        },
+    ]
+
+
 def test_extract_measurements_one_bad_sensor_does_not_kill_the_run(tmp_path):
     """A single sensor erroring out should be logged and skipped, not crash the batch."""
     sensors = [
