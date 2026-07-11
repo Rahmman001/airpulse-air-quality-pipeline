@@ -19,7 +19,12 @@ from typing import Optional
 
 import pandas as pd
 
-from ingestion.config import BRONZE_DIR, TARGET_COUNTRY_ISO_CODES
+from ingestion.config import (
+    BRONZE_DIR,
+    COUNTRY_LOCATION_LIMITS,
+    IMPORTANT_CITY_KEYWORDS_BY_COUNTRY,
+    TARGET_COUNTRY_ISO_CODES,
+)
 from ingestion.openaq_client import OpenAQClient
 from ingestion.schemas import Location
 
@@ -38,7 +43,22 @@ def _datetime_last_timestamp(location: dict) -> float:
         return 0.0
 
 
-def location_importance_key(location: dict) -> tuple[int, int, int, float, int, int, int, str]:
+def _location_search_text(location: dict) -> str:
+    parts = [
+        location.get("name"),
+        location.get("locality"),
+        location.get("country", {}).get("name"),
+    ]
+    return " ".join(str(part).lower() for part in parts if part)
+
+
+def city_priority_score(location: dict, iso: str) -> int:
+    search_text = _location_search_text(location)
+    keywords = IMPORTANT_CITY_KEYWORDS_BY_COUNTRY.get(iso, [])
+    return int(any(keyword.lower() in search_text for keyword in keywords))
+
+
+def location_importance_key(location: dict, iso: str = "") -> tuple[int, int, int, int, float, int, int, int, str]:
     """
     Prefer active fixed monitors with useful, not excessive, sensor coverage.
 
@@ -54,6 +74,7 @@ def location_importance_key(location: dict) -> tuple[int, int, int, float, int, 
     excessive_sensor_penalty = -max(sensor_count - 8, 0)
 
     return (
+        city_priority_score(location, iso),
         int(bool(location.get("isMonitor"))),
         int(not bool(location.get("isMobile"))),
         moderate_sensor_coverage,
@@ -65,11 +86,38 @@ def location_importance_key(location: dict) -> tuple[int, int, int, float, int, 
     )
 
 
+def parse_country_location_limits(raw_limits: list[str]) -> dict[str, int]:
+    limits: dict[str, int] = {}
+    for raw_limit in raw_limits:
+        if "=" not in raw_limit:
+            raise ValueError(
+                f"Invalid country location limit {raw_limit!r}. Use ISO=NUMBER, for example IN=20."
+            )
+        iso, limit = raw_limit.split("=", 1)
+        iso = iso.strip().upper()
+        if not iso:
+            raise ValueError(f"Invalid country location limit {raw_limit!r}: missing ISO code.")
+        try:
+            parsed_limit = int(limit)
+        except ValueError as exc:
+            raise ValueError(
+                f"Invalid country location limit {raw_limit!r}: limit must be an integer."
+            ) from exc
+        if parsed_limit < 1:
+            raise ValueError(f"Invalid country location limit {raw_limit!r}: limit must be at least 1.")
+        limits[iso] = parsed_limit
+    return limits
+
+
 def fetch_locations(
-    client: OpenAQClient, iso_codes: list[str], limit_locations_per_country: Optional[int] = None
+    client: OpenAQClient,
+    iso_codes: list[str],
+    limit_locations_per_country: Optional[int] = None,
+    country_location_limits: Optional[dict[str, int]] = None,
 ) -> list[dict]:
     """Pull + schema-validate locations for each target country."""
     all_locations: list[dict] = []
+    country_location_limits = country_location_limits or {}
     for iso in iso_codes:
         logger.info("Fetching locations for country=%s", iso)
         country_locations: list[dict] = []
@@ -83,10 +131,13 @@ def fetch_locations(
             country_locations.append(record)
 
         fetched_count = len(country_locations)
-        if limit_locations_per_country is not None:
-            country_locations = sorted(country_locations, key=location_importance_key, reverse=True)[
-                :limit_locations_per_country
-            ]
+        country_limit = country_location_limits.get(iso, limit_locations_per_country)
+        if country_limit is not None:
+            country_locations = sorted(
+                country_locations,
+                key=lambda location: location_importance_key(location, iso),
+                reverse=True,
+            )[:country_limit]
             logger.info(
                 "  -> selected %d of %d locations for %s",
                 len(country_locations),
@@ -125,13 +176,24 @@ def main() -> None:
         default=None,
         help="Keep only the most useful N locations per country for faster scheduled refreshes",
     )
+    parser.add_argument(
+        "--country-location-limit",
+        action="append",
+        default=[],
+        metavar="ISO=NUMBER",
+        help="Override the location cap for one country, e.g. IN=20. Can be passed more than once.",
+    )
     args = parser.parse_args()
 
+    country_location_limits = parse_country_location_limits(args.country_location_limit)
+    if args.limit_locations_per_country is not None:
+        country_location_limits = {**COUNTRY_LOCATION_LIMITS, **country_location_limits}
     client = OpenAQClient()
     records = fetch_locations(
         client,
         args.countries,
         limit_locations_per_country=args.limit_locations_per_country,
+        country_location_limits=country_location_limits,
     )
     write_bronze(records, ingest_date=date.today())
 

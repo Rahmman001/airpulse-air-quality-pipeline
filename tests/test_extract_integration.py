@@ -97,6 +97,46 @@ def test_extract_locations_limits_to_moderate_sensor_locations_per_country():
     )
 
 
+def test_extract_locations_can_prioritize_major_indian_cities_with_country_limit():
+    fake_client = object.__new__(extract_locations.OpenAQClient)  # bypass __init__/API key check
+
+    def location_fixture(location_id: int, iso: str, name: str) -> dict:
+        return {
+            **LOCATION_EXAMPLE,
+            "id": location_id,
+            "name": name,
+            "locality": name,
+            "country": {**LOCATION_EXAMPLE["country"], "code": iso, "name": iso},
+        }
+
+    def fake_get_locations(self, iso, **kwargs):
+        del self, kwargs
+        if iso == "IN":
+            names = ["Nagpur", "New Delhi", "Mumbai", "Kolkata", "Jaipur"]
+        else:
+            names = ["Boston", "Seattle", "Chicago"]
+        return iter(
+            [
+                location_fixture(location_id=index + 1, iso=iso, name=name)
+                for index, name in enumerate(names)
+            ]
+        )
+
+    with patch.object(extract_locations.OpenAQClient, "get_locations", fake_get_locations):
+        records = extract_locations.fetch_locations(
+            fake_client,
+            iso_codes=["US", "IN"],
+            limit_locations_per_country=2,
+            country_location_limits={"IN": 3},
+        )
+
+    india_names = {record["name"] for record in records if record["_ingested_iso"] == "IN"}
+    us_names = {record["name"] for record in records if record["_ingested_iso"] == "US"}
+
+    assert len(us_names) == 2
+    assert india_names == {"New Delhi", "Mumbai", "Kolkata"}
+
+
 def test_extract_measurements_end_to_end_reads_locations_and_writes_parquet(tmp_path):
     # Step 1: seed a fake locations snapshot, exactly like extract_locations would.
     locations_records = [{**LOCATION_EXAMPLE, "_ingested_iso": "IN"}]
