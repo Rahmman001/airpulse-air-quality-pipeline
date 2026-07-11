@@ -58,7 +58,9 @@ def city_priority_score(location: dict, iso: str) -> int:
     return int(any(keyword.lower() in search_text for keyword in keywords))
 
 
-def location_importance_key(location: dict, iso: str = "") -> tuple[int, int, int, int, float, int, int, int, str]:
+def location_importance_key(
+    location: dict, iso: str = ""
+) -> tuple[int, int, int, int, float, int, int, int, str]:
     """
     Prefer active fixed monitors with useful, not excessive, sensor coverage.
 

@@ -116,10 +116,7 @@ def test_extract_locations_can_prioritize_major_indian_cities_with_country_limit
         else:
             names = ["Boston", "Seattle", "Chicago"]
         return iter(
-            [
-                location_fixture(location_id=index + 1, iso=iso, name=name)
-                for index, name in enumerate(names)
-            ]
+            [location_fixture(location_id=index + 1, iso=iso, name=name) for index, name in enumerate(names)]
         )
 
     with patch.object(extract_locations.OpenAQClient, "get_locations", fake_get_locations):
