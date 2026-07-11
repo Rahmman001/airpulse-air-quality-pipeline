@@ -23,7 +23,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.utils.data import data_source_label, load_latest_city_aqi, pipeline_freshness  # noqa: E402
+from app.utils.data import (  # noqa: E402
+    data_source_label,
+    load_latest_city_aqi,
+    load_locations,
+    load_locations_without_recent_aqi,
+    pipeline_freshness,
+)
 from app.utils.risk_tiers import (  # noqa: E402
     RISK_TIER_COLORS_HEX,
     RISK_TIER_COLORS_RGB,
@@ -44,8 +50,28 @@ st.caption(
 )
 
 latest = load_latest_city_aqi()
+locations = load_locations()
+locations_without_recent_aqi = load_locations_without_recent_aqi()
 
 if latest.empty:
+    if not locations.empty:
+        st.warning("Monitoring locations are loaded, but no recent AQI readings are available yet.")
+        st.subheader("Locations without recent AQI data")
+        st.dataframe(
+            locations_without_recent_aqi.rename(
+                columns={
+                    "location_name": "Location",
+                    "country_name": "Country",
+                    "country_code": "Country code",
+                    "data_status": "Status",
+                }
+            ),
+            hide_index=True,
+            width="stretch",
+        )
+        st.caption(f"Data source: {data_source_label()}.")
+        st.stop()
+
     st.warning(
         "No data available yet. Run the pipeline first: `python -m ingestion.extract_locations`, "
         "`python -m ingestion.extract_measurements`, `python -m warehouse.load_raw`, then `dbt build` "
@@ -61,7 +87,9 @@ num_hazardous_or_worse = latest[latest["avg_aqi"] > 150]["location_key"].nunique
 freshness = pipeline_freshness()
 
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Locations monitored", latest["location_key"].nunique())
+col1.metric(
+    "Locations monitored", len(locations) if not locations.empty else latest["location_key"].nunique()
+)
 col2.metric(
     "Worst current reading",
     f"{worst_row['avg_aqi']:.0f} AQI",
@@ -154,6 +182,21 @@ leaderboard = (
     )
 )
 st.dataframe(leaderboard, hide_index=True, width="stretch")
+
+if not locations_without_recent_aqi.empty:
+    st.divider()
+    st.subheader("Locations without recent AQI data")
+    missing_display = locations_without_recent_aqi[
+        ["location_name", "country_name", "country_code", "data_status"]
+    ].rename(
+        columns={
+            "location_name": "Location",
+            "country_name": "Country",
+            "country_code": "Country code",
+            "data_status": "Status",
+        }
+    )
+    st.dataframe(missing_display, hide_index=True, width="stretch")
 
 st.caption(
     f"Data source: {data_source_label()}. See the **City Trends** page for historical detail on any "

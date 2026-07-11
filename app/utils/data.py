@@ -113,6 +113,46 @@ def load_locations() -> pd.DataFrame:
 
 
 @st.cache_data(ttl=300)
+def load_locations_without_recent_aqi() -> pd.DataFrame:
+    return _query(
+        """
+        WITH current_locations AS (
+            SELECT
+                location_key,
+                location_id,
+                location_name,
+                country_code,
+                country_name,
+                latitude,
+                longitude
+            FROM mart.dim_location
+            WHERE is_current
+        ),
+        latest_date AS (
+            SELECT MAX(measured_date) AS measured_date
+            FROM mart.fact_daily_city_aqi
+        ),
+        locations_with_current_aqi AS (
+            SELECT DISTINCT f.location_key
+            FROM mart.fact_daily_city_aqi f
+            JOIN latest_date d ON f.measured_date = d.measured_date
+        )
+        SELECT
+            l.location_name,
+            l.country_name,
+            l.country_code,
+            l.latitude,
+            l.longitude,
+            'No recent AQI data' AS data_status
+        FROM current_locations l
+        LEFT JOIN locations_with_current_aqi a ON l.location_key = a.location_key
+        WHERE a.location_key IS NULL
+        ORDER BY l.country_name, l.location_name
+        """
+    )
+
+
+@st.cache_data(ttl=300)
 def load_pollutants() -> pd.DataFrame:
     return _query("SELECT * FROM mart.dim_pollutant WHERE has_aqi_support")
 

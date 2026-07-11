@@ -53,7 +53,10 @@ def real_dashboard_data():
         if p.exists():
             p.unlink()
 
-    locations = [location(8118, "New Delhi", "IN", "India", 28.63, 77.22)]
+    locations = [
+        location(8118, "New Delhi", "IN", "India", 28.63, 77.22),
+        location(364, "Mumbai", "IN", "India", 19.08, 72.88),
+    ]
     write_locations_bronze(locations, ingest_date=date(2026, 6, 29))
 
     measurements = [
@@ -157,6 +160,16 @@ def test_main_dashboard_shows_correct_worst_reading(real_dashboard_data):
     assert not at.exception
     worst = next(m for m in at.metric if m.label == "Worst current reading")
     assert "142" in worst.value
+
+
+def test_main_dashboard_shows_locations_without_recent_aqi(real_dashboard_data):
+    at = AppTest.from_file(str(PROJECT_ROOT / "app" / "streamlit_app.py"))
+    at.run(timeout=30)
+    assert not at.exception
+    assert len(at.dataframe) >= 2
+    missing_df = at.dataframe[1].value
+    assert "Mumbai" in missing_df["Location"].values
+    assert "No recent AQI data" in missing_df["Status"].values
 
 
 def test_city_trends_page_drilldown_shows_hand_verified_aqi(real_dashboard_data):
