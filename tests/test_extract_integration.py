@@ -134,6 +134,31 @@ def test_extract_locations_can_prioritize_major_indian_cities_with_country_limit
     assert india_names == {"New Delhi", "Mumbai", "Kolkata"}
 
 
+def test_extract_locations_prefers_recent_activity_before_major_city_priority():
+    stale_mumbai = {
+        **LOCATION_EXAMPLE,
+        "id": 1,
+        "name": "Mumbai stale station",
+        "locality": "Mumbai",
+        "datetimeLast": {"utc": "2024-01-01T00:00:00Z", "local": "2024-01-01T05:30:00+05:30"},
+    }
+    recent_station = {
+        **LOCATION_EXAMPLE,
+        "id": 2,
+        "name": "Recently Active Station",
+        "locality": "India",
+        "datetimeLast": {"utc": "2026-07-01T00:00:00Z", "local": "2026-07-01T05:30:00+05:30"},
+    }
+
+    selected = sorted(
+        [stale_mumbai, recent_station],
+        key=lambda location: extract_locations.location_importance_key(location, "IN"),
+        reverse=True,
+    )
+
+    assert selected[0]["name"] == "Recently Active Station"
+
+
 def test_extract_measurements_end_to_end_reads_locations_and_writes_parquet(tmp_path):
     # Step 1: seed a fake locations snapshot, exactly like extract_locations would.
     locations_records = [{**LOCATION_EXAMPLE, "_ingested_iso": "IN"}]

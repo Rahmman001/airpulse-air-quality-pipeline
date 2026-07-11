@@ -76,11 +76,11 @@ def location_importance_key(
     excessive_sensor_penalty = -max(sensor_count - 8, 0)
 
     return (
-        city_priority_score(location, iso),
         int(bool(location.get("isMonitor"))),
         int(not bool(location.get("isMobile"))),
-        moderate_sensor_coverage,
         _datetime_last_timestamp(location),
+        city_priority_score(location, iso),
+        moderate_sensor_coverage,
         pollutant_count,
         min(sensor_count, 8),
         excessive_sensor_penalty,

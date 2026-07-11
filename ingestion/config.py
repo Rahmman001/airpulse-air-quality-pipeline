@@ -11,8 +11,11 @@ BRONZE_DIR = PROJECT_ROOT / "data" / "bronze"
 # not hours, during development. Extend freely once the pipeline is proven out.
 TARGET_COUNTRY_ISO_CODES = ["US", "IN", "GB", "DE", "PL", "MX", "TH", "NG"]
 
-# How far back to pull hourly measurements on each run.
-MEASUREMENT_LOOKBACK_DAYS = 3
+# How far back to pull hourly measurements on each run. Fourteen days keeps
+# the hourly endpoint under one API page per sensor while tolerating provider
+# reporting delays that would otherwise make active-looking stations vanish
+# from the dashboard.
+MEASUREMENT_LOOKBACK_DAYS = 14
 
 # Country-specific location caps for scheduled refreshes. India gets a
 # larger cap so the dashboard has better coverage for major cities while the
