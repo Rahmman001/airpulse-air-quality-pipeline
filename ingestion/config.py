@@ -24,6 +24,12 @@ COUNTRY_LOCATION_LIMITS = {
     "IN": 20,
 }
 
+# Keep a small backup set for important cities, so one quiet station does not
+# make the city disappear from the dashboard.
+CITY_FALLBACK_STATIONS_BY_COUNTRY = {
+    "IN": 2,
+}
+
 # City names to prefer when selecting a bounded slice of locations. OpenAQ
 # station names vary by provider, so these are simple case-insensitive
 # substrings matched against name/locality/country fields.

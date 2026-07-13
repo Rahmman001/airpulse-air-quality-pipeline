@@ -21,6 +21,7 @@ import pandas as pd
 
 from ingestion.config import (
     BRONZE_DIR,
+    CITY_FALLBACK_STATIONS_BY_COUNTRY,
     COUNTRY_LOCATION_LIMITS,
     IMPORTANT_CITY_KEYWORDS_BY_COUNTRY,
     TARGET_COUNTRY_ISO_CODES,
@@ -53,9 +54,16 @@ def _location_search_text(location: dict) -> str:
 
 
 def city_priority_score(location: dict, iso: str) -> int:
+    return int(city_priority_name(location, iso) is not None)
+
+
+def city_priority_name(location: dict, iso: str) -> Optional[str]:
     search_text = _location_search_text(location)
     keywords = IMPORTANT_CITY_KEYWORDS_BY_COUNTRY.get(iso, [])
-    return int(any(keyword.lower() in search_text for keyword in keywords))
+    for keyword in keywords:
+        if keyword.lower() in search_text:
+            return keyword
+    return None
 
 
 def location_importance_key(
@@ -111,6 +119,37 @@ def parse_country_location_limits(raw_limits: list[str]) -> dict[str, int]:
     return limits
 
 
+def select_locations_for_country(locations: list[dict], iso: str, limit: int) -> list[dict]:
+    ranked = sorted(
+        locations,
+        key=lambda location: location_importance_key(location, iso),
+        reverse=True,
+    )
+    city_fallback_limit = CITY_FALLBACK_STATIONS_BY_COUNTRY.get(iso, 1)
+    selected: list[dict] = []
+    selected_ids: set[int] = set()
+    city_counts: dict[str, int] = {}
+
+    for location in ranked:
+        city = city_priority_name(location, iso)
+        if city is None or city_counts.get(city, 0) >= city_fallback_limit:
+            continue
+        selected.append(location)
+        selected_ids.add(location["id"])
+        city_counts[city] = city_counts.get(city, 0) + 1
+        if len(selected) == limit:
+            return selected
+
+    for location in ranked:
+        if location["id"] in selected_ids:
+            continue
+        selected.append(location)
+        if len(selected) == limit:
+            return selected
+
+    return selected
+
+
 def fetch_locations(
     client: OpenAQClient,
     iso_codes: list[str],
@@ -135,11 +174,7 @@ def fetch_locations(
         fetched_count = len(country_locations)
         country_limit = country_location_limits.get(iso, limit_locations_per_country)
         if country_limit is not None:
-            country_locations = sorted(
-                country_locations,
-                key=lambda location: location_importance_key(location, iso),
-                reverse=True,
-            )[:country_limit]
+            country_locations = select_locations_for_country(country_locations, iso, country_limit)
             logger.info(
                 "  -> selected %d of %d locations for %s",
                 len(country_locations),

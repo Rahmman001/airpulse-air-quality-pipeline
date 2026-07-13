@@ -159,6 +159,28 @@ def test_extract_locations_prefers_recent_activity_before_major_city_priority():
     assert selected[0]["name"] == "Recently Active Station"
 
 
+def test_extract_locations_keeps_city_fallback_station_candidates():
+    def location_fixture(location_id: int, name: str) -> dict:
+        return {
+            **LOCATION_EXAMPLE,
+            "id": location_id,
+            "name": name,
+            "locality": name,
+        }
+
+    locations = [
+        location_fixture(1, "Mumbai primary station"),
+        location_fixture(2, "Mumbai backup station"),
+        location_fixture(3, "New Delhi station"),
+        location_fixture(4, "Generic active station"),
+    ]
+
+    selected = extract_locations.select_locations_for_country(locations, iso="IN", limit=3)
+
+    selected_names = {location["name"] for location in selected}
+    assert selected_names == {"Mumbai primary station", "Mumbai backup station", "New Delhi station"}
+
+
 def test_extract_measurements_end_to_end_reads_locations_and_writes_parquet(tmp_path):
     # Step 1: seed a fake locations snapshot, exactly like extract_locations would.
     locations_records = [{**LOCATION_EXAMPLE, "_ingested_iso": "IN"}]
