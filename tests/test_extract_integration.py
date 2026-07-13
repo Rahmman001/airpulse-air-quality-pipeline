@@ -159,6 +159,16 @@ def test_extract_locations_prefers_recent_activity_before_major_city_priority():
     assert selected[0]["name"] == "Recently Active Station"
 
 
+def test_extract_locations_matches_station_names_to_canonical_city():
+    delhi = {**LOCATION_EXAMPLE, "name": "East Arjun Nagar, Delhi - CPCB", "locality": "Delhi"}
+    new_delhi = {**LOCATION_EXAMPLE, "name": "New Delhi US Embassy", "locality": "New Delhi"}
+    bangalore = {**LOCATION_EXAMPLE, "name": "Bangalore city station", "locality": "Bangalore"}
+
+    assert extract_locations.city_priority_name(delhi, "IN") == "Delhi"
+    assert extract_locations.city_priority_name(new_delhi, "IN") == "Delhi"
+    assert extract_locations.city_priority_name(bangalore, "IN") == "Bengaluru"
+
+
 def test_extract_locations_keeps_city_fallback_station_candidates():
     def location_fixture(location_id: int, name: str) -> dict:
         return {

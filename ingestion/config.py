@@ -30,20 +30,17 @@ CITY_FALLBACK_STATIONS_BY_COUNTRY = {
     "IN": 2,
 }
 
-# City names to prefer when selecting a bounded slice of locations. OpenAQ
-# station names vary by provider, so these are simple case-insensitive
-# substrings matched against name/locality/country fields.
-IMPORTANT_CITY_KEYWORDS_BY_COUNTRY = {
-    "IN": [
-        "delhi",
-        "new delhi",
-        "mumbai",
-        "kolkata",
-        "bengaluru",
-        "bangalore",
-        "chennai",
-        "hyderabad",
-        "pune",
-        "ahmedabad",
-    ],
+# Target cities to prefer when selecting a bounded slice of locations. OpenAQ
+# still returns stations, but this keeps the project intent city-based.
+IMPORTANT_CITIES_BY_COUNTRY = {
+    "IN": {
+        "Delhi": ["delhi", "new delhi"],
+        "Mumbai": ["mumbai"],
+        "Kolkata": ["kolkata"],
+        "Bengaluru": ["bengaluru", "bangalore"],
+        "Chennai": ["chennai"],
+        "Hyderabad": ["hyderabad"],
+        "Pune": ["pune"],
+        "Ahmedabad": ["ahmedabad"],
+    },
 }

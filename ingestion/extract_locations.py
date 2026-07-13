@@ -23,7 +23,7 @@ from ingestion.config import (
     BRONZE_DIR,
     CITY_FALLBACK_STATIONS_BY_COUNTRY,
     COUNTRY_LOCATION_LIMITS,
-    IMPORTANT_CITY_KEYWORDS_BY_COUNTRY,
+    IMPORTANT_CITIES_BY_COUNTRY,
     TARGET_COUNTRY_ISO_CODES,
 )
 from ingestion.openaq_client import OpenAQClient
@@ -59,10 +59,10 @@ def city_priority_score(location: dict, iso: str) -> int:
 
 def city_priority_name(location: dict, iso: str) -> Optional[str]:
     search_text = _location_search_text(location)
-    keywords = IMPORTANT_CITY_KEYWORDS_BY_COUNTRY.get(iso, [])
-    for keyword in keywords:
-        if keyword.lower() in search_text:
-            return keyword
+    cities = IMPORTANT_CITIES_BY_COUNTRY.get(iso, {})
+    for city, aliases in cities.items():
+        if any(alias.lower() in search_text for alias in aliases):
+            return city
     return None
 
 
