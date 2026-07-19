@@ -42,28 +42,25 @@ models:
       - name: location_key
         tests:
           - relationships:
-              arguments:
-                to: ref('dim_location')
-                field: location_key
+              to: ref('dim_location')
+              field: location_key
       - name: pollutant_key
         tests:
           - relationships:
-              arguments:
-                to: ref('dim_pollutant')
-                field: pollutant_key
+              to: ref('dim_pollutant')
+              field: pollutant_key
       - name: aqi
         description: Null for pollutants calculate_aqi() doesn't cover, or missing source values. Range (0-500) is enforced by the assert_aqi_within_valid_range singular test.
       - name: risk_tier
         tests:
           - accepted_values:
-              arguments:
-                values:
-                  - 'Good'
-                  - 'Moderate'
-                  - 'Unhealthy for Sensitive Groups'
-                  - 'Unhealthy'
-                  - 'Very Unhealthy'
-                  - 'Hazardous'
+              values:
+                - 'Good'
+                - 'Moderate'
+                - 'Unhealthy for Sensitive Groups'
+                - 'Unhealthy'
+                - 'Very Unhealthy'
+                - 'Hazardous'
               config:
                 where: "risk_tier is not null"
 
@@ -73,9 +70,8 @@ models:
       - name: location_key
         tests:
           - relationships:
-              arguments:
-                to: ref('dim_location')
-                field: location_key
+              to: ref('dim_location')
+              field: location_key
       - name: avg_aqi
         tests:
           - not_null

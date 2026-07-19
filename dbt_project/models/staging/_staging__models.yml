@@ -25,9 +25,8 @@ models:
         tests:
           - not_null
           - relationships:
-              arguments:
-                to: ref('stg_openaq__locations')
-                field: location_id
+              to: ref('stg_openaq__locations')
+              field: location_id
 
   - name: stg_openaq__measurements
     description: One row per (sensor, hour), deduped to the most recently ingested reading.
