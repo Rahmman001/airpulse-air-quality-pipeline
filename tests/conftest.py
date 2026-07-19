@@ -48,11 +48,9 @@ def ensure_dbt_manifest_exists():
             profiles_yml.write_text((DBT_PROJECT_DIR / "profiles.yml.example").read_text())
 
         subprocess.run(
-            [*dbt_command(), "parse", "--quiet"],
+            [*dbt_command(), "parse"],
             cwd=DBT_PROJECT_DIR,
             env={**os.environ, "DBT_PROFILES_DIR": str(DBT_PROJECT_DIR)},
             check=True,
-            capture_output=True,
-            text=True,
         )
     yield
