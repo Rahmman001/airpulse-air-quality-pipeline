@@ -85,6 +85,8 @@ if latest.empty:
 worst_row = latest.loc[latest["avg_aqi"].idxmax()]
 num_hazardous_or_worse = latest[latest["avg_aqi"] > 150]["location_key"].nunique()
 freshness = pipeline_freshness()
+latest_date = freshness["latest_date"]
+latest_date_label = str(latest_date.date()) if hasattr(latest_date, "date") else str(latest_date or "—")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric(
@@ -100,7 +102,7 @@ col3.metric(
     num_hazardous_or_worse,
     help="Locations with any pollutant averaging above 150 AQI (Unhealthy or worse)",
 )
-col4.metric("Data through", str(freshness["latest_date"]) if freshness["latest_date"] else "—")
+col4.metric("Data through", latest_date_label)
 
 st.divider()
 
