@@ -18,9 +18,10 @@ the actual DuckDB tables to exist), so this adds negligible overhead.
 from __future__ import annotations
 
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
+from subprocess import CalledProcessError
 
 import pytest
 
@@ -47,10 +48,17 @@ def ensure_dbt_manifest_exists():
             # (possibly customized) profiles.yml.
             profiles_yml.write_text((DBT_PROJECT_DIR / "profiles.yml.example").read_text())
 
-        subprocess.run(
-            [*dbt_command(), "parse"],
-            cwd=DBT_PROJECT_DIR,
-            env={**os.environ, "DBT_PROFILES_DIR": str(DBT_PROJECT_DIR)},
-            check=True,
-        )
+        try:
+            subprocess.run(
+                [*dbt_command(), "parse"],
+                cwd=DBT_PROJECT_DIR,
+                env={**os.environ, "DBT_PROFILES_DIR": str(DBT_PROJECT_DIR)},
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+        except CalledProcessError as exc:
+            print(exc.stdout)
+            print(exc.stderr)
+            raise
     yield
