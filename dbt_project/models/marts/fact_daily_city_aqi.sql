@@ -9,7 +9,7 @@ with hourly as (
 
 locations as (
 
-    select location_key, location_id, location_name, country_code, country_name, latitude, longitude
+    select location_key, location_id, location_name, city_name, country_code, country_name, latitude, longitude
     from {{ ref('dim_location') }}
     where is_current
 
@@ -27,6 +27,7 @@ select
     l.location_key,
     l.location_id,
     l.location_name,
+    l.city_name,
     l.country_code,
     l.country_name,
     l.latitude,
@@ -38,10 +39,16 @@ select
     max(h.aqi)                                      as max_aqi,
     avg(h.value_ugm3)                               as avg_value_ugm3,
     count(*)                                        as reading_count,
-    sum(case when h.has_flags then 1 else 0 end)    as flagged_reading_count
+    sum(case when h.has_flags then 1 else 0 end)    as flagged_reading_count,
+    avg(avg(h.aqi)) over (
+        partition by l.city_name, h.measured_date, p.pollutant_key
+    )                                               as city_avg_aqi,
+    count(distinct l.location_id) over (
+        partition by l.city_name, h.measured_date, p.pollutant_key
+    )                                               as city_stations_count
 
 from hourly h
 join locations l on h.location_key = l.location_key
 join pollutants p on h.pollutant_key = p.pollutant_key
 where h.aqi is not null
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12

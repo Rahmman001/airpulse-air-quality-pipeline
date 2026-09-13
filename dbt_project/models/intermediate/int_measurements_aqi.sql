@@ -1,11 +1,7 @@
--- Compute AQI per (sensor, hour) reading. AQI breakpoint tables are
--- unit-specific per pollutant (ug/m3 for particulates, ppm for gases), so
--- we normalize into *those* units first -- separately from the ug/m3
--- display normalization upstream, since the two conversions serve different
--- purposes and shouldn't be conflated in one column.
-with normalized as (
+-- Compute AQI and normalized display units (ug/m3) per (sensor, hour) reading.
+with measurements as (
 
-    select * from {{ ref('int_measurements_unit_normalized') }}
+    select * from {{ ref('stg_openaq__measurements') }}
 
 ),
 
@@ -13,9 +9,10 @@ epa_units as (
 
     select
         *,
+        {{ convert_to_ugm3('value', 'parameter_units', 'parameter_name') }} as value_ugm3,
         {{ convert_to_epa_aqi_units('value', 'parameter_units', 'parameter_name') }} as value_epa_units
 
-    from normalized
+    from measurements
 
 )
 

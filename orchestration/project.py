@@ -12,6 +12,7 @@ It's a no-op outside of `dagster dev` (e.g. in a real deployment you'd bake
 an already-prepared manifest into your deployment artifact instead).
 """
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -36,12 +37,7 @@ airpulse_dbt_project = DbtProject(
 )
 airpulse_dbt_project.prepare_if_dev()
 
-_active_python_dbt = Path(sys.executable).with_name("dbt")
-_project_venv_dbt = PROJECT_ROOT / ".venv" / "bin" / "dbt"
-_dbt_executable = next(
-    (str(path) for path in (_active_python_dbt, _project_venv_dbt) if path.exists()),
-    "dbt",
-)
+_dbt_executable = shutil.which("dbt") or str(Path(sys.executable).with_name("dbt"))
 dbt_resource = DbtCliResource(
     project_dir=airpulse_dbt_project,
     dbt_executable=_dbt_executable,

@@ -1,12 +1,13 @@
 with distinct_pollutants as (
 
-    select distinct
+    select
         parameter_id,
         parameter_name,
-        parameter_units
+        min(parameter_units) as parameter_units
 
     from {{ ref('stg_openaq__measurements') }}
     where parameter_id is not null
+    group by parameter_id, parameter_name
 
 )
 

@@ -65,7 +65,17 @@ def real_dashboard_data():
     ]
     write_measurements_bronze(measurements, ingest_date=date(2026, 6, 30))
 
-    load_all(mode="full")
+    import warehouse.load_raw as load_raw_mod
+    orig_sources = dict(load_raw_mod.SOURCES)
+    try:
+        from ingestion.config import BRONZE_DIR
+        load_raw_mod.SOURCES = {
+            "locations": BRONZE_DIR / "locations" / "ingest_date=2026-06-29" / "locations.parquet",
+            "measurements": BRONZE_DIR / "measurements" / "ingest_date=2026-06-30" / "measurements.parquet",
+        }
+        load_all()
+    finally:
+        load_raw_mod.SOURCES = orig_sources
 
     profiles_yml = DBT_PROJECT_DIR / "profiles.yml"
     if not profiles_yml.exists():
@@ -195,7 +205,9 @@ def test_alerts_page_threshold_slider_changes_results(real_dashboard_data):
     assert int(metric.value) >= 1  # at least the New Delhi PM2.5 reading qualifies at this threshold
 
 
-def test_dashboard_works_in_snapshot_mode_with_no_live_duckdb_file(real_dashboard_data):
+def test_dashboard_works_in_snapshot_mode_with_no_live_duckdb_file(
+    real_dashboard_data, tmp_path, monkeypatch
+):
     """
     Proves the dual-mode data layer actually works: export the mart tables
     to Parquet, delete the live DuckDB file entirely, and confirm the app
@@ -203,10 +215,13 @@ def test_dashboard_works_in_snapshot_mode_with_no_live_duckdb_file(real_dashboar
     exactly what the deployed Streamlit Community Cloud app does, since it
     has no access to a live DuckDB file or a running Dagster instance.
     """
+    import app.utils.data as app_data
     import warehouse.db as warehouse_db
     from warehouse.export_gold_snapshot import export_gold_snapshot
 
-    export_gold_snapshot()
+    temp_gold = tmp_path / "gold_snapshot"
+    export_gold_snapshot(output_dir=temp_gold)
+    monkeypatch.setattr(app_data, "GOLD_SNAPSHOT_DIR", temp_gold)
 
     for suffix in ("", ".wal"):
         p = warehouse_db.DB_PATH.parent / (warehouse_db.DB_PATH.name + suffix)
@@ -230,7 +245,7 @@ def test_dashboard_works_in_snapshot_mode_with_no_live_duckdb_file(real_dashboar
     finally:
         # Restore the live db for any tests that run after this one.
         load_all_module = __import__("warehouse.load_raw", fromlist=["load_all"])
-        load_all_module.load_all(mode="full")
+        load_all_module.load_all()
         env = {**os.environ, "DBT_PROFILES_DIR": str(DBT_PROJECT_DIR)}
         subprocess.run(
             [*dbt_command(), "build"], cwd=DBT_PROJECT_DIR, env=env, check=False, capture_output=True

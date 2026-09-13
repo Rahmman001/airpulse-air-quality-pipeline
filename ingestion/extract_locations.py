@@ -13,7 +13,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-from datetime import date, datetime
+import math
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -24,6 +25,8 @@ from ingestion.config import (
     CITY_FALLBACK_STATIONS_BY_COUNTRY,
     COUNTRY_LOCATION_LIMITS,
     IMPORTANT_CITIES_BY_COUNTRY,
+    MAJOR_METRO_COORDINATES,
+    MEASUREMENT_LOOKBACK_DAYS,
     TARGET_COUNTRY_ISO_CODES,
 )
 from ingestion.openaq_client import OpenAQClient
@@ -31,6 +34,15 @@ from ingestion.schemas import Location
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
+
+
+def _haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 6371.0
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlam = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2.0) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2.0) ** 2
+    return r * 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
 
 
 def _datetime_last_timestamp(location: dict) -> float:
@@ -44,6 +56,14 @@ def _datetime_last_timestamp(location: dict) -> float:
         return 0.0
 
 
+def _is_recently_active(location: dict, max_age_days: int = MEASUREMENT_LOOKBACK_DAYS) -> bool:
+    ts = _datetime_last_timestamp(location)
+    if ts <= 0:
+        return False
+    age_seconds = datetime.now(timezone.utc).timestamp() - ts
+    return age_seconds <= (max_age_days * 86400)
+
+
 def _location_search_text(location: dict) -> str:
     parts = [
         location.get("name"),
@@ -53,22 +73,38 @@ def _location_search_text(location: dict) -> str:
     return " ".join(str(part).lower() for part in parts if part)
 
 
-def city_priority_score(location: dict, iso: str) -> int:
-    return int(city_priority_name(location, iso) is not None)
-
-
 def city_priority_name(location: dict, iso: str) -> Optional[str]:
+    # 1. Direct text search across station name and locality
     search_text = _location_search_text(location)
     cities = IMPORTANT_CITIES_BY_COUNTRY.get(iso, {})
     for city, aliases in cities.items():
         if any(alias.lower() in search_text for alias in aliases):
             return city
+
+    # 2. Geo-radius match (great-circle distance to major metropolitan center)
+    coords = location.get("coordinates") or {}
+    lat = coords.get("latitude")
+    lon = coords.get("longitude")
+    if lat is not None and lon is not None:
+        try:
+            lat_f, lon_f = float(lat), float(lon)
+            metros = MAJOR_METRO_COORDINATES.get(iso, {})
+            for city, (m_lat, m_lon, radius_km) in metros.items():
+                if _haversine_distance_km(lat_f, lon_f, m_lat, m_lon) <= radius_km:
+                    # If locality explicitly names a distinct non-matching area, don't override it
+                    loc_val = (location.get("locality") or "").strip().lower()
+                    if loc_val and loc_val not in [a.lower() for a in cities.get(city, [])]:
+                        continue
+                    return city
+        except (ValueError, TypeError):
+            pass
+
     return None
 
 
 def location_importance_key(
     location: dict, iso: str = ""
-) -> tuple[int, int, int, int, float, int, int, int, str]:
+) -> tuple[int, int, float, int, int, int, int, int, str]:
     """
     Prefer active fixed monitors with useful, not excessive, sensor coverage.
 
@@ -87,7 +123,7 @@ def location_importance_key(
         int(bool(location.get("isMonitor"))),
         int(not bool(location.get("isMobile"))),
         _datetime_last_timestamp(location),
-        city_priority_score(location, iso),
+        int(city_priority_name(location, iso) is not None),
         moderate_sensor_coverage,
         pollutant_count,
         min(sensor_count, 8),
@@ -119,13 +155,26 @@ def parse_country_location_limits(raw_limits: list[str]) -> dict[str, int]:
     return limits
 
 
-def select_locations_for_country(locations: list[dict], iso: str, limit: int) -> list[dict]:
+def select_locations_for_country(
+    locations: list[dict],
+    iso: str,
+    limit: int,
+    max_age_days: Optional[int] = MEASUREMENT_LOOKBACK_DAYS,
+) -> list[dict]:
+    candidate_pool = locations
+    if max_age_days is not None:
+        active_candidates = [
+            loc for loc in locations if _is_recently_active(loc, max_age_days=max_age_days)
+        ]
+        if active_candidates:
+            candidate_pool = active_candidates
+
     ranked = sorted(
-        locations,
+        candidate_pool,
         key=lambda location: location_importance_key(location, iso),
         reverse=True,
     )
-    city_fallback_limit = CITY_FALLBACK_STATIONS_BY_COUNTRY.get(iso, 1)
+    city_fallback_limit = CITY_FALLBACK_STATIONS_BY_COUNTRY.get(iso, 5)
     selected: list[dict] = []
     selected_ids: set[int] = set()
     city_counts: dict[str, int] = {}
@@ -153,8 +202,10 @@ def select_locations_for_country(locations: list[dict], iso: str, limit: int) ->
 def fetch_locations(
     client: OpenAQClient,
     iso_codes: list[str],
-    limit_locations_per_country: Optional[int] = None,
+    limit_locations_per_country: Optional[int] = 10,
     country_location_limits: Optional[dict[str, int]] = None,
+    max_candidates_per_country: int = 100,
+    max_age_days: Optional[int] = MEASUREMENT_LOOKBACK_DAYS,
 ) -> list[dict]:
     """Pull + schema-validate locations for each target country."""
     all_locations: list[dict] = []
@@ -162,19 +213,22 @@ def fetch_locations(
     for iso in iso_codes:
         logger.info("Fetching locations for country=%s", iso)
         country_locations: list[dict] = []
+        limit_candidates = 300 if iso == "IN" else max_candidates_per_country
         for raw in client.get_locations(iso=iso, limit=100):
-            # Validate at the ingestion boundary. If OpenAQ changes their
-            # response shape, we find out here -- not three layers downstream
-            # in a dbt model that silently produces nulls.
             validated = Location.model_validate(raw)
             record = validated.model_dump(mode="json")
             record["_ingested_iso"] = iso
+            record["city_name"] = city_priority_name(record, iso) or record.get("locality") or record.get("name")
             country_locations.append(record)
+            if limit_candidates and len(country_locations) >= limit_candidates:
+                break
 
         fetched_count = len(country_locations)
         country_limit = country_location_limits.get(iso, limit_locations_per_country)
         if country_limit is not None:
-            country_locations = select_locations_for_country(country_locations, iso, country_limit)
+            country_locations = select_locations_for_country(
+                country_locations, iso, country_limit, max_age_days=max_age_days
+            )
             logger.info(
                 "  -> selected %d of %d locations for %s",
                 len(country_locations),
@@ -210,7 +264,7 @@ def main() -> None:
     parser.add_argument(
         "--limit-locations-per-country",
         type=int,
-        default=None,
+        default=10,
         help="Keep only the most useful N locations per country for faster scheduled refreshes",
     )
     parser.add_argument(
@@ -219,6 +273,18 @@ def main() -> None:
         default=[],
         metavar="ISO=NUMBER",
         help="Override the location cap for one country, e.g. IN=20. Can be passed more than once.",
+    )
+    parser.add_argument(
+        "--max-candidates-per-country",
+        type=int,
+        default=100,
+        help="Maximum raw candidate locations to pull per country before selecting top stations",
+    )
+    parser.add_argument(
+        "--max-age-days",
+        type=int,
+        default=MEASUREMENT_LOOKBACK_DAYS,
+        help="Maximum station inactivity days before dropping (defaults to MEASUREMENT_LOOKBACK_DAYS)",
     )
     args = parser.parse_args()
 
@@ -231,6 +297,8 @@ def main() -> None:
         args.countries,
         limit_locations_per_country=args.limit_locations_per_country,
         country_location_limits=country_location_limits,
+        max_candidates_per_country=args.max_candidates_per_country,
+        max_age_days=args.max_age_days,
     )
     write_bronze(records, ingest_date=date.today())
 

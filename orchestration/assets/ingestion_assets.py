@@ -53,7 +53,9 @@ def raw_locations(context: AssetExecutionContext) -> MaterializeResult:
 def raw_measurements(context: AssetExecutionContext) -> MaterializeResult:
     """Pull hourly measurements for every sensor found in the latest locations snapshot."""
     locations_path = latest_locations_snapshot(bronze_dir=ingestion_config.BRONZE_DIR)
-    sensors = sensor_ids_from_locations(locations_path)
+    sensors = sensor_ids_from_locations(
+        locations_path, lookback_days=ingestion_config.MEASUREMENT_LOOKBACK_DAYS
+    )
     client = OpenAQClient()
     records = fetch_measurements(client, sensors, lookback_days=ingestion_config.MEASUREMENT_LOOKBACK_DAYS)
     out_path = write_measurements_bronze(
@@ -93,7 +95,7 @@ def raw_schema_loaded(context: AssetExecutionContext):
     keys wrong here and dbt's staging models will show up in Dagster's UI as
     having no upstream dependency at all.
     """
-    results = load_all(mode="full")
+    results = load_all()
     context.log.info("Loaded raw schema: %s", results)
     yield MaterializeResult(
         asset_key=AssetKey(["raw", "locations"]), metadata={"row_count": results["locations"]}

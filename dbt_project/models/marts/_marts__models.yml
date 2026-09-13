@@ -20,18 +20,6 @@ models:
           - unique
           - not_null
 
-  - name: dim_date
-    description: Standard calendar spine, 2020-01-01 through 2030-12-31.
-    columns:
-      - name: date_key
-        tests:
-          - unique
-          - not_null
-      - name: date_day
-        tests:
-          - unique
-          - not_null
-
   - name: fact_air_quality_hourly
     description: Grain -- one row per (sensor, hour). The atomic fact table everything else rolls up from.
     columns:

@@ -20,9 +20,10 @@ from warehouse.db import get_connection
 def measurements_are_fresh() -> AssetCheckResult:
     conn = get_connection(read_only=True)
     try:
-        latest = conn.execute(
+        row = conn.execute(
             'SELECT MAX(try_cast("period__datetimeFrom__utc" as timestamp)) FROM raw.measurements'
-        ).fetchone()[0]
+        ).fetchone()
+        latest = row[0] if row else None
     finally:
         conn.close()
 

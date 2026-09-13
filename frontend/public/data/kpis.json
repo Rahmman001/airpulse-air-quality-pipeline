@@ -1,0 +1,15 @@
+{
+  "locations_monitored": 328,
+  "worst_current_reading": {
+    "location_key": "081e0f3c8ff83e1587e997ba4ebd4a25",
+    "location_name": "Cairo Downtown Tahrir",
+    "country_name": "Egypt",
+    "parameter_name": "pm25",
+    "avg_aqi": 229.3,
+    "risk_tier": "Very Unhealthy"
+  },
+  "hazardous_zones_count": 13,
+  "latest_data_date": "2026-09-13",
+  "latest_data_time": "09:00 UTC",
+  "data_source_label": "committed snapshot (data/gold_snapshot/)"
+}

@@ -149,24 +149,14 @@ class OpenAQClient:
 
     def get_locations(
         self,
-        countries_id: Optional[int] = None,
         iso: Optional[str] = None,
-        bbox: Optional[str] = None,
         limit: int = 100,
     ) -> Iterator[dict]:
         """Paginated generator over GET /v3/locations."""
         params: dict[str, Any] = {}
-        if countries_id is not None:
-            params["countries_id"] = countries_id
         if iso is not None:
             params["iso"] = iso
-        if bbox is not None:
-            params["bbox"] = bbox
         yield from self._paginate("/v3/locations", params, limit=limit)
-
-    def get_sensors_for_location(self, location_id: int, limit: int = 100) -> Iterator[dict]:
-        """Paginated generator over GET /v3/locations/{id}/sensors."""
-        yield from self._paginate(f"/v3/locations/{location_id}/sensors", {}, limit=limit)
 
     def get_hourly_measurements(
         self,

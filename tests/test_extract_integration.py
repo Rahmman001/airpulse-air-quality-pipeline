@@ -7,7 +7,7 @@ not just that the client's pagination logic is correct in isolation.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, timezone
 from unittest.mock import patch
 
 import pandas as pd
@@ -273,44 +273,6 @@ def test_extract_measurements_caps_sensors_per_location_with_pollutant_diversity
     assert [sensor["parameter_name"] for sensor in sensors] == ["pm25", "pm10", "no2", "o3"]
 
 
-def test_extract_measurements_builds_location_availability_report():
-    sensors = [
-        {"sensor_id": 1, "location_id": 100, "location_name": "Delhi", "parameter_name": "pm25"},
-        {"sensor_id": 2, "location_id": 100, "location_name": "Delhi", "parameter_name": "pm10"},
-        {"sensor_id": 3, "location_id": 200, "location_name": "Mumbai", "parameter_name": "no2"},
-    ]
-    sensor_statuses = {
-        1: {"hourly_records": 24, "failed": False},
-        2: {"hourly_records": 0, "failed": False},
-        3: {"hourly_records": 0, "failed": True},
-    }
-
-    report = extract_measurements.build_data_availability_report(sensors, sensor_statuses)
-
-    assert report == [
-        {
-            "location_id": 100,
-            "location_name": "Delhi",
-            "sensors_checked": 2,
-            "sensors_with_data": 1,
-            "failed_sensors": 0,
-            "hourly_records": 24,
-            "pollutants_checked": ["pm25", "pm10"],
-            "pollutants_with_data": ["pm25"],
-        },
-        {
-            "location_id": 200,
-            "location_name": "Mumbai",
-            "sensors_checked": 1,
-            "sensors_with_data": 0,
-            "failed_sensors": 1,
-            "hourly_records": 0,
-            "pollutants_checked": ["no2"],
-            "pollutants_with_data": [],
-        },
-    ]
-
-
 def test_extract_measurements_one_bad_sensor_does_not_kill_the_run(tmp_path):
     """A single sensor erroring out should be logged and skipped, not crash the batch."""
     sensors = [
@@ -337,3 +299,85 @@ def test_extract_measurements_one_bad_sensor_does_not_kill_the_run(tmp_path):
     # sensor 1 failed and was skipped; sensor 2 still made it through
     assert len(measurements) == 1
     assert measurements[0]["sensor_id"] == 2
+
+
+def test_extract_locations_matches_metro_by_coordinates():
+    # 1. Generic monitor with no city name in NYC (Central Park coordinates)
+    nyc_station = {
+        **LOCATION_EXAMPLE,
+        "name": "State Air Station 401",
+        "locality": None,
+        "coordinates": {"latitude": 40.7812, "longitude": -73.9665},
+    }
+    assert extract_locations.city_priority_name(nyc_station, "US") == "New York"
+
+    # 2. Monitor in London
+    london_station = {
+        **LOCATION_EXAMPLE,
+        "name": "Roadside Station A",
+        "locality": None,
+        "coordinates": {"latitude": 51.5074, "longitude": -0.1278},
+    }
+    assert extract_locations.city_priority_name(london_station, "GB") == "London"
+
+    # 3. Rural monitor far away from any major metro
+    rural_station = {
+        **LOCATION_EXAMPLE,
+        "name": "Remote Station",
+        "locality": None,
+        "coordinates": {"latitude": 44.4280, "longitude": -110.5885},
+    }
+    assert extract_locations.city_priority_name(rural_station, "US") is None
+
+
+def test_select_locations_filters_dead_stations_when_active_exist():
+    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    active_station = {
+        **LOCATION_EXAMPLE,
+        "id": 101,
+        "name": "Active Station 1",
+        "locality": "Tokyo",
+        "datetimeLast": {"utc": now_utc, "local": now_utc},
+    }
+    dead_station = {
+        **LOCATION_EXAMPLE,
+        "id": 102,
+        "name": "Dead 2016 Station",
+        "locality": "Tokyo",
+        "datetimeLast": {"utc": "2016-01-01T00:00:00Z", "local": "2016-01-01T00:00:00Z"},
+    }
+
+    selected = extract_locations.select_locations_for_country(
+        [dead_station, active_station], iso="JP", limit=5, max_age_days=3
+    )
+    assert len(selected) == 1
+    assert selected[0]["id"] == 101
+
+
+def test_sensor_ids_from_locations_skips_locations_older_than_lookback(tmp_path):
+    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    active_loc = {
+        **LOCATION_EXAMPLE,
+        "id": 201,
+        "name": "Live Station",
+        "datetimeLast": {"utc": now_utc, "local": now_utc},
+        "_ingested_iso": "US",
+    }
+    dead_loc = {
+        **LOCATION_EXAMPLE,
+        "id": 202,
+        "name": "Dead Station",
+        "datetimeLast": {"utc": "2019-01-01T00:00:00Z", "local": "2019-01-01T00:00:00Z"},
+        "_ingested_iso": "US",
+    }
+    extract_locations.write_bronze([active_loc, dead_loc], ingest_date=date(2026, 7, 1), bronze_dir=tmp_path)
+    locations_path = extract_measurements.latest_locations_snapshot(bronze_dir=tmp_path)
+
+    # Without lookback_days: returns sensors for both
+    all_sensors = extract_measurements.sensor_ids_from_locations(locations_path)
+    assert {s["location_id"] for s in all_sensors} == {201, 202}
+
+    # With lookback_days=3: returns sensors only for active_loc
+    fresh_sensors = extract_measurements.sensor_ids_from_locations(locations_path, lookback_days=3)
+    assert {s["location_id"] for s in fresh_sensors} == {201}
+

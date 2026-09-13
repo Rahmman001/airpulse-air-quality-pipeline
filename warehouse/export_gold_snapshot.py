@@ -47,7 +47,8 @@ def export_gold_snapshot(output_dir: Path = GOLD_SNAPSHOT_DIR) -> dict[str, int]
             table_name = qualified_name.split(".")[-1]
             out_path = output_dir / f"{table_name}.parquet"
             conn.execute(f"COPY {qualified_name} TO '{out_path}' (FORMAT PARQUET)")
-            count = conn.execute(f"SELECT COUNT(*) FROM {qualified_name}").fetchone()[0]
+            row = conn.execute(f"SELECT COUNT(*) FROM {qualified_name}").fetchone()
+            count = int(row[0]) if row else 0
             results[table_name] = count
             logger.info("Exported %s: %d rows -> %s", qualified_name, count, out_path)
     finally:

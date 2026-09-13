@@ -12,7 +12,7 @@ sources:
         description: >
           One row per OpenAQ location, as returned by GET /v3/locations.
           The `sensors` column is a nested array (one entry per sensor at that
-          location) -- it gets flattened out in stg_openaq__sensors.
+          location).
         columns:
           - name: id
             description: OpenAQ's location ID. Not guaranteed unique in this raw

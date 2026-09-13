@@ -12,6 +12,7 @@ select
     md5(cast(location_id as varchar) || '|' || cast(dbt_valid_from as varchar)) as location_key,
     location_id,
     location_name,
+    city_name,
     country_code,
     country_name,
     latitude,

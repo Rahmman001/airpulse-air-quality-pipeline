@@ -1,69 +1,117 @@
 # AirPulse: Global Air Quality Risk Intelligence
 
-[![CI](https://github.com/Rahmman001/airpulse-air-quality-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/Rahmman001/airpulse-air-quality-pipeline/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests: 57 Passed](https://img.shields.io/badge/Tests-57%20Passing-brightgreen.svg)]()
+[![Python: 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
+[![Database: DuckDB](https://img.shields.io/badge/Database-DuckDB-FFF000.svg)](https://duckdb.org/)
+[![Modeling: dbt-core](https://img.shields.io/badge/Modeling-dbt--core-FF694B.svg)](https://www.getdbt.com/)
+[![API: FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![Deployment: Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare%20Pages-F38020.svg)](https://pages.cloudflare.com/)
 
-AirPulse is an end-to-end data engineering project that ingests live air-quality data from the OpenAQ API, stores raw data in a bronze layer, transforms it with DuckDB and dbt, and serves a Streamlit dashboard for operational air-quality risk monitoring.
+AirPulse is an end-to-end, open-source data engineering platform that ingests global atmospheric telemetry from the OpenAQ API, stores raw partitions in a bronze Parquet lakehouse, transforms data using DuckDB and dbt Core with SCD Type 2 tracking, and serves a high-performance React + Leaflet operational risk console.
 
-The project is designed like a small production data platform: API ingestion, schema validation, raw storage, dimensional modeling, data quality tests, orchestration, CI, scheduled refreshes, and a deployable dashboard.
+Designed as an enterprise-grade decision support system, AirPulse features **Freight & Flight Route Risk Corridor Triage** for aviation dispatchers, cargo operators, and supply chain managers evaluating atmospheric chokepoints and ground safety advisories worldwide.
 
-## What It Does
+## Key Capabilities
 
-AirPulse answers a practical question:
-
-> Which monitored locations currently have risky air quality, and how is that risk changing over time?
-
-The dashboard shows:
-
-- Current worst AQI readings by location
-- Global map of monitored air-quality risk
-- City/pollutant trend drilldowns
-- Operational alert list for unhealthy locations
-- A snapshot-backed deployment mode for Streamlit Community Cloud
+- **Freight & Flight Route Corridor Triage**: Spherical Great-Circle geodesic distance calculations ($km$ and $NM$), 40 waypoint flight-path interpolation, and automated ramp crew PPE advisories between 26 global hubs.
+- **Geospatial Risk Telemetry**: Interactive Leaflet world map color-coded by EPA AQI risk tiers with dynamic sizing.
+- **SCD Type 2 Dimensional Modeling**: Tracks historical station configurations, coordinates, and validity windows across 6 continents.
+- **Hourly Trend Drilldowns**: Multi-pollutant analysis ($PM_{2.5}$, $PM_{10}$, $O_3$, $NO_2$) across 48-hour monitoring windows.
+- **Operational Alerts & Export**: Filtered risk triage feeds with one-click CSV export for dispatchers.
+- **Dual-Mode Deployment**: Runs as a full-stack local FastAPI application or as a **100% free, zero-maintenance Jamstack app on Cloudflare Pages**.
 
 ## Architecture
 
 ```mermaid
-flowchart LR
-    A["OpenAQ API"] --> B["Python ingestion"]
-    B --> C["Bronze Parquet files"]
-    C --> D["DuckDB raw schema"]
-    D --> E["dbt staging models"]
-    E --> F["dbt intermediate models"]
-    F --> G["dbt mart tables"]
-    G --> H["Gold Parquet snapshot"]
-    G --> I["Streamlit app - live local mode"]
-    H --> J["Streamlit app - deployed snapshot mode"]
-    K["GitHub Actions"] --> B
-    K --> D
-    K --> E
-    K --> H
+flowchart TD
+    subgraph Sources ["External Telemetry"]
+        OpenAQ["OpenAQ v3 API / Global Seeds"]
+    end
+
+    subgraph Lakehouse ["Analytical Lakehouse Layer"]
+        Bronze["Bronze Partitioned Parquet"]
+        DuckDB[("DuckDB OLAP Warehouse")]
+        dbt["dbt Core (Staging -> Marts)"]
+        Snapshots["Gold Parquet Snapshots"]
+        OpenAQ --> Bronze --> DuckDB --> dbt --> Snapshots
+    end
+
+    subgraph Serving ["Serving & Edge Layer"]
+        FastAPI["FastAPI Analytical Engine (Port 8000)"]
+        StaticData["Pre-computed JSON Marts (/public/data/)"]
+        Snapshots --> FastAPI
+        dbt --> StaticData
+    end
+
+    subgraph Presentation ["Presentation Layer"]
+        CF_Pages["Cloudflare Pages (Global Edge CDN)"]
+        Browser["React 19 + TypeScript + Leaflet Console"]
+        FastAPI --> Browser
+        StaticData --> CF_Pages --> Browser
+    end
 ```
 
 ## Tech Stack
 
 | Layer | Technology | Purpose |
 | --- | --- | --- |
-| Source | OpenAQ v3 API | Real global air-quality measurements |
-| Ingestion | Python, requests, tenacity, pydantic | API calls, retries, rate-limit handling, schema validation |
-| Storage | Parquet, DuckDB | Local lakehouse-style bronze/raw storage |
-| Transformation | dbt Core, dbt-duckdb | SQL models, tests, snapshots, documentation |
-| Orchestration | Dagster | Local asset graph, scheduling, checks |
-| Dashboard | Streamlit, PyDeck, Altair | Interactive air-quality risk UI |
-| Automation | GitHub Actions | CI and scheduled data refresh |
-| Testing | pytest, dbt tests, Streamlit AppTest | Unit, integration, data quality, dashboard tests |
+| **Source** | OpenAQ v3 API | Worldwide air-quality measurements across 26 international hubs |
+| **Ingestion** | Python, requests, tenacity, pydantic | API extraction, rate-limit backoff, schema validation |
+| **Storage** | Parquet, DuckDB | Partitioned bronze storage & embedded columnar OLAP warehouse |
+| **Transformation** | dbt Core, dbt-duckdb | Dimensional modeling, SCD Type 2 tracking, data quality tests |
+| **Orchestration** | Dagster / Pipeline Runner | Asset dependency graph, automated batch execution |
+| **API Backend** | FastAPI, Uvicorn, Pandas | High-concurrency REST endpoints, Swagger documentation |
+| **Frontend** | React, TypeScript, Vite, Tailwind, Leaflet | Geospatial flight corridor maps & telemetry console |
+| **Edge Hosting** | Cloudflare Pages, GitHub Actions | Zero-cost static CDN hosting with automated CI/CD data refresh |
+| **Quality** | pytest (57 tests), dbt tests, oxlint | Unit, schema, integration, and end-to-end pipeline verification |
+
+## Quickstart (Local Development)
+
+### 1. Run Everything in One Command
+```bash
+npm run dev
+```
+Starts both the FastAPI analytical backend (`http://localhost:8000`) and the Vite React console (`http://localhost:5173`) in a single terminal.
+
+### 2. Or Run With Only Python (Zero Node Required)
+Because the production bundle is pre-compiled in `frontend/dist`, you can run the entire system with pure Python:
+```bash
+python -m uvicorn app.api.main:app --port 8000
+```
+Open **`http://localhost:8000`** in any browser.
+
+---
+
+## Zero-Cost Cloudflare Pages Deployment Guide
+
+AirPulse can be deployed to **Cloudflare Pages** for **100% free forever** with zero server costs:
+
+1. **Fork or Push this repository to your GitHub account**.
+2. Go to the [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
+3. Select the `airpulse-air-quality-pipeline` repository.
+4. Configure Build Settings:
+   - **Framework preset**: `Vite`
+   - **Build command**: `npm run build --prefix frontend`
+   - **Build output directory**: `frontend/dist`
+5. Click **Save and Deploy**. Your interactive platform will be live globally at `https://<your-project>.pages.dev` in under 60 seconds!
+
+> [!TIP]
+> The included GitHub Actions workflow (`.github/workflows/deploy.yml`) runs tests and automatically refreshes analytical data snapshots on a 6-hour cron schedule.
 
 ## Repository Structure
 
 ```text
 .
 ├── ingestion/                 # OpenAQ client, schemas, location and measurement extraction
-├── warehouse/                 # DuckDB connection, raw loader, gold snapshot export
+├── warehouse/                 # DuckDB connection, raw loader, pipeline runner, snapshot exporter
 ├── dbt_project/               # staging, intermediate, mart models, macros, tests, snapshots
 ├── orchestration/             # Dagster assets, schedules, checks, definitions
-├── app/                       # Streamlit dashboard and app-only requirements
-├── data/gold_snapshot/        # Committed mart snapshot used by deployed Streamlit app
-├── tests/                     # pytest integration/unit/dashboard tests
-├── scripts_dev/               # synthetic bronze data generator
+├── app/                       # FastAPI analytical engine and legacy Streamlit dashboard
+├── frontend/                  # React 19 + Leaflet + Tailwind CSS telemetry console
+├── data/gold_snapshot/        # Committed mart snapshots for zero-setup portability
+├── tests/                     # pytest unit, integration, API, and pipeline tests
+├── scripts_dev/               # synthetic bronze & global telemetry seed generators
 └── .github/workflows/         # CI and scheduled refresh workflows
 ```
 
@@ -148,7 +196,6 @@ mart.fact_air_quality_hourly
 mart.fact_daily_city_aqi
 mart.dim_location
 mart.dim_pollutant
-mart.dim_date
 ```
 
 Run dbt manually:
@@ -176,28 +223,53 @@ data/gold_snapshot/
 
 The deployed Streamlit app reads this committed snapshot because Streamlit Community Cloud does not have access to your local DuckDB database.
 
-## Dashboard
+## Web Dashboard & Serving
 
-Run locally:
+AirPulse supports two frontend options:
+1. **Modern Decoupled Web App (Recommended):** A high-performance FastAPI backend serving a responsive React + TypeScript Single-Page Application with interactive Leaflet mapping, SVG trend charts, and operational alerts.
+2. **Legacy Streamlit Dashboard:** Retained for backward compatibility.
+
+### Run Modern Web App (FastAPI + React)
+
+Run in the project root:
+
+```bash
+npm run dev
+```
+
+This single command starts both:
+1. **FastAPI backend** on `http://127.0.0.1:8000` (auto-reloading on Python changes)
+2. **Vite React UI** on `http://localhost:5173` (hot module replacement with API proxying)
+
+- **Web Dashboard:** [http://localhost:5173](http://localhost:5173) (or [http://localhost:8000](http://localhost:8000))
+- **Interactive API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+
+To run the production build in a single process:
+```bash
+npm run build
+npm start
+```
+
+### Run Legacy Streamlit App
 
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
-Pages:
+### Pages & Capabilities
 
-- Home: KPIs, global AQI risk map, top polluted locations
-- City Trends: location/pollutant AQI history
-- Alerts: operational watch list for unhealthy locations
+- **Global Overview:** Top-line operational KPIs, interactive global station risk map with EPA color codes, and today's most polluted stations leaderboard.
+- **City Trends:** Drill into any location and pollutant to inspect hourly AQI progression against EPA reference threshold lines.
+- **Operational Alerts:** Instant risk-tier threshold filtering with one-click CSV export for dispatch teams.
 
-The app has two data modes:
+The serving layer supports dual data modes:
 
 | Mode | When Used | Source |
 | --- | --- | --- |
-| Live DuckDB | Running locally with `airpulse.duckdb` present | `mart.*` tables |
-| Snapshot | Deployed app or no local DuckDB file | `data/gold_snapshot/*.parquet` |
+| Live DuckDB | Running locally with `warehouse/airpulse.duckdb` present | `mart.*` analytical tables |
+| Snapshot Fallback | Deployed or without local database file | `data/gold_snapshot/*.parquet` |
 
-This is handled in `app/utils/data.py`.
+This is handled seamlessly in `app/utils/data.py`.
 
 ## Setup
 

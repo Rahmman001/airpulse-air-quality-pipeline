@@ -71,7 +71,7 @@ def temp_db(tmp_path, monkeypatch):
 
 
 def test_full_refresh_loads_all_partitions(bronze_dir, temp_db):
-    results = load_raw.load_all(mode="full")
+    results = load_raw.load_all()
 
     assert results == {"locations": 3, "measurements": 3}
 
@@ -82,7 +82,7 @@ def test_full_refresh_loads_all_partitions(bronze_dir, temp_db):
 
 
 def test_full_refresh_tags_each_row_with_source_file(bronze_dir, temp_db):
-    load_raw.load_all(mode="full")
+    load_raw.load_all()
     conn = get_connection(read_only=True)
     source_files = conn.execute("SELECT DISTINCT _source_file FROM raw.locations").fetchall()
     conn.close()
@@ -95,8 +95,8 @@ def test_full_refresh_tags_each_row_with_source_file(bronze_dir, temp_db):
 
 def test_full_refresh_is_idempotent(bronze_dir, temp_db):
     """Running full refresh twice in a row should produce the same row count, not double it."""
-    load_raw.load_all(mode="full")
-    results_second_run = load_raw.load_all(mode="full")
+    load_raw.load_all()
+    results_second_run = load_raw.load_all()
     assert results_second_run == {"locations": 3, "measurements": 3}
 
 
@@ -108,63 +108,3 @@ def test_init_db_creates_expected_schemas(temp_db):
     }
     conn.close()
     assert {"raw", "staging", "mart"}.issubset(schemas)
-
-
-def test_incremental_append_falls_back_to_full_refresh_when_table_missing(bronze_dir, temp_db):
-    init_db()
-    results = load_raw.load_all(mode="incremental")
-    assert results == {"locations": 3, "measurements": 3}
-
-
-def test_incremental_append_only_loads_new_partitions_when_table_exists(tmp_path, temp_db, monkeypatch):
-    """
-    Regression test for a real bug caught while building Phase 3: incremental_append()
-    referenced a column (_ingest_date) that full_refresh() never actually created, so
-    this code path raised "column does not exist" the moment a table already had data
-    in it. The previous test only exercised the "table missing" fallback branch, which
-    is exactly how this went uncaught -- so this test specifically forces the
-    "table already exists" branch instead.
-    """
-    day1 = tmp_path / "locations" / "ingest_date=2026-06-29"
-    day1.mkdir(parents=True)
-    pd.DataFrame([{"id": 1, "name": "Delhi"}]).to_parquet(day1 / "locations.parquet", index=False)
-
-    monkeypatch.setattr(
-        load_raw,
-        "SOURCES",
-        {"locations": tmp_path / "locations" / "ingest_date=*" / "locations.parquet"},
-    )
-
-    first_results = load_raw.load_all(mode="incremental")
-    assert first_results == {"locations": 1}
-
-    # A second day's bronze partition lands...
-    day2 = tmp_path / "locations" / "ingest_date=2026-06-30"
-    day2.mkdir(parents=True)
-    pd.DataFrame([{"id": 2, "name": "Mumbai"}]).to_parquet(day2 / "locations.parquet", index=False)
-
-    # ...and this time raw.locations already exists, so we hit the real
-    # incremental_append() branch, not the "table missing" fallback.
-    second_results = load_raw.load_all(mode="incremental")
-    assert second_results == {"locations": 2}
-
-    conn = get_connection(read_only=True)
-    rows = conn.execute("SELECT id, name FROM raw.locations ORDER BY id").fetchall()
-    conn.close()
-    assert rows == [(1, "Delhi"), (2, "Mumbai")]
-
-
-def test_incremental_append_does_not_reload_same_partition_twice(tmp_path, temp_db, monkeypatch):
-    """Running incremental append again with no new partitions must not duplicate rows."""
-    day1 = tmp_path / "locations" / "ingest_date=2026-06-29"
-    day1.mkdir(parents=True)
-    pd.DataFrame([{"id": 1, "name": "Delhi"}]).to_parquet(day1 / "locations.parquet", index=False)
-    monkeypatch.setattr(
-        load_raw,
-        "SOURCES",
-        {"locations": tmp_path / "locations" / "ingest_date=*" / "locations.parquet"},
-    )
-
-    load_raw.load_all(mode="incremental")
-    results = load_raw.load_all(mode="incremental")
-    assert results == {"locations": 1}

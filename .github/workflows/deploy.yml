@@ -1,0 +1,60 @@
+name: AirPulse CI & Cloudflare Jamstack Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run every 6 hours to refresh global atmospheric data
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  test-and-build:
+    name: Test, Refresh Telemetry & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Test Suite (57 Tests)
+        env:
+          OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY || 'test_dummy_key' }}
+        run: |
+          pytest tests/ -v
+
+      - name: Export Static Analytical Snapshots
+        run: |
+          python -m warehouse.export_static_data
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Frontend Application
+        run: |
+          npm install --prefix frontend
+          npm run build --prefix frontend
+
+      - name: Verify Distribution Artifacts
+        run: |
+          ls -lh frontend/dist/
+          ls -lh frontend/dist/data/
+          test -f frontend/dist/index.html
+          test -f frontend/dist/data/kpis.json
+          test -f frontend/dist/data/map_stations.json
+          echo "Production Jamstack bundle verified successfully!"

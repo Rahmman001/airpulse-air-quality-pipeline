@@ -446,7 +446,6 @@ mart.fact_air_quality_hourly
 mart.fact_daily_city_aqi
 mart.dim_location
 mart.dim_pollutant
-mart.dim_date
 ```
 
 The dashboard mainly reads:

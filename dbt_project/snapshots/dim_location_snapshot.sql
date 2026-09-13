@@ -18,7 +18,7 @@
         unique_key='location_id',
         strategy='check',
         check_cols=[
-            'location_name', 'country_code', 'country_name',
+            'location_name', 'city_name', 'country_code', 'country_name',
             'latitude', 'longitude', 'timezone',
             'is_mobile', 'is_monitor', 'provider_name',
         ],

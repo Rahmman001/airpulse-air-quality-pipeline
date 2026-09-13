@@ -13,21 +13,6 @@ models:
         tests:
           - not_null
 
-  - name: stg_openaq__sensors
-    description: One row per sensor, flattened out of each location's nested sensors array.
-    columns:
-      - name: sensor_id
-        description: Primary key -- OpenAQ sensor IDs are globally unique.
-        tests:
-          - unique
-          - not_null
-      - name: location_id
-        tests:
-          - not_null
-          - relationships:
-              to: ref('stg_openaq__locations')
-              field: location_id
-
   - name: stg_openaq__measurements
     description: One row per (sensor, hour), deduped to the most recently ingested reading.
     columns:

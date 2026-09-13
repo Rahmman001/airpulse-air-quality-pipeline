@@ -1,0 +1,173 @@
+@import "tailwindcss";
+@import 'leaflet/dist/leaflet.css';
+
+@theme {
+  --color-canvas: #F8FAFC;
+  --color-canvas-subtle: #F1F5F9;
+  --color-surface: #FFFFFF;
+  --color-obsidian: #090D16;
+  --color-obsidian-surface: #131A29;
+  --color-border-light: #E2E8F0;
+  
+  --font-display: 'Clash Display', 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-modern: 'Clash Display', 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Clash Display', 'Outfit', sans-serif;
+  --font-sans: 'Satoshi', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --canvas: #F8FAFC;
+  --canvas-subtle: #F1F5F9;
+  --surface: #FFFFFF;
+  --obsidian: #090D16;
+  --obsidian-surface: #131A29;
+  
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-medium: rgba(15, 23, 42, 0.16);
+  --border-deep: #0F172A;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+
+  --color-good: #059669;
+  --color-moderate: #D97706;
+  --color-usg: #EA580C;
+  --color-unhealthy: #DC2626;
+  --color-very-unhealthy: #991B1B;
+  --color-hazardous: #581C87;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--text-primary);
+  font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Luxury Modern Typography Utilities */
+.font-display,
+.font-modern,
+.font-editorial {
+  font-family: 'Clash Display', 'Outfit', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* World-Class Minimalist Card */
+.minimal-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.1rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 12px 32px -4px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.minimal-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04), 0 20px 40px -8px rgba(15, 23, 42, 0.07);
+}
+
+/* Minimalist Data Table */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.data-table th {
+  padding: 12px 16px;
+  color: #475569;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  color: #0F172A;
+  background: #FFFFFF;
+  transition: background 0.12s ease;
+}
+
+.data-table tbody tr:hover td {
+  background: #F8FAFC;
+}
+
+/* Leaflet Strict Containment & Styling */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 0.75rem !important;
+  background: #F1F5F9 !important;
+  isolation: isolate;
+  z-index: 1;
+}
+
+.leaflet-pane {
+  z-index: 2 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  position: absolute !important;
+  z-index: 5 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.15) !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+/* Custom Live Station Hover Tooltip */
+.custom-station-tooltip {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+  box-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.35), 0 4px 6px -2px rgba(15, 23, 42, 0.2) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+
+.custom-station-tooltip::before {
+  border-top-color: #0F172A !important;
+}
+
+/* Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}

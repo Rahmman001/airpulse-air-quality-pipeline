@@ -35,19 +35,3 @@ def hex_to_rgb(hex_color: str) -> list[int]:
 
 RISK_TIER_COLORS_RGB = {tier: hex_to_rgb(hex_color) for tier, hex_color in RISK_TIER_COLORS_HEX.items()}
 
-
-def risk_tier_for_aqi(aqi: float | None) -> str | None:
-    """Mirrors the exact bucketing logic in dbt_project/models/marts/fact_air_quality_hourly.sql."""
-    if aqi is None:
-        return None
-    if aqi <= 50:
-        return "Good"
-    if aqi <= 100:
-        return "Moderate"
-    if aqi <= 150:
-        return "Unhealthy for Sensitive Groups"
-    if aqi <= 200:
-        return "Unhealthy"
-    if aqi <= 300:
-        return "Very Unhealthy"
-    return "Hazardous"
