@@ -36,9 +36,12 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-luxury text-xl text-[#FFF3E6] tracking-wider font-bold leading-none">
               AtmosRoute
             </span>
-            <span className="text-[9px] font-mono font-semibold tracking-wider uppercase text-[#DFBA70] px-2 py-0.5 rounded-full border border-[#C5A059]/40 bg-[#C5A059]/15 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA70] animate-pulse" />
-              LIVE
+            <span
+              className="text-[9px] font-mono font-semibold tracking-wider uppercase text-[#DFBA70] px-2 py-0.5 rounded-full border border-[#C5A059]/40 bg-[#C5A059]/15 flex items-center gap-1.5 cursor-help"
+              title="Automated 6-hour scheduled batch ingestion from global OpenAQ stations, served globally via Cloudflare Pages edge functions (<50ms)"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA70]" />
+              6H BATCH • OPENAQ
             </span>
           </div>
         </div>

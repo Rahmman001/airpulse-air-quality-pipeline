@@ -395,16 +395,16 @@
     "location_name": "Riyadh",
     "country_name": "Saudi Arabia",
     "country_code": "SA",
-    "latitude": 24.7136,
-    "longitude": 46.6753,
+    "latitude": 24.849905766381248,
+    "longitude": 46.63332079253333,
     "data_status": "No recent AQI data"
   },
   {
     "location_name": "Riyadh",
     "country_name": "Saudi Arabia",
     "country_code": "SA",
-    "latitude": 24.849905766381248,
-    "longitude": 46.63332079253333,
+    "latitude": 24.7136,
+    "longitude": 46.6753,
     "data_status": "No recent AQI data"
   },
   {

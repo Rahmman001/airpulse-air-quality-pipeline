@@ -551,20 +551,20 @@ def get_corridor_risk(
         recommendations.append(f"Destination terminal '{dest['location_name']}' is offline; corridor exposure estimated from origin.")
     if origin["risk_tier"] == "Unmonitored":
         recommendations.append(
-            f"Notice: Departure terminal '{origin['location_name']}' is currently unmonitored; deploy portable sensor telemetry."
+            f"Coverage Notice: Departure terminal '{origin['location_name']}' is currently unmonitored; verify local regional advisory."
         )
     if dest["risk_tier"] == "Unmonitored":
         recommendations.append(
-            f"Notice: Arrival terminal '{dest['location_name']}' is currently unmonitored; verify local regional advisory."
+            f"Coverage Notice: Arrival terminal '{dest['location_name']}' is currently unmonitored; verify local regional advisory."
         )
     if aqi2 > 150 or aqi1 > 150:
-        recommendations.append("Mandate N95 respirator PPE for outdoor cargo ramp and tarmac operations.")
+        recommendations.append("Cal/OSHA Title 8 §5141.1 Directive: Mandate N95 respirator PPE for outdoor cargo ramp and tarmac operations.")
     if aqi2 > 200:
-        recommendations.append("Trigger Aircraft Environmental Control (ECS) cabin HEPA filter inspection upon arrival.")
+        recommendations.append("Aircraft Maintenance (Boeing/Airbus AMM Guidance): Trigger Environmental Control (ECS) cabin HEPA filter inspection upon arrival.")
     if max(aqi1, aqi2) > 175:
-        recommendations.append("Anticipate ground turnaround delays (+30 to 45 mins) due to reduced ground visibility.")
+        recommendations.append("CAT II/III Low-Visibility SOP: Anticipate ground turnaround delays (+30 to 45 mins) due to reduced ramp maneuvering visibility.")
     if 100 < aqi2 <= 150:
-        recommendations.append("Notify dispatch to activate sensitive-group ramp crew rotation intervals.")
+        recommendations.append("Workforce Health Protocol: Activate sensitive-group ramp crew rotation intervals (max 2h outdoor exposure).")
     if not recommendations:
         recommendations.append("Standard dispatch parameters: No environmental operational restrictions along flight path.")
 

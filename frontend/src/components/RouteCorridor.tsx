@@ -9,9 +9,11 @@ import {
   Wind,
   NavigationArrow,
   ArrowClockwise,
+  BookOpen,
 } from '@phosphor-icons/react';
 import { api, type LocationItem, type CorridorRiskResponse, type UnmonitoredLocation } from '../api';
 import { SearchableHubSelect } from './SearchableHubSelect';
+import { MethodologyModal } from './MethodologyModal';
 
 interface RouteCorridorProps {
   locations: LocationItem[];
@@ -24,6 +26,7 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations, unmonit
   const [corridor, setCorridor] = useState<CorridorRiskResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMethodologyOpen, setIsMethodologyOpen] = useState(false);
 
   const unmonitoredNames = useMemo(
     () => new Set(unmonitored?.map((u) => u.location_name.toLowerCase()) || []),
@@ -147,6 +150,20 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations, unmonit
             <p className="text-xs text-[#84657E] mt-1.5 leading-relaxed">
               Geodesic route risk modeling and automated ground crew advisories between major global hubs.
             </p>
+            <div className="flex flex-wrap items-center gap-2.5 mt-2.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#381932]/5 border border-[#381932]/15 text-[11px] text-[#583351] font-mono font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA70]" />
+                Scope: Terminal Airspace (&lt;10,000 ft AGL) &amp; Tarmac Operations
+              </span>
+              <button
+                onClick={() => setIsMethodologyOpen(true)}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#84657E] hover:text-[#381932] transition-colors cursor-pointer underline decoration-dotted underline-offset-2"
+                title="View mathematical weighting formula and regulatory citations"
+              >
+                <BookOpen size={13} weight="bold" className="text-[#DFBA70]" />
+                Methodology &amp; Standards
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -268,6 +285,7 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations, unmonit
           )}
         </div>
       </div>
+      <MethodologyModal isOpen={isMethodologyOpen} onClose={() => setIsMethodologyOpen(false)} />
     </div>
   );
 };

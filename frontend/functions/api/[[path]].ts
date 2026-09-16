@@ -82,12 +82,12 @@ function calculateCorridor(origin: any, dest: any, originStation: any, destStati
   }
 
   const recommendations = [
-    tier1 === 'Unmonitored' && `Notice: Departure terminal '${origin.location_name}' is currently unmonitored; deploy portable sensor telemetry.`,
-    tier2 === 'Unmonitored' && `Notice: Arrival terminal '${dest.location_name}' is currently unmonitored; verify local regional advisory.`,
-    (aqi2 > 150 || aqi1 > 150) && 'Mandate N95 respirator PPE for outdoor cargo ramp and tarmac operations.',
-    aqi2 > 200 && 'Trigger Aircraft Environmental Control (ECS) cabin HEPA filter inspection upon arrival.',
-    Math.max(aqi1, aqi2) > 175 && 'Anticipate ground turnaround delays (+30 to 45 mins) due to reduced ground visibility.',
-    aqi2 > 100 && aqi2 <= 150 && 'Notify dispatch to activate sensitive-group ramp crew rotation intervals.',
+    tier1 === 'Unmonitored' && `Coverage Notice: Departure terminal '${origin.location_name}' is currently unmonitored; verify local regional advisory.`,
+    tier2 === 'Unmonitored' && `Coverage Notice: Arrival terminal '${dest.location_name}' is currently unmonitored; verify local regional advisory.`,
+    (aqi2 > 150 || aqi1 > 150) && 'Cal/OSHA Title 8 §5141.1 Directive: Mandate N95 respirator PPE for outdoor cargo ramp and tarmac operations.',
+    aqi2 > 200 && 'Aircraft Maintenance (Boeing/Airbus AMM Guidance): Trigger Environmental Control (ECS) cabin HEPA filter inspection upon arrival.',
+    Math.max(aqi1, aqi2) > 175 && 'CAT II/III Low-Visibility SOP: Anticipate ground turnaround delays (+30 to 45 mins) due to reduced ramp maneuvering visibility.',
+    aqi2 > 100 && aqi2 <= 150 && 'Workforce Health Protocol: Activate sensitive-group ramp crew rotation intervals (max 2h outdoor exposure).',
   ].filter(Boolean) as string[];
 
   if (!recommendations.length) {
