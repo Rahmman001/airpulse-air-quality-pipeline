@@ -24,6 +24,14 @@
     "has_aqi_support": true
   },
   {
+    "pollutant_key": "a87ff679a2f3e71d9181a67b7542122c",
+    "parameter_id": 4,
+    "parameter_name": "no2",
+    "parameter_units": "ppb",
+    "pollutant_display_name": "Nitrogen Dioxide",
+    "has_aqi_support": true
+  },
+  {
     "pollutant_key": "c4ca4238a0b923820dcc509a6f75849b",
     "parameter_id": 1,
     "parameter_name": "pm10",
@@ -44,14 +52,6 @@
     "parameter_id": 7,
     "parameter_name": "no2",
     "parameter_units": "ppm",
-    "pollutant_display_name": "Nitrogen Dioxide",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "a87ff679a2f3e71d9181a67b7542122c",
-    "parameter_id": 4,
-    "parameter_name": "no2",
-    "parameter_units": "ppb",
     "pollutant_display_name": "Nitrogen Dioxide",
     "has_aqi_support": true
   },
