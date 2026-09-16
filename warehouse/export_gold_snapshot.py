@@ -50,10 +50,10 @@ def export_gold_snapshot(output_dir: Path = GOLD_SNAPSHOT_DIR) -> dict[str, int]
             out_path = output_dir / f"{table_name}.parquet"
             if out_path.exists():
                 c = duckdb.connect()
-                count = c.execute(
+                row = c.execute(
                     f"SELECT COUNT(*) FROM read_parquet('{out_path}')"
-                ).fetchone()[0]
-                results[table_name] = int(count)
+                ).fetchone()
+                results[table_name] = int(row[0]) if row else 0
                 c.close()
         return results
 

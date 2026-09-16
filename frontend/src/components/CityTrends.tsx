@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TrendUp, WarningCircle, MapPin } from '@phosphor-icons/react';
 import { api, RISK_COLORS } from '../api';
-import type { LocationItem, Pollutant, TrendPoint } from '../api';
+import type { LocationItem, Pollutant, TrendPoint, UnmonitoredLocation } from '../api';
 import { formatIsoTimestamp, getTzShortLabel } from '../timezone';
 import { SearchableHubSelect } from './SearchableHubSelect';
 
 interface CityTrendsProps {
   locations: LocationItem[];
   pollutants: Pollutant[];
+  unmonitored?: UnmonitoredLocation[];
   initialLocationKey?: string;
   initialPollutantKey?: string;
   timezone?: string;
@@ -24,6 +25,7 @@ const THRESHOLDS = [
 export const CityTrends: React.FC<CityTrendsProps> = ({
   locations,
   pollutants,
+  unmonitored,
   initialLocationKey,
   initialPollutantKey,
   timezone = 'UTC',
@@ -34,11 +36,24 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<TrendPoint | null>(null);
 
-  useEffect(() => {
-    if (initialLocationKey) setSelectedLoc(initialLocationKey);
-  }, [initialLocationKey]);
+  const unmonitoredNames = useMemo(
+    () => new Set(unmonitored?.map((u) => u.location_name.toLowerCase()) || []),
+    [unmonitored]
+  );
 
   useEffect(() => {
+    if (!locations.length) return;
+    if (initialLocationKey) {
+      setSelectedLoc(initialLocationKey);
+      return;
+    }
+    if (!locations.some((l) => l.location_key === selectedLoc)) {
+      setSelectedLoc(locations[0].location_key);
+    }
+  }, [initialLocationKey, locations, selectedLoc]);
+
+  useEffect(() => {
+    if (!pollutants.length) return;
     if (initialPollutantKey) {
       const match = pollutants.find(
         (p) =>
@@ -50,10 +65,13 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
         return;
       }
     }
+    if (pollutants.some((p) => p.pollutant_key === selectedPol)) {
+      return;
+    }
     const pm25 = pollutants.find((p) => p.parameter_name?.toLowerCase() === 'pm25')?.pollutant_key;
     if (pm25) setSelectedPol(pm25);
     else if (pollutants[0]) setSelectedPol(pollutants[0].pollutant_key);
-  }, [initialPollutantKey, pollutants]);
+  }, [initialPollutantKey, pollutants, selectedPol]);
 
   useEffect(() => {
     if (!selectedLoc || !selectedPol) return;
@@ -78,18 +96,34 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
 
   const activeLoc = locations.find((l) => l.location_key === selectedLoc);
   const activePol = pollutants.find((p) => p.pollutant_key === selectedPol);
+  const isOffline = unmonitoredNames.has(activeLoc?.location_name.toLowerCase() || '');
+
+  // Handle parameters without EPA AQI support (e.g. PM1 or raw sensor feeds)
+  const hasAqi = useMemo(() => trends.some((t) => t.aqi != null && !isNaN(t.aqi) && t.aqi > 0), [trends]);
+  const getVal = (t: TrendPoint) => (hasAqi ? (t.aqi ?? 0) : (t.value_ugm3 ?? t.raw_value ?? 0));
+  const maxVal = Math.max(hasAqi ? 350 : 50, ...trends.map(getVal));
 
   // SVG Chart Dimensions
   const W = 900, H = 280, pad = { top: 25, right: 30, bottom: 35, left: 50 };
   const plotW = W - pad.left - pad.right;
   const plotH = H - pad.top - pad.bottom;
-  const maxAqi = Math.max(350, ...trends.map((t) => t.aqi || 0));
 
-  const scaleY = (aqi: number) => pad.top + plotH - (aqi / maxAqi) * plotH;
+  const scaleY = (v: number) => pad.top + plotH - (maxVal > 0 ? (v / maxVal) * plotH : 0);
   const scaleX = (i: number) => pad.left + (trends.length <= 1 ? plotW / 2 : (i / (trends.length - 1)) * plotW);
 
-  const linePath = trends.map((p, i) => `${i ? 'L' : 'M'} ${scaleX(i)},${scaleY(p.aqi)}`).join(' ');
-  const areaPath = linePath ? `${linePath} L ${scaleX(trends.length - 1)},${scaleY(0)} L ${scaleX(0)},${scaleY(0)} Z` : '';
+  // Break path with 'M' command across temporal outages (> 2.5 hours)
+  let hasGaps = false;
+  const linePath = trends.map((p, i) => {
+    const val = getVal(p);
+    if (i === 0) return `M ${scaleX(i)},${scaleY(val)}`;
+    const prevTime = new Date(trends[i - 1].measured_at_utc).getTime();
+    const currTime = new Date(p.measured_at_utc).getTime();
+    const isGap = Math.abs(currTime - prevTime) > 2.5 * 3600 * 1000;
+    if (isGap) hasGaps = true;
+    return `${isGap ? 'M' : 'L'} ${scaleX(i)},${scaleY(val)}`;
+  }).join(' ');
+
+  const areaPath = (!hasGaps && linePath) ? `${linePath} L ${scaleX(trends.length - 1)},${scaleY(0)} L ${scaleX(0)},${scaleY(0)} Z` : '';
 
   return (
     <div className="space-y-8 mb-12">
@@ -113,6 +147,7 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
               val={selectedLoc}
               setVal={setSelectedLoc}
               locations={locations}
+              unmonitoredNames={unmonitoredNames}
             />
           </div>
 
@@ -146,8 +181,8 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
           {trends.length > 0 && (
             <div className="flex items-center gap-6 text-xs font-mono text-[#84657E] bg-[#FBF4EC] px-4 py-1.5 rounded-full border border-[#381932]/10">
               <div>Obs: <strong className="text-[#381932]">{trends.length}</strong></div>
-              <div>Peak AQI: <strong className="text-[#381932]">{Math.max(...trends.map((t) => t.aqi))}</strong></div>
-              <div>Current: <strong className="text-[#381932]">{trends[trends.length - 1]?.aqi}</strong></div>
+              <div>{hasAqi ? 'Peak AQI:' : 'Peak (ug/m3):'} <strong className="text-[#381932]">{Math.max(...trends.map(getVal))}</strong></div>
+              <div>Current: <strong className="text-[#381932]">{getVal(trends[trends.length - 1])} {hasAqi ? '' : 'ug/m3'}</strong></div>
             </div>
           )}
         </div>
@@ -159,7 +194,11 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
         ) : !trends.length ? (
           <div className="h-[280px] flex flex-col items-center justify-center gap-2 text-[#84657E]">
             <WarningCircle size={24} />
-            <p className="text-xs">No historical readings recorded for this parameter.</p>
+            <p className="text-xs">
+              {isOffline
+                ? 'Telemetry Offline: This monitoring station currently has no active data streams from the OpenAQ provider.'
+                : 'No historical readings recorded for this parameter in the current lookback window.'}
+            </p>
           </div>
         ) : (
           <div className="w-full overflow-x-auto">
@@ -171,8 +210,8 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
                 </linearGradient>
               </defs>
 
-              {/* Threshold Lines */}
-              {THRESHOLDS.map((th) => {
+              {/* Threshold Lines (only rendered when EPA AQI standard is defined) */}
+              {hasAqi && THRESHOLDS.map((th) => {
                 const y = scaleY(th.aqi);
                 if (y < pad.top || y > pad.top + plotH) return null;
                 return (
@@ -192,7 +231,7 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
                 <circle
                   key={i}
                   cx={scaleX(i)}
-                  cy={scaleY(p.aqi)}
+                  cy={scaleY(getVal(p))}
                   r={hovered === p ? 6 : 3.5}
                   fill={RISK_COLORS[p.risk_tier] || '#381932'}
                   stroke="#FFF3E6"
@@ -207,8 +246,12 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
             {hovered && (
               <div className="mt-4 p-3.5 bg-[#381932] text-[#FFF3E6] rounded-2xl inline-flex flex-wrap items-center gap-6 text-xs font-mono border border-[#583351] shadow-lg">
                 <div>Time: <strong>{formatIsoTimestamp(hovered.measured_at_utc, timezone)}</strong></div>
-                <div>AQI: <strong className="font-luxury text-sm">{hovered.aqi}</strong></div>
-                <div>Risk: <strong className="px-2 py-0.5 rounded-full text-[10px]" style={{ backgroundColor: RISK_COLORS[hovered.risk_tier] }}>{hovered.risk_tier}</strong></div>
+                {hasAqi ? (
+                  <div>AQI: <strong className="font-luxury text-sm">{hovered.aqi}</strong></div>
+                ) : (
+                  <div>Metric: <strong className="font-luxury text-sm">Raw Concentration (No EPA AQI)</strong></div>
+                )}
+                <div>Risk: <strong className="px-2 py-0.5 rounded-full text-[10px]" style={{ backgroundColor: RISK_COLORS[hovered.risk_tier] || '#94A3B8' }}>{hovered.risk_tier || 'Unclassified'}</strong></div>
                 <div>Reading: <strong>{hovered.value_ugm3 ? hovered.value_ugm3.toFixed(1) : hovered.raw_value} ug/m3</strong></div>
               </div>
             )}
@@ -242,11 +285,11 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
                     </td>
                     <td className="tabular-nums font-mono text-xs text-[#583351]">{t.raw_value}</td>
                     <td className="tabular-nums font-mono text-xs text-[#583351]">{t.value_ugm3 ? t.value_ugm3.toFixed(1) : '-'}</td>
-                    <td className="tabular-nums font-luxury font-bold text-sm text-[#381932]">{t.aqi}</td>
+                    <td className="tabular-nums font-luxury font-bold text-sm text-[#381932]">{t.aqi != null ? t.aqi : 'N/A'}</td>
                     <td>
                       <span className="inline-flex items-center gap-2 text-xs">
-                        <span className="w-2 h-2 rounded-full ring-1 ring-black/10" style={{ backgroundColor: RISK_COLORS[t.risk_tier] || '#381932' }} />
-                        <span className="text-[#381932] font-medium">{t.risk_tier}</span>
+                        <span className="w-2 h-2 rounded-full ring-1 ring-black/10" style={{ backgroundColor: RISK_COLORS[t.risk_tier] || '#94A3B8' }} />
+                        <span className="text-[#381932] font-medium">{t.risk_tier || 'Unclassified'}</span>
                       </span>
                     </td>
                   </tr>

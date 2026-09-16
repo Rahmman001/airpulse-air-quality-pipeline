@@ -12,6 +12,20 @@ interface Env {
   };
 }
 
+interface EventContext<Env, P extends string = string, Data = Record<string, unknown>> {
+  request: Request;
+  functionPath: string;
+  waitUntil: (promise: Promise<unknown>) => void;
+  next: (input?: Request | string, init?: RequestInit) => Promise<Response>;
+  env: Env;
+  params: Record<P, string | string[]>;
+  data: Data;
+}
+
+type PagesFunction<Env = unknown, Params extends string = any, Data = Record<string, unknown>> = (
+  context: EventContext<Env, Params, Data>
+) => Response | Promise<Response>;
+
 const RISK_TIERS: Record<string, string> = {
   Good: '#059669',
   Moderate: '#D97706',
@@ -39,14 +53,33 @@ function calculateCorridor(origin: any, dest: any, originStation: any, destStati
   const aqi2 = destStation?.avg_aqi || 0;
   const tier1 = originStation?.risk_tier || 'Unmonitored';
   const tier2 = destStation?.risk_tier || 'Unmonitored';
-  const corridorScore = Math.round((0.3 * aqi1 + 0.5 * aqi2 + 0.2 * Math.max(aqi1, aqi2)) * 10) / 10;
 
-  const [overallStatus, riskLevel, statusColor] =
-    corridorScore > 200 ? ['Severe Terminal Disruption Alert', 'Critical', '#991B1B'] :
-    corridorScore > 150 ? ['High Operational Impact', 'High', '#DC2626'] :
-    corridorScore > 100 ? ['Elevated Chokepoint Advisory', 'Elevated', '#EA580C'] :
-    corridorScore > 50  ? ['Moderate Transit Risk', 'Moderate', '#D97706'] :
-    ['Optimal Flight Conditions', 'Low', '#059669'];
+  let corridorScore = 0;
+  let overallStatus = 'Optimal Flight Conditions';
+  let riskLevel = 'Low';
+  let statusColor = '#059669';
+
+  if (tier1 === 'Unmonitored' && tier2 === 'Unmonitored') {
+    corridorScore = 0;
+    overallStatus = 'Telemetry Unavailable';
+    riskLevel = 'Unmonitored';
+    statusColor = '#94A3B8';
+  } else if (tier1 === 'Unmonitored') {
+    corridorScore = aqi2;
+  } else if (tier2 === 'Unmonitored') {
+    corridorScore = aqi1;
+  } else {
+    corridorScore = Math.round((0.3 * aqi1 + 0.5 * aqi2 + 0.2 * Math.max(aqi1, aqi2)) * 10) / 10;
+  }
+
+  if (tier1 !== 'Unmonitored' || tier2 !== 'Unmonitored') {
+    [overallStatus, riskLevel, statusColor] =
+      corridorScore > 200 ? ['Severe Terminal Disruption Alert', 'Critical', '#991B1B'] :
+      corridorScore > 150 ? ['High Operational Impact', 'High', '#DC2626'] :
+      corridorScore > 100 ? ['Elevated Chokepoint Advisory', 'Elevated', '#EA580C'] :
+      corridorScore > 50  ? ['Moderate Transit Risk', 'Moderate', '#D97706'] :
+      ['Optimal Flight Conditions', 'Low', '#059669'];
+  }
 
   const recommendations = [
     tier1 === 'Unmonitored' && `Notice: Departure terminal '${origin.location_name}' is currently unmonitored; deploy portable sensor telemetry.`,
@@ -168,8 +201,16 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const pol = url.searchParams.get('pollutant_key') || '';
     const trendsRes = await context.env.ASSETS.fetch(new URL('/data/trends.json', context.request.url));
     const trendsMap = (await trendsRes.json()) as Record<string, any[]>;
-    const series = trendsMap[`${loc}_${pol}`] || [];
-    return new Response(JSON.stringify(series), { headers: jsonHeaders });
+    let series = trendsMap[`${loc}_${pol}`];
+    if (!series) {
+      const polRes = await context.env.ASSETS.fetch(new URL('/data/pollutants.json', context.request.url));
+      if (polRes.ok) {
+        const polList = (await polRes.json()) as any[];
+        const match = polList.find((p) => p.parameter_name?.toLowerCase() === pol.toLowerCase() || p.pollutant_key?.toLowerCase() === pol.toLowerCase());
+        if (match) series = trendsMap[`${loc}_${match.pollutant_key}`];
+      }
+    }
+    return new Response(JSON.stringify(series || []), { headers: jsonHeaders });
   }
 
   // 5. Categorized Alerts API

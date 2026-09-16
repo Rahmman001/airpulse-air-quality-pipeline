@@ -191,14 +191,33 @@ function calculateClientCorridor(
   const aqi2 = destStation?.avg_aqi || 0;
   const tier1 = originStation?.risk_tier || 'Unmonitored';
   const tier2 = destStation?.risk_tier || 'Unmonitored';
-  const corridorScore = Math.round((0.3 * aqi1 + 0.5 * aqi2 + 0.2 * Math.max(aqi1, aqi2)) * 10) / 10;
 
-  const [overallStatus, riskLevel, statusColor] =
-    corridorScore > 200 ? ['Severe Terminal Disruption Alert', 'Critical', '#991B1B'] :
-    corridorScore > 150 ? ['High Operational Impact', 'High', '#DC2626'] :
-    corridorScore > 100 ? ['Elevated Chokepoint Advisory', 'Elevated', '#EA580C'] :
-    corridorScore > 50  ? ['Moderate Transit Risk', 'Moderate', '#D97706'] :
-    ['Optimal Flight Conditions', 'Low', '#059669'];
+  let corridorScore = 0;
+  let overallStatus = 'Optimal Flight Conditions';
+  let riskLevel = 'Low';
+  let statusColor = '#059669';
+
+  if (tier1 === 'Unmonitored' && tier2 === 'Unmonitored') {
+    corridorScore = 0;
+    overallStatus = 'Telemetry Unavailable';
+    riskLevel = 'Unmonitored';
+    statusColor = '#94A3B8';
+  } else if (tier1 === 'Unmonitored') {
+    corridorScore = aqi2;
+  } else if (tier2 === 'Unmonitored') {
+    corridorScore = aqi1;
+  } else {
+    corridorScore = Math.round((0.3 * aqi1 + 0.5 * aqi2 + 0.2 * Math.max(aqi1, aqi2)) * 10) / 10;
+  }
+
+  if (tier1 !== 'Unmonitored' || tier2 !== 'Unmonitored') {
+    [overallStatus, riskLevel, statusColor] =
+      corridorScore > 200 ? ['Severe Terminal Disruption Alert', 'Critical', '#991B1B'] :
+      corridorScore > 150 ? ['High Operational Impact', 'High', '#DC2626'] :
+      corridorScore > 100 ? ['Elevated Chokepoint Advisory', 'Elevated', '#EA580C'] :
+      corridorScore > 50  ? ['Moderate Transit Risk', 'Moderate', '#D97706'] :
+      ['Optimal Flight Conditions', 'Low', '#059669'];
+  }
 
   const recommendations = [
     tier1 === 'Unmonitored' && `Notice: Departure terminal '${originLoc.location_name}' is currently unmonitored; deploy portable sensor telemetry.`,
@@ -261,7 +280,14 @@ export const api = {
       if (isJson(res)) return (await res.json()) as TrendPoint[];
     } catch {}
     _cachedTrends ??= await fetch('/data/trends.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
-    return _cachedTrends?.[`${loc}_${pol}`] || [];
+    if (_cachedTrends?.[`${loc}_${pol}`]) return _cachedTrends[`${loc}_${pol}`];
+    // Fallback: if pol was passed as parameter_name (e.g. pm25), resolve to pollutant_key
+    const pols = await api.getPollutants().catch(() => []);
+    const match = pols.find((p) => p.parameter_name.toLowerCase() === pol.toLowerCase() || p.pollutant_key.toLowerCase() === pol.toLowerCase());
+    if (match && _cachedTrends?.[`${loc}_${match.pollutant_key}`]) {
+      return _cachedTrends[`${loc}_${match.pollutant_key}`];
+    }
+    return [];
   },
 
   getAlerts: async (minTier: string): Promise<AlertsResponse> => {

@@ -93,6 +93,7 @@ export function App() {
             <CityTrends
               locations={locations}
               pollutants={pollutants}
+              unmonitored={unmonitored}
               initialLocationKey={selectedStationKey}
               initialPollutantKey={selectedPollutantKey}
               timezone={timezone}
@@ -102,7 +103,7 @@ export function App() {
 
         {activeTab === 'corridors' && (
           <div className="transition-opacity duration-200">
-            <RouteCorridor locations={locations} />
+            <RouteCorridor locations={locations} unmonitored={unmonitored} />
           </div>
         )}
 

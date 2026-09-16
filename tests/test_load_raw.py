@@ -108,3 +108,18 @@ def test_init_db_creates_expected_schemas(temp_db):
     }
     conn.close()
     assert {"raw", "staging", "mart"}.issubset(schemas)
+
+
+def test_full_refresh_handles_empty_bronze_gracefully(tmp_path, temp_db, monkeypatch):
+    """When bronze folder has no parquet files, full refresh should return 0 instead of crashing."""
+    monkeypatch.setattr(
+        load_raw,
+        "SOURCES",
+        {
+            "locations": tmp_path / "empty_loc" / "*.parquet",
+            "measurements": tmp_path / "empty_meas" / "*.parquet",
+        },
+    )
+    results = load_raw.load_all()
+    assert results == {"locations": 0, "measurements": 0}
+

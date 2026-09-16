@@ -140,16 +140,19 @@ def get_kpis() -> dict[str, Any]:
             "data_source_label": data_source_label(),
         }
 
-    worst_row = latest.sort_values("avg_aqi", ascending=False).iloc[0]
-
-    worst_reading = {
-        "location_key": str(worst_row["location_key"]),
-        "location_name": str(worst_row["location_name"]),
-        "country_name": str(worst_row["country_name"]),
-        "parameter_name": str(worst_row["parameter_name"]),
-        "avg_aqi": round(float(worst_row["avg_aqi"]), 1),
-        "risk_tier": str(worst_row["risk_tier"]),
-    }
+    valid_latest = latest.dropna(subset=["avg_aqi"])
+    if valid_latest.empty:
+        worst_reading = None
+    else:
+        worst_row = valid_latest.sort_values("avg_aqi", ascending=False).iloc[0]
+        worst_reading = {
+            "location_key": str(worst_row["location_key"]),
+            "location_name": str(worst_row["location_name"]),
+            "country_name": str(worst_row["country_name"]),
+            "parameter_name": str(worst_row["parameter_name"]),
+            "avg_aqi": round(float(worst_row["avg_aqi"]), 1),
+            "risk_tier": str(worst_row["risk_tier"]),
+        }
 
     hazardous_count = int(latest[latest["avg_aqi"] > 150]["location_key"].nunique())
 
@@ -500,31 +503,52 @@ def get_corridor_risk(
 
     aqi1 = origin["avg_aqi"]
     aqi2 = dest["avg_aqi"]
+    tier1 = origin["risk_tier"]
+    tier2 = dest["risk_tier"]
 
-    corridor_score = round(0.3 * aqi1 + 0.5 * aqi2 + 0.2 * max(aqi1, aqi2), 1)
-
-    if corridor_score <= 50:
-        overall_status = "Optimal Flight Conditions"
-        risk_level = "Low"
-        status_color = "#059669"
-    elif corridor_score <= 100:
-        overall_status = "Moderate Transit Risk"
-        risk_level = "Moderate"
-        status_color = "#D97706"
-    elif corridor_score <= 150:
-        overall_status = "Elevated Chokepoint Advisory"
-        risk_level = "Elevated"
-        status_color = "#EA580C"
-    elif corridor_score <= 200:
-        overall_status = "High Operational Impact"
-        risk_level = "High"
-        status_color = "#DC2626"
+    # Handle missing telemetry: don't let unmonitored terminals falsely drag risk down to 0
+    if tier1 == "Unmonitored" and tier2 == "Unmonitored":
+        corridor_score = 0.0
+        overall_status = "Telemetry Unavailable"
+        risk_level = "Unmonitored"
+        status_color = "#94A3B8"
+    elif tier1 == "Unmonitored":
+        corridor_score = aqi2
+    elif tier2 == "Unmonitored":
+        corridor_score = aqi1
     else:
-        overall_status = "Severe Terminal Disruption Alert"
-        risk_level = "Critical"
-        status_color = "#991B1B"
+        corridor_score = round(0.3 * aqi1 + 0.5 * aqi2 + 0.2 * max(aqi1, aqi2), 1)
 
-    recommendations: list[str] = []
+    if tier1 != "Unmonitored" or tier2 != "Unmonitored":
+        if corridor_score <= 50:
+            overall_status = "Optimal Flight Conditions"
+            risk_level = "Low"
+            status_color = "#059669"
+        elif corridor_score <= 100:
+            overall_status = "Moderate Transit Risk"
+            risk_level = "Moderate"
+            status_color = "#D97706"
+        elif corridor_score <= 150:
+            overall_status = "Elevated Chokepoint Advisory"
+            risk_level = "Elevated"
+            status_color = "#EA580C"
+        elif corridor_score <= 200:
+            overall_status = "High Operational Impact"
+            risk_level = "High"
+            status_color = "#DC2626"
+        else:
+            overall_status = "Severe Terminal Disruption Alert"
+            risk_level = "Critical"
+            status_color = "#991B1B"
+
+    # Actionable operational recommendations
+    recommendations = []
+    if tier1 == "Unmonitored" and tier2 == "Unmonitored":
+        recommendations.append("Both route terminals are unmonitored. Local atmospheric telemetry is currently unavailable.")
+    elif tier1 == "Unmonitored":
+        recommendations.append(f"Origin terminal '{origin['location_name']}' is offline; corridor exposure estimated from destination.")
+    elif tier2 == "Unmonitored":
+        recommendations.append(f"Destination terminal '{dest['location_name']}' is offline; corridor exposure estimated from origin.")
     if origin["risk_tier"] == "Unmonitored":
         recommendations.append(
             f"Notice: Departure terminal '{origin['location_name']}' is currently unmonitored; deploy portable sensor telemetry."

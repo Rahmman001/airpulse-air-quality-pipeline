@@ -242,7 +242,11 @@ def fetch_locations(
     return all_locations
 
 
-def write_bronze(records: list[dict], ingest_date: date, bronze_dir: Path = BRONZE_DIR) -> Path:
+def write_bronze(records: list[dict], ingest_date: date, bronze_dir: Path = BRONZE_DIR) -> Optional[Path]:
+    if not records:
+        logger.warning("No location records to write; skipping bronze parquet write.")
+        return None
+
     out_dir = bronze_dir / "locations" / f"ingest_date={ingest_date.isoformat()}"
     out_dir.mkdir(parents=True, exist_ok=True)
 

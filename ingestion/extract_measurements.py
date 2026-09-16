@@ -144,7 +144,11 @@ def fetch_measurements(client: OpenAQClient, sensors: list[dict], lookback_days:
     return all_measurements
 
 
-def write_bronze(records: list[dict], ingest_date: date, bronze_dir: Path = BRONZE_DIR) -> Path:
+def write_bronze(records: list[dict], ingest_date: date, bronze_dir: Path = BRONZE_DIR) -> Optional[Path]:
+    if not records:
+        logger.warning("No measurement records to write; skipping bronze parquet write.")
+        return None
+
     out_dir = bronze_dir / "measurements" / f"ingest_date={ingest_date.isoformat()}"
     out_dir.mkdir(parents=True, exist_ok=True)
 

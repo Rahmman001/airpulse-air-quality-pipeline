@@ -92,9 +92,12 @@ def configure_duckdb_r2(
         )
 
     conn.execute("INSTALL httpfs; LOAD httpfs;")
-    conn.execute(f"SET s3_endpoint = '{cfg['endpoint']}';")
-    conn.execute(f"SET s3_access_key_id = '{cfg['access_key_id']}';")
-    conn.execute(f"SET s3_secret_access_key = '{cfg['secret_access_key']}';")
+    endpoint = cfg["endpoint"].replace("'", "''")
+    access_key = cfg["access_key_id"].replace("'", "''")
+    secret_key = cfg["secret_access_key"].replace("'", "''")
+    conn.execute(f"SET s3_endpoint = '{endpoint}';")
+    conn.execute(f"SET s3_access_key_id = '{access_key}';")
+    conn.execute(f"SET s3_secret_access_key = '{secret_key}';")
     conn.execute("SET s3_url_style = 'path';")
     conn.execute("SET s3_use_ssl = true;")
     return cfg["bucket_name"]
@@ -122,8 +125,9 @@ def export_to_r2(conn: duckdb.DuckDBPyConnection | None = None) -> dict[str, int
             table_name = qualified_name.split(".")[-1]
             r2_target = f"s3://{bucket}/gold/{table_name}.parquet"
             conn.execute(f"COPY {qualified_name} TO '{r2_target}' (FORMAT PARQUET)")
-            count = conn.execute(f"SELECT COUNT(*) FROM {qualified_name}").fetchone()[0]
-            results[table_name] = int(count)
+            row = conn.execute(f"SELECT COUNT(*) FROM {qualified_name}").fetchone()
+            count = int(row[0]) if row else 0
+            results[table_name] = count
             logger.info(
                 "Exported to Cloudflare R2: %s (%d rows) -> %s",
                 qualified_name,

@@ -12,6 +12,7 @@ Run:
 
 from __future__ import annotations
 
+import glob as pyglob
 import logging
 
 import duckdb
@@ -39,6 +40,10 @@ def full_refresh(conn: duckdb.DuckDBPyConnection, table_name: str, glob: str) ->
     hive-style `ingest_date=YYYY-MM-DD` folder structure and adds a real,
     typed `ingest_date` DATE column for free -- no manual parsing needed.
     """
+    if not pyglob.glob(glob):
+        logger.warning("No bronze parquet files found matching %s; skipping raw.%s", glob, table_name)
+        return 0
+
     conn.execute(
         f"""
         CREATE OR REPLACE TABLE raw.{table_name} AS

@@ -39,8 +39,8 @@ export const Alerts: React.FC = () => {
   }, [alertsData, searchTerm]);
 
   const handleExportCsv = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (filteredAlerts.length) {
-      e.preventDefault();
       const headers = ['location_name,country_name,parameter_name,avg_aqi,risk_tier,reading_count,flagged_reading_count'];
       const esc = (v: any) => String(v ?? '').replace(/^[=+\-@]/, "'$&");
       const rows = filteredAlerts.map(

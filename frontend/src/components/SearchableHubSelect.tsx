@@ -8,6 +8,7 @@ export interface SearchableHubSelectProps {
   val: string;
   setVal: (v: string) => void;
   locations: LocationItem[];
+  unmonitoredNames?: Set<string>;
   placeholder?: string;
   className?: string;
 }
@@ -18,6 +19,7 @@ export const SearchableHubSelect: React.FC<SearchableHubSelectProps> = ({
   val,
   setVal,
   locations,
+  unmonitoredNames,
   placeholder = 'Select a hub...',
   className = '',
 }) => {
@@ -32,17 +34,25 @@ export const SearchableHubSelect: React.FC<SearchableHubSelectProps> = ({
     [locations, val]
   );
 
-  // Filter locations by name, country_name, or country_code
+  // Filter locations by name, country_name, or country_code, prioritizing active hubs
   const filteredLocations = useMemo(() => {
-    if (!search.trim()) return locations;
-    const q = search.toLowerCase().trim();
-    return locations.filter(
-      (l) =>
-        l.location_name.toLowerCase().includes(q) ||
-        (l.country_name && l.country_name.toLowerCase().includes(q)) ||
-        (l.country_code && l.country_code.toLowerCase().includes(q))
-    );
-  }, [locations, search]);
+    let list = locations;
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      list = locations.filter(
+        (l) =>
+          l.location_name.toLowerCase().includes(q) ||
+          (l.country_name && l.country_name.toLowerCase().includes(q)) ||
+          (l.country_code && l.country_code.toLowerCase().includes(q))
+      );
+    }
+    if (!unmonitoredNames || unmonitoredNames.size === 0) return list;
+    return [...list].sort((a, b) => {
+      const aOff = unmonitoredNames.has(a.location_name.toLowerCase()) ? 1 : 0;
+      const bOff = unmonitoredNames.has(b.location_name.toLowerCase()) ? 1 : 0;
+      return aOff - bOff;
+    });
+  }, [locations, search, unmonitoredNames]);
 
   // Focus search input on open
   useEffect(() => {
@@ -165,6 +175,7 @@ export const SearchableHubSelect: React.FC<SearchableHubSelectProps> = ({
             ) : (
               filteredLocations.map((loc) => {
                 const isSelected = loc.location_key === val;
+                const isOffline = unmonitoredNames?.has(loc.location_name.toLowerCase());
                 return (
                   <button
                     key={loc.location_key}
@@ -173,13 +184,22 @@ export const SearchableHubSelect: React.FC<SearchableHubSelectProps> = ({
                     className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-xl text-xs transition-colors cursor-pointer ${
                       isSelected
                         ? 'bg-[#381932] text-[#FFF3E6] font-bold shadow-2xs'
+                        : isOffline
+                        ? 'text-[#381932]/70 hover:bg-[#FBF4EC]'
                         : 'text-[#381932] hover:bg-[#FBF4EC] font-medium'
                     }`}
                     role="option"
                     aria-selected={isSelected}
                   >
                     <div className="flex flex-col truncate pr-2">
-                      <span className="truncate">{loc.location_name}</span>
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span className="truncate">{loc.location_name}</span>
+                        {isOffline && (
+                          <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-semibold ${isSelected ? 'bg-white/20 text-white' : 'bg-[#84657E]/15 text-[#84657E]'}`}>
+                            Offline
+                          </span>
+                        )}
+                      </div>
                       {loc.country_name && (
                         <span className={`text-[10px] truncate ${isSelected ? 'text-[#FFF3E6]/80' : 'text-[#84657E]'}`}>
                           {loc.country_name}

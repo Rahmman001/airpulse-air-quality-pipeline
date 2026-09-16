@@ -61,9 +61,15 @@ def data_source_label() -> str:
 
 
 def _query(sql: str, params: list[Any] | None = None) -> pd.DataFrame:
+    conn = None
     if DB_PATH.exists():
-        conn = duckdb.connect(str(DB_PATH), read_only=True)
-    else:
+        try:
+            conn = duckdb.connect(str(DB_PATH), read_only=True)
+        except Exception as e:
+            logger.warning("Could not open %s (%s); falling back to snapshot", DB_PATH, e)
+            conn = None
+
+    if conn is None:
         conn = duckdb.connect(":memory:")
         conn.execute("CREATE SCHEMA IF NOT EXISTS mart")
         from warehouse.r2_storage import configure_duckdb_r2, get_r2_config
@@ -134,12 +140,14 @@ def load_latest_city_aqi() -> pd.DataFrame:
 def load_hourly_trend(location_key: str, pollutant_key: str) -> pd.DataFrame:
     return _query(
         """
-        SELECT measured_at_utc, aqi, raw_value, value_ugm3, risk_tier
-        FROM mart.fact_air_quality_hourly
-        WHERE location_key = ? AND pollutant_key = ?
-        ORDER BY measured_at_utc
+        SELECT f.measured_at_utc, f.aqi, f.raw_value, f.value_ugm3, f.risk_tier
+        FROM mart.fact_air_quality_hourly f
+        LEFT JOIN mart.dim_pollutant p ON f.pollutant_key = p.pollutant_key
+        WHERE f.location_key = ? 
+          AND (f.pollutant_key = ? OR lower(p.parameter_name) = lower(?))
+        ORDER BY f.measured_at_utc
         """,
-        [location_key, pollutant_key],
+        [location_key, pollutant_key, pollutant_key],
     )
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import {
   AirplaneTakeoff,
@@ -10,19 +10,25 @@ import {
   NavigationArrow,
   ArrowClockwise,
 } from '@phosphor-icons/react';
-import { api, type LocationItem, type CorridorRiskResponse } from '../api';
+import { api, type LocationItem, type CorridorRiskResponse, type UnmonitoredLocation } from '../api';
 import { SearchableHubSelect } from './SearchableHubSelect';
 
 interface RouteCorridorProps {
   locations: LocationItem[];
+  unmonitored?: UnmonitoredLocation[];
 }
 
-export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
+export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations, unmonitored }) => {
   const [origin, setOrigin] = useState('');
   const [dest, setDest] = useState('');
   const [corridor, setCorridor] = useState<CorridorRiskResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const unmonitoredNames = useMemo(
+    () => new Set(unmonitored?.map((u) => u.location_name.toLowerCase()) || []),
+    [unmonitored]
+  );
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -72,7 +78,9 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
 
     group.clearLayers();
 
-    const latlngs: L.LatLngExpression[] = corridor.waypoints.map((w) => [w.lat, w.lon]);
+    const latlngs: L.LatLngExpression[] = corridor.waypoints
+      .filter((w) => typeof w.lat === 'number' && !isNaN(w.lat) && typeof w.lon === 'number' && !isNaN(w.lon))
+      .map((w) => [w.lat, w.lon]);
     const routeLine = L.polyline(latlngs, { color: corridor.status_color || '#381932', weight: 3.5, opacity: 0.85, dashArray: '8, 8' }).addTo(group);
 
     const departureSvg = `<svg width="15" height="15" viewBox="0 0 256 256" fill="currentColor"><path d="M247.16,145.49a16,16,0,0,0-15.74-6.85L172.58,146l-41.9-57.61a8,8,0,0,0-6.49-3.28H104a8,8,0,0,0-7.39,11.08l21.28,50.77-40.42,7.35L57,137.66A8,8,0,0,0,51.34,135H32a8,8,0,0,0-7.07,11.75l17.78,33.78a16.14,16.14,0,0,0,13.88,8.59l159-28.91A16,16,0,0,0,247.16,145.49ZM216,216H40a8,8,0,0,1,0-16H216a8,8,0,0,1,0,16Z"/></svg>`;
@@ -82,22 +90,24 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
       { hub: corridor.origin, svg: departureSvg, role: 'Departure Hub' },
       { hub: corridor.destination, svg: arrivalSvg, role: 'Arrival Hub' },
     ].forEach(({ hub, svg, role }) => {
-      L.marker([hub.latitude, hub.longitude], {
-        icon: L.divIcon({
-          className: 'custom-hub-marker',
-          html: `<div style="background:#281224;border:2px solid ${hub.color_hex};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(56,25,50,0.4);color:#FFF3E6;">${svg}</div>`,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
-        }),
-      }).bindPopup(`
-        <div style="font-family:'Satoshi',sans-serif;padding:6px;min-width:145px;">
-          <div style="font-size:10px;text-transform:uppercase;color:#84657E;letter-spacing:0.06em;font-weight:700;">${role}</div>
-          <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:15px;color:#381932;margin-top:2px;">${hub.location_name}</div>
-          <div style="margin-top:6px;display:inline-block;padding:3px 8px;border-radius:9999px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;background:${hub.color_hex};color:#FFF;">
-            AQI ${hub.avg_aqi} • ${hub.risk_tier}
+      if (typeof hub.latitude === 'number' && !isNaN(hub.latitude) && typeof hub.longitude === 'number' && !isNaN(hub.longitude)) {
+        L.marker([hub.latitude, hub.longitude], {
+          icon: L.divIcon({
+            className: 'custom-hub-marker',
+            html: `<div style="background:#281224;border:2px solid ${hub.color_hex};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(56,25,50,0.4);color:#FFF3E6;">${svg}</div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+          }),
+        }).bindPopup(`
+          <div style="font-family:'Satoshi',sans-serif;padding:6px;min-width:145px;">
+            <div style="font-size:10px;text-transform:uppercase;color:#84657E;letter-spacing:0.06em;font-weight:700;">${role}</div>
+            <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:15px;color:#381932;margin-top:2px;">${hub.location_name}</div>
+            <div style="margin-top:6px;display:inline-block;padding:3px 8px;border-radius:9999px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;background:${hub.color_hex};color:#FFF;">
+              AQI ${hub.avg_aqi} • ${hub.risk_tier}
+            </div>
           </div>
-        </div>
-      `).addTo(group);
+        `).addTo(group);
+      }
     });
 
     try {
@@ -171,6 +181,7 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
             val={originKey}
             setVal={setOrigin}
             locations={locations}
+            unmonitoredNames={unmonitoredNames}
           />
           <div className="flex justify-center md:pt-6">
             <button 
@@ -187,6 +198,7 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
             val={destKey}
             setVal={setDest}
             locations={locations}
+            unmonitoredNames={unmonitoredNames}
           />
         </div>
       </div>

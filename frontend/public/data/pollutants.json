@@ -1,29 +1,5 @@
 [
   {
-    "pollutant_key": "9bf31c7ff062936a96d3c8bd1f8f2ff3",
-    "parameter_id": 15,
-    "parameter_name": "no2",
-    "parameter_units": "ppb",
-    "pollutant_display_name": "Nitrogen Dioxide",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "d3d9446802a44259755d38e6d163e820",
-    "parameter_id": 10,
-    "parameter_name": "o3",
-    "parameter_units": "ppm",
-    "pollutant_display_name": "Ozone",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "eccbc87e4b5ce2fe28308fd9f2a7baf3",
-    "parameter_id": 3,
-    "parameter_name": "o3",
-    "parameter_units": "ppm",
-    "pollutant_display_name": "Ozone",
-    "has_aqi_support": true
-  },
-  {
     "pollutant_key": "e4da3b7fbbce2345d7772b0674a318d5",
     "parameter_id": 5,
     "parameter_name": "no2",
@@ -58,6 +34,30 @@
   {
     "pollutant_key": "a87ff679a2f3e71d9181a67b7542122c",
     "parameter_id": 4,
+    "parameter_name": "no2",
+    "parameter_units": "ppb",
+    "pollutant_display_name": "Nitrogen Dioxide",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "d3d9446802a44259755d38e6d163e820",
+    "parameter_id": 10,
+    "parameter_name": "o3",
+    "parameter_units": "ppm",
+    "pollutant_display_name": "Ozone",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "eccbc87e4b5ce2fe28308fd9f2a7baf3",
+    "parameter_id": 3,
+    "parameter_name": "o3",
+    "parameter_units": "ppm",
+    "pollutant_display_name": "Ozone",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "9bf31c7ff062936a96d3c8bd1f8f2ff3",
+    "parameter_id": 15,
     "parameter_name": "no2",
     "parameter_units": "ppb",
     "pollutant_display_name": "Nitrogen Dioxide",
