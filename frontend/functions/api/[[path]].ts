@@ -196,5 +196,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return new Response(assetRes.body, { status: assetRes.status, headers: jsonHeaders });
   }
 
+  if (path.startsWith('/api/')) {
+    return new Response(JSON.stringify({ error: 'Endpoint not found', path }), { status: 404, headers: jsonHeaders });
+  }
+
   return context.next();
 };

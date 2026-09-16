@@ -62,7 +62,7 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
       mapInstanceRef.current = null;
       layersGroupRef.current = null;
     };
-  }, []);
+  }, [locations.length]);
 
   // Update Waypoints & Markers
   useEffect(() => {

@@ -140,8 +140,7 @@ def get_kpis() -> dict[str, Any]:
             "data_source_label": data_source_label(),
         }
 
-    worst_idx = latest["avg_aqi"].idxmax()
-    worst_row = latest.loc[worst_idx]
+    worst_row = latest.sort_values("avg_aqi", ascending=False).iloc[0]
 
     worst_reading = {
         "location_key": str(worst_row["location_key"]),

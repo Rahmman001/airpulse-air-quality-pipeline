@@ -1,6 +1,6 @@
 [
   {
-    "location_key": "e6a6fd61255e4f8e10d0ce0a3386fce8",
+    "location_key": "4fb65928315833e540510ad5e292361c",
     "city_name": "화북면",
     "location_name": "화북면",
     "country_code": "KR",
@@ -17,7 +17,7 @@
     "radius": 35
   },
   {
-    "location_key": "ed743f131da65f606c80f2cbe60d1926",
+    "location_key": "5d1964185c055f9869028f5706631f48",
     "city_name": "Cairo",
     "location_name": "Cairo",
     "country_code": "EG",
@@ -34,7 +34,7 @@
     "radius": 28
   },
   {
-    "location_key": "27de38df9bdd3018c9f91329b56f34a1",
+    "location_key": "8463d3cc99a78fb56f755f2af4481613",
     "city_name": "Taman Tun Dr. Ismail",
     "location_name": "Taman Tun Dr. Ismail",
     "country_code": "MY",
@@ -51,7 +51,7 @@
     "radius": 23
   },
   {
-    "location_key": "f24ee194a92501c4ac352f56b7af19e3",
+    "location_key": "acfcc5e0d5d40ccd58f2daaf51cd2362",
     "city_name": "Setapak",
     "location_name": "Setapak",
     "country_code": "MY",
@@ -68,7 +68,7 @@
     "radius": 22
   },
   {
-    "location_key": "d4241c464b605f9a94af5b68c2b41f3a",
+    "location_key": "70ac1bdea2b84db5565c8b062f3f2caf",
     "city_name": "Manesar",
     "location_name": "Manesar",
     "country_code": "IN",
@@ -85,7 +85,7 @@
     "radius": 21
   },
   {
-    "location_key": "f823bcbc6f17bbea27604fda98899bf3",
+    "location_key": "adc1b564c28cfaab43f5131af5829a7c",
     "city_name": "Setia Eco Park",
     "location_name": "Setia Eco Park",
     "country_code": "MY",
@@ -102,7 +102,7 @@
     "radius": 21
   },
   {
-    "location_key": "af24ca9c4f2630f584071a3de9d6a7db",
+    "location_key": "e7171ae28d84fdaee8db6f20547433f2",
     "city_name": "Beijing",
     "location_name": "Beijing",
     "country_code": "CN",
@@ -119,7 +119,7 @@
     "radius": 20
   },
   {
-    "location_key": "54fa26627fe359479627d058e556ee1a",
+    "location_key": "408f52aecfd41da2cdc87a91b788710d",
     "city_name": "Jakarta",
     "location_name": "Jakarta",
     "country_code": "ID",
@@ -136,7 +136,7 @@
     "radius": 20
   },
   {
-    "location_key": "dfe184eb35b2c11c62f4f05d394d7bae",
+    "location_key": "3ff645c21daa2b0071026db27bd44883",
     "city_name": "Taibah",
     "location_name": "Taibah",
     "country_code": "SA",
@@ -153,7 +153,7 @@
     "radius": 19
   },
   {
-    "location_key": "2bf4515dc32b21694596b26e420b2866",
+    "location_key": "bd100bc4b7144428bbcbc78c9c142db7",
     "city_name": "Serena",
     "location_name": "Serena",
     "country_code": "AE",
@@ -170,7 +170,7 @@
     "radius": 19
   },
   {
-    "location_key": "1ab46003a0cb735a3685c70dddeec759",
+    "location_key": "ce3ff498a905263e4664e9145025b4db",
     "city_name": "Jebel Heights",
     "location_name": "Jebel Heights",
     "country_code": "SA",
@@ -187,7 +187,7 @@
     "radius": 19
   },
   {
-    "location_key": "cf670125ba83bb8fa67d27e77fcc7a91",
+    "location_key": "b4e66387314c9720a9f82c651350fab1",
     "city_name": "Bangkok",
     "location_name": "Bangkok",
     "country_code": "TH",
@@ -204,7 +204,7 @@
     "radius": 18
   },
   {
-    "location_key": "db26af84af7d90f03314b51b36fd8931",
+    "location_key": "b5e0690f8b1f56c60705253a607e6178",
     "city_name": "Santiago",
     "location_name": "Santiago",
     "country_code": "CL",
@@ -221,7 +221,7 @@
     "radius": 17
   },
   {
-    "location_key": "d16f534af8d7ae3d749d881525addca4",
+    "location_key": "d05d81561483cff2b2cb599db3420349",
     "city_name": "Dubai",
     "location_name": "Dubai (4 stations)",
     "country_code": "AE",
@@ -238,7 +238,7 @@
     "radius": 16
   },
   {
-    "location_key": "0780939cf2986ec98a53ae6600de8680",
+    "location_key": "e42c8f7eac45e3f6ea41d1d8ed68d207",
     "city_name": "Delhi",
     "location_name": "Delhi (22 stations)",
     "country_code": "IN",
@@ -255,7 +255,7 @@
     "radius": 16
   },
   {
-    "location_key": "f1b2cc473ab2a9407ab27d2861e9ffa7",
+    "location_key": "4d81baa7d07f97f8c54affb558cb7b59",
     "city_name": "Mexico",
     "location_name": "Mexico",
     "country_code": "MX",
@@ -272,7 +272,7 @@
     "radius": 16
   },
   {
-    "location_key": "4c9bedd537cbd8c0c1e05367262b008c",
+    "location_key": "d51af2657644f6aff0656db4e1bb53db",
     "city_name": "Seoul",
     "location_name": "Seoul",
     "country_code": "KR",
@@ -289,7 +289,7 @@
     "radius": 14
   },
   {
-    "location_key": "fe5ef1335d8ef66a3f09a26d04d35d75",
+    "location_key": "2f7dee00ee8dea93ce74d0a7ccc4b6c2",
     "city_name": "The Views",
     "location_name": "The Views",
     "country_code": "AE",
@@ -306,7 +306,7 @@
     "radius": 14
   },
   {
-    "location_key": "4333a0becd44b80ab403dc7d7b628b7c",
+    "location_key": "9cdd3eb1cbcdeedc0537149d4a86bfd1",
     "city_name": "Yahya Alarfaj",
     "location_name": "Yahya Alarfaj",
     "country_code": "SA",
@@ -323,7 +323,7 @@
     "radius": 13
   },
   {
-    "location_key": "c2a6c633be9559cad794198f46ae68f3",
+    "location_key": "55174ae6f6f5aaa254af80b78dd3d1ca",
     "city_name": "Los Angeles",
     "location_name": "Los Angeles",
     "country_code": "US",
@@ -340,7 +340,7 @@
     "radius": 13
   },
   {
-    "location_key": "7021573b7ff6c684d0b07f051fdd8c39",
+    "location_key": "87081912324a1ed28bb489f3bc378933",
     "city_name": "Midwood",
     "location_name": "Midwood",
     "country_code": "SG",
@@ -357,7 +357,7 @@
     "radius": 12
   },
   {
-    "location_key": "d4aecc39caf298b0fdafc91a56353ba3",
+    "location_key": "c0bd40cacd369507b519632f6ea310d2",
     "city_name": "São",
     "location_name": "São",
     "country_code": "BR",
@@ -374,7 +374,7 @@
     "radius": 11
   },
   {
-    "location_key": "be8ebc198d8b1f587fe1495766d3bbfa",
+    "location_key": "92741ecfd48db4332be6d56f624ec8c9",
     "city_name": "Ahmedabad",
     "location_name": "Ahmedabad",
     "country_code": "IN",
@@ -391,7 +391,7 @@
     "radius": 11
   },
   {
-    "location_key": "62f4569a756e53b6ad59c4f57e3e45de",
+    "location_key": "0a70398a20eb1dec09072d4f48a2017d",
     "city_name": "Shelford",
     "location_name": "Shelford",
     "country_code": "SG",
@@ -408,7 +408,7 @@
     "radius": 11
   },
   {
-    "location_key": "45de012e0e4c2dfce72a8e317b0e115b",
+    "location_key": "80bf133167034988bb556600536e6d38",
     "city_name": "CGB",
     "location_name": "CGB",
     "country_code": "SG",
@@ -425,7 +425,7 @@
     "radius": 11
   },
   {
-    "location_key": "63c4570c18a063415c340fa55904dc5c",
+    "location_key": "251414b525275bbee044ecd90a75abb4",
     "city_name": "Joo Chiat Place",
     "location_name": "Joo Chiat Place",
     "country_code": "SG",
@@ -442,7 +442,7 @@
     "radius": 10
   },
   {
-    "location_key": "2cb8dccf783ab1dea9d32b57a401ecb2",
+    "location_key": "74dea57810d578acc4704db0a6f96ec6",
     "city_name": "Johannesburg",
     "location_name": "Johannesburg",
     "country_code": "ZA",
@@ -459,7 +459,7 @@
     "radius": 10
   },
   {
-    "location_key": "1835bdd43f5d7c56ab582c90ff378ae4",
+    "location_key": "ae166fd72eee3a8d15f40a5a12c7f021",
     "city_name": "Chennai",
     "location_name": "Chennai (4 stations)",
     "country_code": "IN",
@@ -476,7 +476,7 @@
     "radius": 10
   },
   {
-    "location_key": "bfc48cbaccf6740c07e62115c48ae478",
+    "location_key": "6931c9192e9a190b6b0b8ec712949d7a",
     "city_name": "Hyderabad",
     "location_name": "Hyderabad (6 stations)",
     "country_code": "IN",
@@ -493,7 +493,7 @@
     "radius": 10
   },
   {
-    "location_key": "c481abeb4608c251c881c6d10edf3fc9",
+    "location_key": "3f72a24f3fca02c7d9ad73f1ba6ab22c",
     "city_name": "Kolkata",
     "location_name": "Kolkata (9 stations)",
     "country_code": "IN",
@@ -510,7 +510,7 @@
     "radius": 10
   },
   {
-    "location_key": "7533502c028bacf5141e2b8d9337bc30",
+    "location_key": "e120fe1ea21c83d5223a76a5866385da",
     "city_name": "Mumbai",
     "location_name": "Mumbai (12 stations)",
     "country_code": "IN",
@@ -527,7 +527,7 @@
     "radius": 10
   },
   {
-    "location_key": "6aa928c99cdd1940e194655e7bcccaec",
+    "location_key": "7e272d8aa2ef3221994e37c982ad3f25",
     "city_name": "Timaru",
     "location_name": "Timaru (2 stations)",
     "country_code": "NZ",
@@ -544,7 +544,7 @@
     "radius": 10
   },
   {
-    "location_key": "86be850ec1ba58fb6d9bd675a33ce965",
+    "location_key": "be288888a0a40d5f3e52a49ded6a7e03",
     "city_name": "Bengaluru",
     "location_name": "Bengaluru (8 stations)",
     "country_code": "IN",
@@ -561,7 +561,7 @@
     "radius": 10
   },
   {
-    "location_key": "896c07b8c54214175bb6686f23a8c4c5",
+    "location_key": "d4b2f47ae742ebf2f34ab95d0aeb76d9",
     "city_name": "Terre Haute",
     "location_name": "Terre Haute",
     "country_code": "US",
@@ -578,7 +578,24 @@
     "radius": 10
   },
   {
-    "location_key": "f9ecd36650603860de613d4e0006fc62",
+    "location_key": "4d117152f757bd4f73d5300774ca179e",
+    "city_name": "Rotterdam",
+    "location_name": "Rotterdam (5 stations)",
+    "country_code": "NL",
+    "country_name": "Netherlands",
+    "latitude": 51.91115,
+    "longitude": 4.47896,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 66.3,
+    "city_avg_aqi": 66.3,
+    "city_stations_count": 5,
+    "risk_tier": "Moderate",
+    "color_hex": "#ffff00",
+    "radius": 10
+  },
+  {
+    "location_key": "fd8db481295cf3ae40e658411ed33f4d",
     "city_name": "Chicago",
     "location_name": "Chicago",
     "country_code": "US",
@@ -595,7 +612,7 @@
     "radius": 10
   },
   {
-    "location_key": "9191a97e524444c8d5d1676c86738715",
+    "location_key": "8486483d2d33338561bfa14f4b0b2fda",
     "city_name": "New Territories",
     "location_name": "New Territories (3 stations)",
     "country_code": "HK",
@@ -612,7 +629,7 @@
     "radius": 10
   },
   {
-    "location_key": "ccb207563cbe3cde4ae374cabd1b37ed",
+    "location_key": "65e92a4b783f6aae054b481b49c05ee0",
     "city_name": "Singapore",
     "location_name": "Singapore (2 stations)",
     "country_code": "SG",
@@ -629,7 +646,7 @@
     "radius": 10
   },
   {
-    "location_key": "2b0be5c8ccb895956ee5f1534a55b55a",
+    "location_key": "7454c25e74d25150c5360f45d0deca22",
     "city_name": "人吉市西間下町８６－１",
     "location_name": "人吉市西間下町８６－１",
     "country_code": "JP",
@@ -646,7 +663,7 @@
     "radius": 10
   },
   {
-    "location_key": "af38d2b838e684c19003cf819e925977",
+    "location_key": "790450e7755e34fcd859618e426992f3",
     "city_name": "화원읍",
     "location_name": "화원읍",
     "country_code": "KR",
@@ -663,7 +680,7 @@
     "radius": 10
   },
   {
-    "location_key": "3678d04c5f4cc6d68a5c77b301bb9438",
+    "location_key": "2e7edd7c035fb0a1e0368225d8457ef9",
     "city_name": "Paris",
     "location_name": "Paris",
     "country_code": "FR",
@@ -680,7 +697,7 @@
     "radius": 10
   },
   {
-    "location_key": "74f764f9b38fc19512a2b9a7cbc39092",
+    "location_key": "020ebe30fe5dbe2dd0b5d8c3b407d215",
     "city_name": "GIJÓN",
     "location_name": "GIJÓN",
     "country_code": "ES",
@@ -697,7 +714,7 @@
     "radius": 10
   },
   {
-    "location_key": "f3b13ac0b818c1b3853d3333ceaf2974",
+    "location_key": "2a58302b6d6b779e1b12d7109a3d24eb",
     "city_name": "Kokomo",
     "location_name": "Kokomo",
     "country_code": "US",
@@ -714,7 +731,7 @@
     "radius": 10
   },
   {
-    "location_key": "7a2949e13595f6c5b6f65768887c3bc9",
+    "location_key": "375eaa1a4008a2adeb94be3714fc639f",
     "city_name": "Madrid",
     "location_name": "Madrid",
     "country_code": "ES",
@@ -731,7 +748,7 @@
     "radius": 10
   },
   {
-    "location_key": "ac3f7ac38211224798b6fbb8bbc96908",
+    "location_key": "1133122bebc01e9988ad302adc652946",
     "city_name": "New York",
     "location_name": "New York",
     "country_code": "US",
@@ -748,7 +765,7 @@
     "radius": 10
   },
   {
-    "location_key": "ffde5006646fec3db8967403147d968e",
+    "location_key": "9af3dbdce0488424d90b4c3a59938ee0",
     "city_name": "London",
     "location_name": "London",
     "country_code": "GB",
@@ -765,7 +782,7 @@
     "radius": 10
   },
   {
-    "location_key": "d308cd6ee1448c74d66209347c3a2d0e",
+    "location_key": "cdde3351b518e98e90daf0d0ce09d209",
     "city_name": "Chicago-Naperville-Joliet",
     "location_name": "Chicago-Naperville-Joliet (2 stations)",
     "country_code": "US",
@@ -782,7 +799,7 @@
     "radius": 10
   },
   {
-    "location_key": "b253cdd0e464347f2d33d2b502017b4d",
+    "location_key": "e4c6bd0e9a708d849b39043e9ed5cb8e",
     "city_name": "화북동",
     "location_name": "화북동",
     "country_code": "KR",
@@ -799,7 +816,7 @@
     "radius": 10
   },
   {
-    "location_key": "f4a598ebc967d9ad620820183e1a959b",
+    "location_key": "4d959a3de82158c261f56ebd50a22ebc",
     "city_name": "Berlin",
     "location_name": "Berlin (4 stations)",
     "country_code": "DE",
@@ -816,7 +833,7 @@
     "radius": 10
   },
   {
-    "location_key": "1e95847db4bbe7f6631efee1f73aedda",
+    "location_key": "9d44826fd1771a2a857be99be9c1be2a",
     "city_name": "Tokyo",
     "location_name": "Tokyo",
     "country_code": "JP",
@@ -833,7 +850,7 @@
     "radius": 10
   },
   {
-    "location_key": "9340815c8d650bbdbd17fd63275ddbac",
+    "location_key": "e7af0e47453e7331ed6f69993084643e",
     "city_name": "Indianapolis",
     "location_name": "Indianapolis (2 stations)",
     "country_code": "US",
@@ -850,7 +867,7 @@
     "radius": 10
   },
   {
-    "location_key": "648b061adf12d2051fee9788bcc91780",
+    "location_key": "7c20266ad4b9cd8b599c9638a7ba996c",
     "city_name": "Praha",
     "location_name": "Praha (4 stations)",
     "country_code": "CZ",
@@ -867,7 +884,7 @@
     "radius": 10
   },
   {
-    "location_key": "ddc5142c5dc0893719c08f742122fa9e",
+    "location_key": "1917211ec619f20e6221463fe0cfc443",
     "city_name": "LLEIDA",
     "location_name": "LLEIDA",
     "country_code": "ES",
@@ -884,7 +901,7 @@
     "radius": 10
   },
   {
-    "location_key": "392fa353b3a1eee68b07459b0f03b847",
+    "location_key": "a353913b4a4eeee9de650a44334d0bf6",
     "city_name": "홍릉로",
     "location_name": "홍릉로",
     "country_code": "KR",
@@ -901,7 +918,7 @@
     "radius": 10
   },
   {
-    "location_key": "1c6a3b18dbfa92ea27e189e5949ad518",
+    "location_key": "7d5e6bc753e579e2acedd2032b42ca1b",
     "city_name": "회원동",
     "location_name": "회원동",
     "country_code": "KR",
@@ -918,7 +935,7 @@
     "radius": 10
   },
   {
-    "location_key": "9a702f064336e77fca57718d7789c07a",
+    "location_key": "94b5e8c5c039f6469b7e791fcf180a3a",
     "city_name": "Elkhart-Goshen",
     "location_name": "Elkhart-Goshen",
     "country_code": "US",
@@ -935,7 +952,7 @@
     "radius": 10
   },
   {
-    "location_key": "a7f91b2e4772103cc4007add7ab51994",
+    "location_key": "fc9d687dbcf2e825b2a4183d9d40cf46",
     "city_name": "Riverside-San Bernardino-Ontario",
     "location_name": "Riverside-San Bernardino-Ontario",
     "country_code": "US",
@@ -952,7 +969,7 @@
     "radius": 10
   },
   {
-    "location_key": "ac6389ef855831772a8d860f016031ce",
+    "location_key": "a9b33daf7540794e7b32bf902f3f8f7f",
     "city_name": "South Bend-Mishawaka",
     "location_name": "South Bend-Mishawaka",
     "country_code": "US",
@@ -969,7 +986,7 @@
     "radius": 10
   },
   {
-    "location_key": "87085bbe095281d2fd645496f892df0e",
+    "location_key": "3df8da1f15ec93365f982a1aee8496d0",
     "city_name": "Bernau bei Berlin",
     "location_name": "Bernau bei Berlin",
     "country_code": "DE",
@@ -986,7 +1003,7 @@
     "radius": 10
   },
   {
-    "location_key": "c996b4ca6e6a7e52586aeeaeb0ddcb45",
+    "location_key": "e052877f857e98587a60d61c8ca66784",
     "city_name": "高雄市",
     "location_name": "高雄市 (4 stations)",
     "country_code": "TW",
@@ -1003,7 +1020,7 @@
     "radius": 10
   },
   {
-    "location_key": "c52a34c326b5770a9dfe0125a5e09a6a",
+    "location_key": "c95a8e622432a6372f8e27db927262ac",
     "city_name": "Toronto",
     "location_name": "Toronto",
     "country_code": "CA",
@@ -1020,7 +1037,7 @@
     "radius": 10
   },
   {
-    "location_key": "c9c47d2186d1ce388e03cfccb39f3a2d",
+    "location_key": "40b6e2f7b9eba71b6bfe122ff4fb64ae",
     "city_name": "Sydney",
     "location_name": "Sydney",
     "country_code": "AU",
@@ -1037,7 +1054,7 @@
     "radius": 10
   },
   {
-    "location_key": "9636ea78f382cf775000a6e458bcf223",
+    "location_key": "144dda00c0192e2d7a987fb4e9aebc8b",
     "city_name": "Zurich",
     "location_name": "Zurich",
     "country_code": "CH",
@@ -1054,24 +1071,7 @@
     "radius": 10
   },
   {
-    "location_key": "9cdf0cceb5a25a2fa6b5a2eb6bfd388f",
-    "city_name": "Rotterdam",
-    "location_name": "Rotterdam (5 stations)",
-    "country_code": "NL",
-    "country_name": "Netherlands",
-    "latitude": 51.91115,
-    "longitude": 4.47896,
-    "parameter_name": "o3",
-    "pollutant_display_name": "Ozone",
-    "avg_aqi": 35.5,
-    "city_avg_aqi": 35.5,
-    "city_stations_count": 5,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "63a9c91c3a8b083b721361d80db2fa2b",
+    "location_key": "4accd0ec4119705ca5112930fb04b0de",
     "city_name": "Auckland",
     "location_name": "Auckland",
     "country_code": "NZ",
@@ -1088,7 +1088,7 @@
     "radius": 10
   },
   {
-    "location_key": "d32048f3abe57c73ddc8219ce096e7ea",
+    "location_key": "cf8efdf3d7afad214a41b3b699509542",
     "city_name": "MADRID",
     "location_name": "MADRID",
     "country_code": "ES",
@@ -1105,7 +1105,7 @@
     "radius": 10
   },
   {
-    "location_key": "2b62c36a39bc9337afd77aba6fc922df",
+    "location_key": "aa088a2067d4c0c3ef384bb996545a05",
     "city_name": "Amsterdam",
     "location_name": "Amsterdam (3 stations)",
     "country_code": "NL",
@@ -1122,24 +1122,7 @@
     "radius": 10
   },
   {
-    "location_key": "b56973b63f1739aa133e69e424af4af7",
-    "city_name": "Malmö",
-    "location_name": "Malmö (3 stations)",
-    "country_code": "SE",
-    "country_name": "Sweden",
-    "latitude": 55.59196,
-    "longitude": 13.00481,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 33.6,
-    "city_avg_aqi": 33.6,
-    "city_stations_count": 3,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "23f38bdcfe529efe9665b18bf30c0e1c",
+    "location_key": "8b3531dfbdab2eb8a40b7146219cbdb2",
     "city_name": "WHITLEY",
     "location_name": "WHITLEY",
     "country_code": "US",
@@ -1156,7 +1139,7 @@
     "radius": 10
   },
   {
-    "location_key": "1c3fb4929677f356a2940474810ae931",
+    "location_key": "9c59f85327d50a552faf65780a6111a2",
     "city_name": "St. Joseph",
     "location_name": "St. Joseph",
     "country_code": "US",
@@ -1173,7 +1156,7 @@
     "radius": 10
   },
   {
-    "location_key": "e6e0bc2c410d8e435b306ae1018de858",
+    "location_key": "959fad32ba55ed1533293493a2251649",
     "city_name": "TUSCOLA",
     "location_name": "TUSCOLA",
     "country_code": "US",
@@ -1190,7 +1173,7 @@
     "radius": 10
   },
   {
-    "location_key": "0bd99b7a34c70d5e34672c1d2b707530",
+    "location_key": "22de07fe7fd9f645c4fca3da809a5697",
     "city_name": "Frankfurt (Oder)",
     "location_name": "Frankfurt (Oder)",
     "country_code": "DE",
@@ -1207,24 +1190,7 @@
     "radius": 10
   },
   {
-    "location_key": "fa9d0dd9454dd27132f9ea1cd082d69b",
-    "city_name": "Houston",
-    "location_name": "Houston (6 stations)",
-    "country_code": "US",
-    "country_name": "United States",
-    "latitude": 29.70413,
-    "longitude": -95.38691,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 30.0,
-    "city_avg_aqi": 30.0,
-    "city_stations_count": 6,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "b510903fd2e9f7bb8b4bb31e28fd4615",
+    "location_key": "9739708ad5ddd17dfd7922b842db9253",
     "city_name": "SAN BERNARDINO",
     "location_name": "SAN BERNARDINO",
     "country_code": "US",
@@ -1241,7 +1207,7 @@
     "radius": 10
   },
   {
-    "location_key": "9be755b9bbd64c39b01181ed9e607bf9",
+    "location_key": "5737b0aa2f87b00a18029e34d3cd4a80",
     "city_name": "Aarhus",
     "location_name": "Aarhus (2 stations)",
     "country_code": "DK",
@@ -1258,7 +1224,7 @@
     "radius": 10
   },
   {
-    "location_key": "aa539823b3b5db9ff90d177fdeb3e55d",
+    "location_key": "ff04a7b6846d82868043c5620d7f38ee",
     "city_name": "Copenhagen",
     "location_name": "Copenhagen (2 stations)",
     "country_code": "DK",
@@ -1275,7 +1241,7 @@
     "radius": 10
   },
   {
-    "location_key": "50038356b655ad4bf5767702c25a718a",
+    "location_key": "68f98a1be4759982bc4bb51cbfffe54f",
     "city_name": "REUS",
     "location_name": "REUS",
     "country_code": "ES",
@@ -1292,7 +1258,24 @@
     "radius": 10
   },
   {
-    "location_key": "e0dd84a5afa6a5c6bf012888fc1e5b69",
+    "location_key": "b4a33b554ac44ab2aea4f87df7b63daa",
+    "city_name": "Houston",
+    "location_name": "Houston (6 stations)",
+    "country_code": "US",
+    "country_name": "United States",
+    "latitude": 29.70413,
+    "longitude": -95.38691,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 28.9,
+    "city_avg_aqi": 28.9,
+    "city_stations_count": 6,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
+    "location_key": "30462baf348684d4bcfdbefa233bcdc7",
     "city_name": "Hamburg",
     "location_name": "Hamburg (6 stations)",
     "country_code": "DE",
@@ -1309,7 +1292,7 @@
     "radius": 10
   },
   {
-    "location_key": "a537f2f84c9899703d96691369c58261",
+    "location_key": "8e76546393faeefa15d424f3cc3bfc97",
     "city_name": "8160 Weiz",
     "location_name": "8160 Weiz",
     "country_code": "AT",
@@ -1326,7 +1309,7 @@
     "radius": 10
   },
   {
-    "location_key": "d293f2e962afed14ac5978a3ad68dd9f",
+    "location_key": "6b0b9e46bff4da6c263e227c5c587012",
     "city_name": "Townsville",
     "location_name": "Townsville",
     "country_code": "AU",
@@ -1343,7 +1326,7 @@
     "radius": 10
   },
   {
-    "location_key": "d4039d9f8c0251066e077e58a889aac1",
+    "location_key": "cd02ecbd36b41fedd6284b3c22736fd9",
     "city_name": "REIMS",
     "location_name": "REIMS",
     "country_code": "FR",
@@ -1360,7 +1343,7 @@
     "radius": 10
   },
   {
-    "location_key": "551a52073bee5b154ace7fd08e51293c",
+    "location_key": "9047011a9ed066a693952e83aa4815ee",
     "city_name": "LYON 3E ARRONDISSEMENT",
     "location_name": "LYON 3E ARRONDISSEMENT",
     "country_code": "FR",
@@ -1377,7 +1360,24 @@
     "radius": 10
   },
   {
-    "location_key": "7de33f52440c6cc75822aafca3f05bd3",
+    "location_key": "735b17805f326aaa508f31404ef41843",
+    "city_name": "Malmö",
+    "location_name": "Malmö (3 stations)",
+    "country_code": "SE",
+    "country_name": "Sweden",
+    "latitude": 55.59196,
+    "longitude": 13.00481,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 25.5,
+    "city_avg_aqi": 25.5,
+    "city_stations_count": 3,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
+    "location_key": "97fc95aee85b32f81f2c9129e36137ec",
     "city_name": "京都郡苅田町富久町１丁目１９－１",
     "location_name": "京都郡苅田町富久町１丁目１９－１",
     "country_code": "JP",
@@ -1394,7 +1394,7 @@
     "radius": 10
   },
   {
-    "location_key": "4225ea930bb18f365638af2984051997",
+    "location_key": "0b250aa7040171a5be38b631555b9831",
     "city_name": "仙台市宮城野区原町３ー７",
     "location_name": "仙台市宮城野区原町３ー７",
     "country_code": "JP",
@@ -1411,7 +1411,7 @@
     "radius": 10
   },
   {
-    "location_key": "20d6c1baa6cfef5325f823778efe9434",
+    "location_key": "8121465135f0848ee94916cd2fa45542",
     "city_name": "1020 Wien",
     "location_name": "1020 Wien",
     "country_code": "AT",
@@ -1428,7 +1428,7 @@
     "radius": 10
   },
   {
-    "location_key": "d88911403eb15341cbf7af8479c183ae",
+    "location_key": "eee3e227d23b0fc1c1250b92326494b0",
     "city_name": "Antwerpen",
     "location_name": "Antwerpen (5 stations)",
     "country_code": "BE",
@@ -1445,7 +1445,7 @@
     "radius": 10
   },
   {
-    "location_key": "76c597345ee44bef0ce7270a709f4c5f",
+    "location_key": "dbc04f38eafcef2a72fed70daa1847b9",
     "city_name": "Gent",
     "location_name": "Gent (2 stations)",
     "country_code": "BE",
@@ -1462,7 +1462,7 @@
     "radius": 10
   },
   {
-    "location_key": "9aa9eb63e34c14a12a7b55cf7152c5b1",
+    "location_key": "308c873c20eeab2ba802996b317c808a",
     "city_name": "GRANDE-SYNTHE",
     "location_name": "GRANDE-SYNTHE",
     "country_code": "FR",
@@ -1479,7 +1479,7 @@
     "radius": 10
   },
   {
-    "location_key": "9433c1467b3177c9b1fa8eaf97361422",
+    "location_key": "00e6ccc4e54af515238232374f889bc3",
     "city_name": "ANDREW",
     "location_name": "ANDREW",
     "country_code": "US",
@@ -1496,7 +1496,7 @@
     "radius": 10
   },
   {
-    "location_key": "f7df419592def6e2cb5ed0ad8c51a44b",
+    "location_key": "991bd70eaf08f297812fb55aecf855fe",
     "city_name": "Den Haag",
     "location_name": "Den Haag (3 stations)",
     "country_code": "NL",
@@ -1513,7 +1513,7 @@
     "radius": 10
   },
   {
-    "location_key": "3bc4df2a9a0f6d174511755bc92705da",
+    "location_key": "8f953a84868e0953f018bed3fc6f009e",
     "city_name": "Houston-Sugar Land-Baytown",
     "location_name": "Houston-Sugar Land-Baytown (3 stations)",
     "country_code": "US",
@@ -1530,7 +1530,7 @@
     "radius": 10
   },
   {
-    "location_key": "f79a5ddc68752180ee7896a9700a1ff9",
+    "location_key": "678d4c8ffb57a980f936345376c793e4",
     "city_name": "TWIN FALLS",
     "location_name": "TWIN FALLS",
     "country_code": "US",
@@ -1547,7 +1547,7 @@
     "radius": 10
   },
   {
-    "location_key": "bbe157cee41e99bd74555c716eafab44",
+    "location_key": "df7a40d40e4fac7cc1a89208553dbb27",
     "city_name": "PRINCE EDWARD ISLAND",
     "location_name": "PRINCE EDWARD ISLAND",
     "country_code": "CA",
@@ -1564,7 +1564,7 @@
     "radius": 10
   },
   {
-    "location_key": "d2c052552cd5681f2918770740144be8",
+    "location_key": "32d59468e6633e745f2e2f96804e98d6",
     "city_name": "München",
     "location_name": "München",
     "country_code": "DE",
@@ -1581,7 +1581,7 @@
     "radius": 10
   },
   {
-    "location_key": "9b49aede28872ac031aa65d412cec8d0",
+    "location_key": "e767ad61dd28a70701bd031e71ea3203",
     "city_name": "VILLEURBANNE",
     "location_name": "VILLEURBANNE",
     "country_code": "FR",
@@ -1598,7 +1598,7 @@
     "radius": 10
   },
   {
-    "location_key": "e3c7670c15c3b3aedc3fba39154b625d",
+    "location_key": "87efe6bdea4bd41652db08614f9724cc",
     "city_name": "Lafayette",
     "location_name": "Lafayette",
     "country_code": "US",
@@ -1615,7 +1615,7 @@
     "radius": 10
   },
   {
-    "location_key": "6495112995ac7291b2ce6d6d910a70af",
+    "location_key": "b01937bfdd79eb463b5ff36e17446aac",
     "city_name": "2700 Wiener Neustadt",
     "location_name": "2700 Wiener Neustadt",
     "country_code": "AT",
@@ -1632,7 +1632,7 @@
     "radius": 10
   },
   {
-    "location_key": "21854efbb52ee30bd2a04597927e9282",
+    "location_key": "13a135874189ae0d4c9f595177dcbb73",
     "city_name": "ALBERTA",
     "location_name": "ALBERTA (2 stations)",
     "country_code": "CA",
@@ -1649,7 +1649,7 @@
     "radius": 10
   },
   {
-    "location_key": "86ee71b33c6a1de36377491c2611c9cb",
+    "location_key": "b887816fa68c0f0299ec111ebc5347c7",
     "city_name": "ANTWERPEN",
     "location_name": "ANTWERPEN",
     "country_code": "BE",
@@ -1666,7 +1666,7 @@
     "radius": 10
   },
   {
-    "location_key": "675d88004b7d210283ec293dd83e1f46",
+    "location_key": "8f24de4fd0632a7bcaf41a251d79f341",
     "city_name": "MONROE",
     "location_name": "MONROE",
     "country_code": "US",
@@ -1683,7 +1683,7 @@
     "radius": 10
   },
   {
-    "location_key": "24ea32c9d9e2a61e4df4c5101829fe08",
+    "location_key": "943d732b477c197f2921b2edb2670415",
     "city_name": "BRITISH COLUMBIA",
     "location_name": "BRITISH COLUMBIA (4 stations)",
     "country_code": "CA",
@@ -1700,24 +1700,7 @@
     "radius": 10
   },
   {
-    "location_key": "f92df65eae280a7d48d9e004e112644b",
-    "city_name": "Stockholm",
-    "location_name": "Stockholm (4 stations)",
-    "country_code": "SE",
-    "country_name": "Sweden",
-    "latitude": 59.33071,
-    "longitude": 18.03937,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 21.5,
-    "city_avg_aqi": 21.5,
-    "city_stations_count": 4,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "1b0ad65b120877f4ce92ebb3d3556206",
+    "location_key": "3b3d6a2e02e51e1de0961af599290563",
     "city_name": "VILANOVA I LA GELTRÚ",
     "location_name": "VILANOVA I LA GELTRÚ",
     "country_code": "ES",
@@ -1734,7 +1717,7 @@
     "radius": 10
   },
   {
-    "location_key": "a7aafe7d92dbd1f492690e06a1113d97",
+    "location_key": "e17a9685d430c90c585ca325c1e93d6a",
     "city_name": "仙台市宮城野区白鳥1-32-1",
     "location_name": "仙台市宮城野区白鳥1-32-1",
     "country_code": "JP",
@@ -1751,7 +1734,7 @@
     "radius": 10
   },
   {
-    "location_key": "cf3faeff72b8379794816191ba8b7255",
+    "location_key": "76d2cd6acd30f5510d147810e6623604",
     "city_name": "仙台市宮城野区福室５－１６－１",
     "location_name": "仙台市宮城野区福室５－１６－１",
     "country_code": "JP",
@@ -1768,7 +1751,24 @@
     "radius": 10
   },
   {
-    "location_key": "5a4385096a2f2e670c18965f4d440f27",
+    "location_key": "550b7025e83d7824674c5b4be4a42b3d",
+    "city_name": "Stockholm",
+    "location_name": "Stockholm (4 stations)",
+    "country_code": "SE",
+    "country_name": "Sweden",
+    "latitude": 59.33071,
+    "longitude": 18.03937,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 21.0,
+    "city_avg_aqi": 21.0,
+    "city_stations_count": 4,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
+    "location_key": "8ba0e538652e39a5078d995040c99fe2",
     "city_name": "Fort Smith",
     "location_name": "Fort Smith",
     "country_code": "US",
@@ -1785,7 +1785,7 @@
     "radius": 10
   },
   {
-    "location_key": "21cfe8ee9044d8e8fd74301f8d8c8d90",
+    "location_key": "f8f166b11165f8e5e9687301740fe900",
     "city_name": "Spokane",
     "location_name": "Spokane",
     "country_code": "US",
@@ -1802,7 +1802,7 @@
     "radius": 10
   },
   {
-    "location_key": "18c5237d0c6fe5843f57d42e33c5c442",
+    "location_key": "de7ba524a5c84a8646b74e072b0fee7f",
     "city_name": "8940 Liezen",
     "location_name": "8940 Liezen",
     "country_code": "AT",
@@ -1819,7 +1819,7 @@
     "radius": 10
   },
   {
-    "location_key": "a361b94d6b676315a4040b064bfeb694",
+    "location_key": "6834a3c3ff3acb7a9f8c548526f875c2",
     "city_name": "Barcelona",
     "location_name": "Barcelona",
     "country_code": "ES",
@@ -1836,7 +1836,7 @@
     "radius": 10
   },
   {
-    "location_key": "8a52cf3210070405a7b6eced90e09264",
+    "location_key": "9a8f03be4ebeff206b8ae12489a30bbf",
     "city_name": "Kansas City",
     "location_name": "Kansas City (2 stations)",
     "country_code": "US",
@@ -1853,7 +1853,7 @@
     "radius": 10
   },
   {
-    "location_key": "9baef0aff7a85b97cfbb59f3b2eecea4",
+    "location_key": "62a68c26d236895c146547bc5b0bd1d5",
     "city_name": "New Haven-Milford",
     "location_name": "New Haven-Milford",
     "country_code": "US",
@@ -1870,7 +1870,24 @@
     "radius": 10
   },
   {
-    "location_key": "c1403b86861734982674505c3d22c4ba",
+    "location_key": "d8ddc76076ee929d87868e5450073673",
+    "city_name": "Oslo",
+    "location_name": "Oslo (6 stations)",
+    "country_code": "NO",
+    "country_name": "Norway",
+    "latitude": 59.92338,
+    "longitude": 10.75661,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 19.9,
+    "city_avg_aqi": 19.9,
+    "city_stations_count": 6,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
+    "location_key": "520913d4538ab233b1970224bc36b04d",
     "city_name": "BARCELONA",
     "location_name": "BARCELONA",
     "country_code": "ES",
@@ -1887,7 +1904,7 @@
     "radius": 10
   },
   {
-    "location_key": "30200d112efde97b85fff502e8417e27",
+    "location_key": "9cf31973e61524b16803aff879f44a6d",
     "city_name": "Dublin Pearse St.",
     "location_name": "Dublin Pearse St.",
     "country_code": "IE",
@@ -1904,7 +1921,7 @@
     "radius": 10
   },
   {
-    "location_key": "d236dcf2861e80cd2c7c4a92028962ac",
+    "location_key": "23f914833150e7fbf676d1982e5977fe",
     "city_name": "QUEBEC",
     "location_name": "QUEBEC (2 stations)",
     "country_code": "CA",
@@ -1921,7 +1938,7 @@
     "radius": 10
   },
   {
-    "location_key": "74dd9e725d3503237de5e7c9405832d8",
+    "location_key": "0fbd97299a6c09e378b6fc4ce5de3355",
     "city_name": "Nationales Beobachtungsnetz für Luftfremdstoffe",
     "location_name": "Nationales Beobachtungsnetz für Luftfremdstoffe (4 stations)",
     "country_code": "CH",
@@ -1938,7 +1955,7 @@
     "radius": 10
   },
   {
-    "location_key": "384b577ac4b7910acd4d6e68d9f5e20a",
+    "location_key": "34de175e124b85f1048b975b63af336a",
     "city_name": "PARIS 2E ARRONDISSEMENT",
     "location_name": "PARIS 2E ARRONDISSEMENT",
     "country_code": "FR",
@@ -1955,7 +1972,7 @@
     "radius": 10
   },
   {
-    "location_key": "767f555f2d9a8fbd062c5348d4102bfd",
+    "location_key": "37ccfdf7283bdd3cdc9eab2170e74a77",
     "city_name": "Helsinki",
     "location_name": "Helsinki (3 stations)",
     "country_code": "FI",
@@ -1972,7 +1989,7 @@
     "radius": 10
   },
   {
-    "location_key": "fe58daf9bd99bc617d41cf571dcad792",
+    "location_key": "f405a4fa9a37b7023a6d15d3fa9576b5",
     "city_name": "Düsseldorf",
     "location_name": "Düsseldorf (2 stations)",
     "country_code": "DE",
@@ -1989,24 +2006,7 @@
     "radius": 10
   },
   {
-    "location_key": "d7d6fb7ad18ddaf1d43edfd490f28709",
-    "city_name": "Oslo",
-    "location_name": "Oslo (6 stations)",
-    "country_code": "NO",
-    "country_name": "Norway",
-    "latitude": 59.92338,
-    "longitude": 10.75661,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 18.0,
-    "city_avg_aqi": 18.0,
-    "city_stations_count": 6,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "d65555f249d3f8d320c1e4efdd1cf910",
+    "location_key": "ea2609021b21ce9d0835e96fae24e805",
     "city_name": "Columbus",
     "location_name": "Columbus",
     "country_code": "US",
@@ -2023,7 +2023,7 @@
     "radius": 10
   },
   {
-    "location_key": "102898723729576baee535294c0113b4",
+    "location_key": "2ca3009daf7bef48ede0512675419530",
     "city_name": "LA PAZ",
     "location_name": "LA PAZ",
     "country_code": "US",
@@ -2040,7 +2040,7 @@
     "radius": 10
   },
   {
-    "location_key": "e6fc9824191aeef46b65e0922be376b0",
+    "location_key": "fa00c45d08e740fdd2689778333d5ac9",
     "city_name": "Dublin Lucan",
     "location_name": "Dublin Lucan",
     "country_code": "IE",
@@ -2057,7 +2057,7 @@
     "radius": 10
   },
   {
-    "location_key": "17bb8373cb0740667de4711b48849c17",
+    "location_key": "22c95ccd3149b013837ddf51fe49315e",
     "city_name": "South East Queensland",
     "location_name": "South East Queensland (9 stations)",
     "country_code": "AU",
@@ -2074,7 +2074,7 @@
     "radius": 10
   },
   {
-    "location_key": "275a4fb28c9addafb4f2820beadc8791",
+    "location_key": "f2531ca48beefed03d556a43e4cd8df3",
     "city_name": "Air Quality Luxembourg",
     "location_name": "Air Quality Luxembourg (3 stations)",
     "country_code": "LU",
@@ -2091,7 +2091,7 @@
     "radius": 10
   },
   {
-    "location_key": "6baaf60821c047302fbaf1a11e893f36",
+    "location_key": "92df843b24e9f3e7ec5d8f698a5f41cc",
     "city_name": "下関市長府亀の甲２丁目２－１",
     "location_name": "下関市長府亀の甲２丁目２－１",
     "country_code": "JP",
@@ -2108,7 +2108,7 @@
     "radius": 10
   },
   {
-    "location_key": "a26a5d0c7c632d412f16b3885976e005",
+    "location_key": "06e20b4903ff2ebbc88e02f5d55123f9",
     "city_name": "京都市西京区樫原三宅町２４",
     "location_name": "京都市西京区樫原三宅町２４",
     "country_code": "JP",
@@ -2125,7 +2125,7 @@
     "radius": 10
   },
   {
-    "location_key": "822da16893dd2cf1eb27a8c8f063176e",
+    "location_key": "232b53cda88cf80a93eb948dc8d2ea2c",
     "city_name": "Christchurch",
     "location_name": "Christchurch (2 stations)",
     "country_code": "NZ",
@@ -2142,7 +2142,7 @@
     "radius": 10
   },
   {
-    "location_key": "905e1ea040aad2e51cc4ff7f37813ad2",
+    "location_key": "544f275fcdbc0553ba1265291cb4e6f6",
     "city_name": "SAINT-ÉTIENNE",
     "location_name": "SAINT-ÉTIENNE",
     "country_code": "FR",
@@ -2159,7 +2159,7 @@
     "radius": 10
   },
   {
-    "location_key": "ce0d7b78e31393261ebe0b7944458cea",
+    "location_key": "7d12ecbfc6e652bfb1ffd22767bb67fd",
     "city_name": "Tower Hamlets",
     "location_name": "Tower Hamlets",
     "country_code": "GB",
@@ -2176,7 +2176,7 @@
     "radius": 10
   },
   {
-    "location_key": "4caacc3b99fefa36c1ae37497e3495d0",
+    "location_key": "1ef192767c93417cc3a7b5d456d37c87",
     "city_name": "WALLOWA",
     "location_name": "WALLOWA",
     "country_code": "US",
@@ -2193,7 +2193,7 @@
     "radius": 10
   },
   {
-    "location_key": "a7c4276482e78d054efb259bb8d1214e",
+    "location_key": "ad101acc31447969cc713b0286319257",
     "city_name": "Ireland Air Quality e-Reporting monitoring network for compliance and informative reporting",
     "location_name": "Ireland Air Quality e-Reporting monitoring network for compliance and informative reporting (2 stations)",
     "country_code": "IE",
@@ -2210,7 +2210,7 @@
     "radius": 10
   },
   {
-    "location_key": "3cf8dc38070fb2cc02fcecfeceab8d32",
+    "location_key": "adbb15a7c4dab2bf53a65855e7a9949a",
     "city_name": "Salzgitter",
     "location_name": "Salzgitter",
     "country_code": "DE",
@@ -2227,7 +2227,7 @@
     "radius": 10
   },
   {
-    "location_key": "de4c38d2b69540c34c5e50399c31c600",
+    "location_key": "ef9bf45b6045930d559b162507914f97",
     "city_name": "Gladstone",
     "location_name": "Gladstone (5 stations)",
     "country_code": "AU",
@@ -2244,7 +2244,7 @@
     "radius": 10
   },
   {
-    "location_key": "99d7a7af9426459421ec75da86f9c024",
+    "location_key": "82d1a5761aca84aff012b0c0e85226c6",
     "city_name": "NOVA SCOTIA",
     "location_name": "NOVA SCOTIA (3 stations)",
     "country_code": "CA",
@@ -2261,7 +2261,7 @@
     "radius": 10
   },
   {
-    "location_key": "5470d123265448a1fd660dfe6542c7b3",
+    "location_key": "944c46aede6ee37b0c92829e6a294b74",
     "city_name": "St Albans EP",
     "location_name": "St Albans EP",
     "country_code": "NZ",
@@ -2278,7 +2278,7 @@
     "radius": 10
   },
   {
-    "location_key": "310be9f3166e410d07c50c80bf157ec1",
+    "location_key": "50b46c696783e13aabbb3f113532dacb",
     "city_name": "Canton de Genève",
     "location_name": "Canton de Genève (3 stations)",
     "country_code": "CH",
@@ -2295,7 +2295,7 @@
     "radius": 10
   },
   {
-    "location_key": "60627ba6a6659c7291e2ee9c9427b258",
+    "location_key": "f6889a0d9daad3c6e052f98f1d838b46",
     "city_name": "仙台市宮城野区五輪一丁目3",
     "location_name": "仙台市宮城野区五輪一丁目3",
     "country_code": "JP",
@@ -2312,7 +2312,7 @@
     "radius": 10
   },
   {
-    "location_key": "73ed71cbe044df6b9c9b86503d4a70ef",
+    "location_key": "52908278bc09e20f7eb5675b14f08a6f",
     "city_name": "Eindhoven",
     "location_name": "Eindhoven (2 stations)",
     "country_code": "NL",
@@ -2329,7 +2329,7 @@
     "radius": 10
   },
   {
-    "location_key": "579c509a739af83559f3ee1a8f6fa6f6",
+    "location_key": "e40953470298b352081da23641d13c2d",
     "city_name": "OSTLUFT",
     "location_name": "OSTLUFT (3 stations)",
     "country_code": "CH",
@@ -2346,7 +2346,7 @@
     "radius": 10
   },
   {
-    "location_key": "258d91284fd6ca8a2e805fc019370bc5",
+    "location_key": "f8a38a4422ad45e5b114fb994b382769",
     "city_name": "Holsterbro",
     "location_name": "Holsterbro",
     "country_code": "DK",
@@ -2363,7 +2363,7 @@
     "radius": 10
   },
   {
-    "location_key": "ba305e13d7537dff8caa8b646e739854",
+    "location_key": "da7ef8182256eb60bc0b65ee1c9a192e",
     "city_name": "SAINT-GERMAIN-SUR-RHÔNE",
     "location_name": "SAINT-GERMAIN-SUR-RHÔNE",
     "country_code": "FR",
@@ -2380,7 +2380,7 @@
     "radius": 10
   },
   {
-    "location_key": "4d6cbd3c4117c0ff99d6455a4642b7e7",
+    "location_key": "a8e7e8c6aa164aac684be13b99d705d0",
     "city_name": "Virolahti",
     "location_name": "Virolahti",
     "country_code": "FI",
@@ -2397,7 +2397,7 @@
     "radius": 10
   },
   {
-    "location_key": "6365110f6671af3adc53cd2d69d53c29",
+    "location_key": "2bcf35ff7f30413a4c6bdec8e5974053",
     "city_name": "Bergen",
     "location_name": "Bergen (2 stations)",
     "country_code": "NO",
@@ -2414,7 +2414,7 @@
     "radius": 10
   },
   {
-    "location_key": "e65284e5d113787beb708b4bd5e7ba1d",
+    "location_key": "5c35009b25ecf7cf27340e38c783ac73",
     "city_name": "Canton de Vaud",
     "location_name": "Canton de Vaud (2 stations)",
     "country_code": "CH",
@@ -2431,7 +2431,7 @@
     "radius": 10
   },
   {
-    "location_key": "e4ed43cff188191102d7bb230e6234ea",
+    "location_key": "6254b325bca4a7f1e42743894cd93f01",
     "city_name": "FOREST",
     "location_name": "FOREST",
     "country_code": "US",
@@ -2448,7 +2448,7 @@
     "radius": 10
   },
   {
-    "location_key": "a2b31a734d64a780ed649bd7e6232b80",
+    "location_key": "77aea2f2c46a6afac827c8dd193fc218",
     "city_name": "Bexley",
     "location_name": "Bexley",
     "country_code": "GB",
@@ -2465,7 +2465,7 @@
     "radius": 10
   },
   {
-    "location_key": "646dadcbbc1b9bd92ecff1e4f231c27a",
+    "location_key": "d30e0b945f3723418bcbb0e7ace8675c",
     "city_name": "SAINT-OMER",
     "location_name": "SAINT-OMER",
     "country_code": "FR",
@@ -2482,7 +2482,7 @@
     "radius": 10
   },
   {
-    "location_key": "5a72df44a52c8b0e3cb7d62bdaa15c16",
+    "location_key": "9dfd75e6b3df5c714de8ca795a8bcdb3",
     "city_name": "Roskilde",
     "location_name": "Roskilde",
     "country_code": "DK",
@@ -2499,7 +2499,7 @@
     "radius": 10
   },
   {
-    "location_key": "fe6bc5227e6ead27db0a3eab31ebbd10",
+    "location_key": "49f8d17ef1824aa768fa236fc781ca50",
     "city_name": "Eskdale Reserve Auckland",
     "location_name": "Eskdale Reserve Auckland",
     "country_code": "NZ",
@@ -2516,7 +2516,7 @@
     "radius": 10
   },
   {
-    "location_key": "3b2d07959208053290fdc3e4c2159855",
+    "location_key": "4e3e6cb3d2bc9dc421ea0b9c62f3ce2f",
     "city_name": "Tambulaung",
     "location_name": "Tambulaung",
     "country_code": "MY",

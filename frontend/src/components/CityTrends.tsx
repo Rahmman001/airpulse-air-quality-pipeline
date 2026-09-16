@@ -58,6 +58,7 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
   useEffect(() => {
     if (!selectedLoc || !selectedPol) return;
     let active = true;
+    setHovered(null);
     setLoading(true);
 
     api.getTrends(selectedLoc, selectedPol)

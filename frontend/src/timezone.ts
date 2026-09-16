@@ -85,7 +85,8 @@ export function formatLastUpdated(
 }
 
 export function formatIsoTimestamp(isoString: string, tz: string = 'UTC'): string {
-  const d = new Date(isoString.endsWith('Z') ? isoString : `${isoString}Z`);
+  const hasTz = isoString.endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(isoString);
+  const d = new Date(hasTz ? isoString : `${isoString}Z`);
   if (isNaN(d.getTime())) return isoString;
 
   const timeZoneOption = tz === 'local' ? undefined : tz;

@@ -155,10 +155,12 @@ let _cachedAlerts: Record<string, AlertsResponse> | null = null;
 let _cachedStations: MapStation[] | null = null;
 let _cachedLocations: LocationItem[] | null = null;
 
+const isJson = (res: Response) => res.ok && (res.headers.get('content-type') || '').includes('application/json');
+
 async function fetchJsonWithFallback<T>(apiEndpoint: string, staticPath: string): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${apiEndpoint}`);
-    if (res.ok) {
+    if (isJson(res)) {
       const data = await res.json();
       if (!Array.isArray(data) || data.length > 0) return data as T;
     }
@@ -256,7 +258,7 @@ export const api = {
   getTrends: async (loc: string, pol: string): Promise<TrendPoint[]> => {
     try {
       const res = await fetch(`${API_BASE}/aqi/trends?location_key=${encodeURIComponent(loc)}&pollutant_key=${encodeURIComponent(pol)}`);
-      if (res.ok) return (await res.json()) as TrendPoint[];
+      if (isJson(res)) return (await res.json()) as TrendPoint[];
     } catch {}
     _cachedTrends ??= await fetch('/data/trends.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
     return _cachedTrends?.[`${loc}_${pol}`] || [];
@@ -265,7 +267,7 @@ export const api = {
   getAlerts: async (minTier: string): Promise<AlertsResponse> => {
     try {
       const res = await fetch(`${API_BASE}/alerts?min_tier=${encodeURIComponent(minTier)}`);
-      if (res.ok) return (await res.json()) as AlertsResponse;
+      if (isJson(res)) return (await res.json()) as AlertsResponse;
     } catch {}
     _cachedAlerts ??= await fetch('/data/alerts.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
     return _cachedAlerts?.[minTier] || _cachedAlerts?.['All'] || { min_tier: minTier, threshold_aqi: 0, alert_count: 0, alerts: [] };
@@ -276,7 +278,7 @@ export const api = {
   getCorridorRisk: async (originKey: string, destKey: string): Promise<CorridorRiskResponse> => {
     try {
       const res = await fetch(`${API_BASE}/corridors/risk?origin_key=${encodeURIComponent(originKey)}&destination_key=${encodeURIComponent(destKey)}`);
-      if (res.ok) return (await res.json()) as CorridorRiskResponse;
+      if (isJson(res)) return (await res.json()) as CorridorRiskResponse;
     } catch {}
 
     const [locations, stations] = await Promise.all([api.getLocations(), api.getMapStations()]);
