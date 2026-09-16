@@ -30,11 +30,11 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Luxury Brand Identity */}
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-b from-[#381932] to-[#200D1C] border border-[#C5A059]/40 flex items-center justify-center text-[#E0BA70] text-xs font-luxury font-bold tracking-wider shadow-xs">
-            AP
+            AR
           </div>
           <div className="flex items-center gap-2">
             <span className="font-luxury text-xl text-[#FFF3E6] tracking-wider font-bold leading-none">
-              AirPulse
+              AtmosRoute
             </span>
             <span className="text-[9px] font-mono font-semibold tracking-wider uppercase text-[#DFBA70] px-2 py-0.5 rounded-full border border-[#C5A059]/40 bg-[#C5A059]/15 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA70] animate-pulse" />

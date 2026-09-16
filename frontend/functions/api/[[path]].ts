@@ -130,7 +130,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return new Response(headers.concat(rows).join('\n'), {
       headers: {
         'content-type': 'text/csv; charset=utf-8',
-        'content-disposition': `attachment; filename="airpulse_alerts_${minTier.toLowerCase().replace(/\s+/g, '_')}.csv"`,
+        'content-disposition': `attachment; filename="atmosroute_alerts_${minTier.toLowerCase().replace(/\s+/g, '_')}.csv"`,
         'access-control-allow-origin': '*',
       },
     });

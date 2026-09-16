@@ -117,7 +117,7 @@ export function App() {
         <div className="max-w-[1400px] mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-[#381932]" />
-            <span className="font-luxury text-base text-[#381932] tracking-wider font-bold">AirPulse</span>
+            <span className="font-luxury text-base text-[#381932] tracking-wider font-bold">AtmosRoute</span>
             <span className="text-[#381932]/30">/</span>
             <span className="text-xs text-[#583351] tracking-wider uppercase font-semibold">Atmospheric Telemetry &amp; Risk Intelligence</span>
           </div>

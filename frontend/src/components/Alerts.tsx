@@ -35,7 +35,7 @@ export const Alerts: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `airpulse_alerts_${minTier.toLowerCase().replace(/\s+/g, '_')}.csv`;
+      link.download = `atmosroute_alerts_${minTier.toLowerCase().replace(/\s+/g, '_')}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -60,7 +60,7 @@ export const Alerts: React.FC = () => {
           <a
             href={api.getExportUrl(minTier)}
             onClick={handleExportCsv}
-            download="airpulse_alerts.csv"
+            download="atmosroute_alerts.csv"
             className="inline-flex items-center gap-2 bg-[#381932] text-[#FFF3E6] px-5 py-2 text-xs font-medium rounded-full hover:bg-[#583351] transition-all shadow-xs cursor-pointer"
           >
             <DownloadSimple size={14} weight="bold" />
