@@ -1,10 +1,10 @@
 {
   "locations_monitored": 382,
   "worst_current_reading": {
-    "location_key": "ecaf06a5d34e0f7b994921ecd3c708a5",
+    "location_key": "4a110e6a0683aa590be479bfc9da495d",
     "location_name": "화북면",
     "country_name": "Republic of Korea",
-    "parameter_name": "pm25",
+    "parameter_name": "pm10",
     "avg_aqi": 500.0,
     "risk_tier": "Hazardous"
   },

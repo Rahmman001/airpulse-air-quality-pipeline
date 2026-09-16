@@ -126,7 +126,18 @@ export const RISK_TIERS = [
   'Hazardous',
 ] as const;
 
+export const ALERT_FILTER_TIERS = [
+  'All',
+  'Hazardous',
+  'Very Unhealthy',
+  'Unhealthy',
+  'Unhealthy for Sensitive Groups',
+  'Moderate',
+  'Good',
+] as const;
+
 export const RISK_COLORS: Record<string, string> = {
+  All: '#381932',
   Good: '#059669',
   Moderate: '#D97706',
   'Unhealthy for Sensitive Groups': '#EA580C',
@@ -257,7 +268,7 @@ export const api = {
       if (res.ok) return (await res.json()) as AlertsResponse;
     } catch {}
     _cachedAlerts ??= await fetch('/data/alerts.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
-    return _cachedAlerts?.[minTier] || { min_tier: minTier, threshold_aqi: 100, alert_count: 0, alerts: [] };
+    return _cachedAlerts?.[minTier] || _cachedAlerts?.['All'] || { min_tier: minTier, threshold_aqi: 0, alert_count: 0, alerts: [] };
   },
 
   getExportUrl: (minTier: string) => `${API_BASE}/alerts/export?min_tier=${encodeURIComponent(minTier)}`,

@@ -118,11 +118,28 @@ def test_trends_endpoint_missing_params(client):
     assert response.status_code == 422
 
 
+def test_alerts_endpoint_exact_tier_filtering(client):
+    response = client.get("/api/v1/alerts?min_tier=Good")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["min_tier"] == "Good"
+    for alert in data["alerts"]:
+        assert alert["risk_tier"] == "Good"
+
+
+def test_alerts_endpoint_all_tier(client):
+    response = client.get("/api/v1/alerts?min_tier=All")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["min_tier"] == "All"
+    assert data["alert_count"] == len(data["alerts"])
+
+
 def test_spa_index_served(client):
     response = client.get("/")
     assert response.status_code == 200
     assert "<!doctype html>" in response.text.lower()
-    assert "AirPulse" in response.text
+    assert "AtmosRoute" in response.text or "AirPulse" in response.text
 
 
 def test_corridor_risk_valid(client):

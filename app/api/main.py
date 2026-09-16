@@ -49,6 +49,7 @@ app.add_middleware(
 )
 
 MIN_AQI_BY_TIER: dict[str, int] = {
+    "All": 0,
     "Good": 0,
     "Moderate": 51,
     "Unhealthy for Sensitive Groups": 101,
@@ -282,10 +283,10 @@ def get_trends(
 def get_alerts(
     min_tier: str = Query(
         "Unhealthy",
-        description="Minimum risk tier: Good, Moderate, Unhealthy for Sensitive Groups, Unhealthy, Very Unhealthy, Hazardous",
+        description="Risk tier classification: All, Good, Moderate, Unhealthy for Sensitive Groups, Unhealthy, Very Unhealthy, Hazardous",
     ),
 ) -> dict[str, Any]:
-    """Operational alert feed filtered by minimum risk tier."""
+    """Operational alert feed filtered by risk tier classification or All."""
     if min_tier not in MIN_AQI_BY_TIER:
         raise HTTPException(
             status_code=400,
@@ -302,11 +303,14 @@ def get_alerts(
             "alerts": [],
         }
 
-    alerts_df = (
-        latest[latest["avg_aqi"] >= threshold]
-        .sort_values("avg_aqi", ascending=False)
-        .copy()
-    )
+    if min_tier == "All":
+        alerts_df = latest.sort_values("avg_aqi", ascending=False).copy()
+    else:
+        alerts_df = (
+            latest[latest["risk_tier"] == min_tier]
+            .sort_values("avg_aqi", ascending=False)
+            .copy()
+        )
 
     alerts_records = _df_to_records(alerts_df)
     for item in alerts_records:
@@ -322,7 +326,7 @@ def get_alerts(
 
 @app.get("/api/v1/alerts/export")
 def export_alerts_csv(
-    min_tier: str = Query("Unhealthy", description="Minimum risk tier threshold"),
+    min_tier: str = Query("Unhealthy", description="Risk tier classification threshold"),
 ) -> Response:
     """Download alerts as a UTF-8 encoded CSV file."""
     if min_tier not in MIN_AQI_BY_TIER:
@@ -333,7 +337,11 @@ def export_alerts_csv(
     if latest.empty:
         csv_content = "location_name,country_name,parameter_name,avg_aqi,risk_tier,reading_count,flagged_reading_count\n"
     else:
-        filtered = latest[latest["avg_aqi"] >= threshold].sort_values("avg_aqi", ascending=False)
+        if min_tier == "All":
+            filtered = latest.sort_values("avg_aqi", ascending=False).copy()
+        else:
+            filtered = latest[latest["risk_tier"] == min_tier].sort_values("avg_aqi", ascending=False).copy()
+
         export_cols = [
             "location_name",
             "country_name",
@@ -344,6 +352,12 @@ def export_alerts_csv(
             "flagged_reading_count",
         ]
         available_cols = [c for c in export_cols if c in filtered.columns]
+        # Sanitize strings to avoid formula injection
+        for col in ["location_name", "country_name", "parameter_name", "risk_tier"]:
+            if col in filtered.columns:
+                filtered[col] = filtered[col].astype(str).apply(
+                    lambda x: f"'{x}" if x.startswith(("=", "+", "-", "@")) else x
+                )
         csv_content = filtered[available_cols].to_csv(index=False)
 
     return Response(

@@ -177,7 +177,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const minTier = url.searchParams.get('min_tier') || 'Unhealthy';
     const alertsRes = await context.env.ASSETS.fetch(new URL('/data/alerts.json', context.request.url));
     const alertsMap = (await alertsRes.json()) as Record<string, any>;
-    const tierData = alertsMap[minTier] || { min_tier: minTier, threshold_aqi: 100, alert_count: 0, alerts: [] };
+    const tierData = alertsMap[minTier] || alertsMap['All'] || { min_tier: minTier, threshold_aqi: 0, alert_count: 0, alerts: [] };
     return new Response(JSON.stringify(tierData), { headers: jsonHeaders });
   }
 
