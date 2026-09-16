@@ -27,8 +27,9 @@ export const Alerts: React.FC = () => {
     if (alertsData?.alerts?.length) {
       e.preventDefault();
       const headers = ['location_name,country_name,parameter_name,avg_aqi,risk_tier,reading_count,flagged_reading_count'];
+      const esc = (v: any) => String(v ?? '').replace(/^[=+\-@]/, "'$&");
       const rows = alertsData.alerts.map(
-        (a) => `"${a.location_name}","${a.country_name}","${a.parameter_name}",${a.avg_aqi},"${a.risk_tier}",${a.reading_count},${a.flagged_reading_count}`
+        (a) => `"${esc(a.location_name)}","${esc(a.country_name)}","${esc(a.parameter_name)}",${a.avg_aqi},"${esc(a.risk_tier)}",${a.reading_count},${a.flagged_reading_count}`
       );
       const blob = new Blob([headers.concat(rows).join('\n')], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);

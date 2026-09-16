@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -43,8 +43,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -86,12 +86,12 @@ def _df_to_records(df: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------------------
-# API v1 Endpoints
+# API Endpoints
 # ---------------------------------------------------------------------------
 
 
 @app.get("/api/v1/health")
-def health_check() -> dict[str, Any]:
+def health() -> dict[str, str]:
     """Health check endpoint indicating active storage backend and server status."""
     return {
         "status": "healthy",
@@ -101,8 +101,11 @@ def health_check() -> dict[str, Any]:
 
 
 @app.post("/api/v1/cache/clear")
-def clear_api_cache() -> dict[str, str]:
-    """Clear all in-memory query caches."""
+def clear_api_cache(request: Request) -> dict[str, str]:
+    """Clear all in-memory query caches (internal/localhost only)."""
+    host = request.client.host if request.client else ""
+    if host not in ("127.0.0.1", "::1", "localhost", "testclient"):
+        raise HTTPException(status_code=403, detail="Localhost access only")
     clear_cache()
     return {"status": "cache_cleared"}
 
