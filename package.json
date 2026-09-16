@@ -3,14 +3,21 @@
   "version": "2.0.0",
   "private": true,
   "description": "AirPulse Global Air Quality Risk Intelligence Platform",
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
-    "dev": "npx -y concurrently --kill-others --names \"API,UI\" --prefix-colors \"blue,green\" \"./.venv/bin/python -m uvicorn app.api.main:app --reload --port 8000\" \"npm run dev --prefix frontend\"",
+    "dev": "npx -y concurrently --kill-others --names \"API,UI\" --prefix-colors \"blue,green\" \"./.venv/bin/python -m uvicorn app.api.main:app --reload --port 8000\" \"npm run dev -w frontend\"",
     "dev:api": "./.venv/bin/python -m uvicorn app.api.main:app --reload --port 8000",
-    "dev:ui": "npm run dev --prefix frontend",
+    "dev:ui": "npm run dev -w frontend",
     "pipeline": "./.venv/bin/python -m warehouse.pipeline_runner",
     "pipeline:live": "./.venv/bin/python -m warehouse.pipeline_runner --live",
-    "build": "npm run build --prefix frontend",
+    "build": "npm run build -w frontend",
+    "lint": "npm run lint -w frontend",
     "export:static": "./.venv/bin/python -m warehouse.export_static_data",
+    "export:r2": "./.venv/bin/python -m warehouse.r2_storage",
+    "dev:pages": "npx -y wrangler pages dev dist --cwd frontend",
+    "deploy:pages": "npm run export:static && npm run build && npx -y wrangler pages deploy dist --project-name=airpulse --cwd frontend",
     "start": "npm run build && ./.venv/bin/python -m uvicorn app.api.main:app --port 8000",
     "test": "./.venv/bin/pytest tests/"
   }

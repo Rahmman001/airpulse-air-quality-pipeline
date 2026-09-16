@@ -1,9 +1,8 @@
-"""Data access layer for the Streamlit app."""
-
 from __future__ import annotations
 
-import time
 from functools import wraps
+import logging
+import time
 from typing import Any, Callable
 
 import duckdb
@@ -11,6 +10,8 @@ import pandas as pd
 
 from ingestion.config import PROJECT_ROOT
 from warehouse.db import DB_PATH
+
+logger = logging.getLogger(__name__)
 
 GOLD_SNAPSHOT_DIR = PROJECT_ROOT / "data" / "gold_snapshot"
 
@@ -23,20 +24,9 @@ def clear_cache() -> None:
         c.clear()
 
 
-try:
-    import streamlit as st  # type: ignore[import-untyped]
-    _orig_st_clear = getattr(st.cache_data, "clear", None)
-    if _orig_st_clear:
-        def _clear_both() -> None:
-            _orig_st_clear()
-            clear_cache()
-        st.cache_data.clear = _clear_both
-except ImportError:
-    pass
-
-
 def ttl_cache(ttl_seconds: int = 300) -> Callable[..., Any]:
     """Lightweight in-memory TTL cache decorator (stdlib-only, thread-safe for reads)."""
+
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         cache: dict[Any, tuple[Any, float]] = {}
         _ALL_CACHES.append(cache)
@@ -61,20 +51,57 @@ def ttl_cache(ttl_seconds: int = 300) -> Callable[..., Any]:
 
 def data_source_label() -> str:
     """For the footer -- tell the person which mode they're looking at."""
-    return "live DuckDB warehouse" if DB_PATH.exists() else "committed snapshot (data/gold_snapshot/)"
+    if DB_PATH.exists():
+        return "live DuckDB warehouse"
+    from warehouse.r2_storage import is_r2_configured
+
+    if is_r2_configured():
+        return "Cloudflare R2 lakehouse (remote Parquet)"
+    return "committed snapshot (data/gold_snapshot/)"
 
 
-def _query(sql: str) -> pd.DataFrame:
+def _query(sql: str, params: list[Any] | None = None) -> pd.DataFrame:
     if DB_PATH.exists():
         conn = duckdb.connect(str(DB_PATH), read_only=True)
     else:
         conn = duckdb.connect(":memory:")
         conn.execute("CREATE SCHEMA IF NOT EXISTS mart")
-        for f in GOLD_SNAPSHOT_DIR.glob("*.parquet"):
-            conn.execute(f"CREATE VIEW mart.{f.stem} AS SELECT * FROM read_parquet('{f}')")
+        from warehouse.r2_storage import configure_duckdb_r2, get_r2_config
+
+        r2_cfg = get_r2_config()
+        if r2_cfg:
+            try:
+                bucket = configure_duckdb_r2(conn, r2_cfg)
+                for tbl in (
+                    "fact_daily_city_aqi",
+                    "fact_air_quality_hourly",
+                    "dim_location",
+                    "dim_pollutant",
+                ):
+                    conn.execute(
+                        f"CREATE VIEW mart.{tbl} AS SELECT * FROM read_parquet('s3://{bucket}/gold/{tbl}.parquet')"
+                    )
+            except Exception as e:
+                logger.warning(
+                    "Failed to query Cloudflare R2 (%s); falling back to local snapshots.",
+                    e,
+                )
+                for f in GOLD_SNAPSHOT_DIR.glob("*.parquet"):
+                    conn.execute(
+                        f"CREATE VIEW mart.{f.stem} AS SELECT * FROM read_parquet('{f}')"
+                    )
+        else:
+            for f in GOLD_SNAPSHOT_DIR.glob("*.parquet"):
+                conn.execute(
+                    f"CREATE VIEW mart.{f.stem} AS SELECT * FROM read_parquet('{f}')"
+                )
 
     try:
-        return conn.execute(sql).fetchdf()
+        return (
+            conn.execute(sql, params).fetchdf()
+            if params
+            else conn.execute(sql).fetchdf()
+        )
     except duckdb.CatalogException:
         return pd.DataFrame()
     finally:
@@ -94,6 +121,7 @@ def load_latest_city_aqi() -> pd.DataFrame:
     )
     if not df.empty and "risk_tier" not in df.columns and "avg_aqi" in df.columns:
         from app.utils.risk_tiers import RISK_TIER_ORDER
+
         df["risk_tier"] = pd.cut(
             df["avg_aqi"],
             bins=[-1, 50, 100, 150, 200, 300, 10_000],
@@ -105,12 +133,13 @@ def load_latest_city_aqi() -> pd.DataFrame:
 @ttl_cache(ttl_seconds=300)
 def load_hourly_trend(location_key: str, pollutant_key: str) -> pd.DataFrame:
     return _query(
-        f"""
+        """
         SELECT measured_at_utc, aqi, raw_value, value_ugm3, risk_tier
         FROM mart.fact_air_quality_hourly
-        WHERE location_key = '{location_key}' AND pollutant_key = '{pollutant_key}'
+        WHERE location_key = ? AND pollutant_key = ?
         ORDER BY measured_at_utc
-        """
+        """,
+        [location_key, pollutant_key],
     )
 
 
@@ -130,7 +159,14 @@ def load_locations_without_recent_aqi() -> pd.DataFrame:
     if missing.empty:
         return pd.DataFrame()
     missing["data_status"] = "No recent AQI data"
-    cols = ["location_name", "country_name", "country_code", "latitude", "longitude", "data_status"]
+    cols = [
+        "location_name",
+        "country_name",
+        "country_code",
+        "latitude",
+        "longitude",
+        "data_status",
+    ]
     return missing.loc[:, cols].sort_values(by=["country_name", "location_name"])
 
 
@@ -145,7 +181,9 @@ def pipeline_freshness() -> dict:
         "SELECT MAX(measured_date) AS latest_date, COUNT(DISTINCT location_key) AS num_locations "
         "FROM mart.fact_daily_city_aqi"
     )
-    ts_df = _query("SELECT MAX(measured_at_utc) AS latest_ts FROM mart.fact_air_quality_hourly")
+    ts_df = _query(
+        "SELECT MAX(measured_at_utc) AS latest_ts FROM mart.fact_air_quality_hourly"
+    )
     latest_ts = None
     if not ts_df.empty and pd.notna(ts_df.iloc[0]["latest_ts"]):
         latest_ts = str(ts_df.iloc[0]["latest_ts"])

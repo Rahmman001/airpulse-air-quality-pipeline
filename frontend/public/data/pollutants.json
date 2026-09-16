@@ -1,49 +1,9 @@
 [
   {
-    "pollutant_key": "e4da3b7fbbce2345d7772b0674a318d5",
-    "parameter_id": 5,
-    "parameter_name": "no2",
-    "parameter_units": "µg/m³",
-    "pollutant_display_name": "Nitrogen Dioxide",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "1679091c5a880faf6fb5e6087eb1b2dc",
-    "parameter_id": 6,
-    "parameter_name": "so2",
-    "parameter_units": "µg/m³",
-    "pollutant_display_name": "Sulfur Dioxide",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "c4ca4238a0b923820dcc509a6f75849b",
-    "parameter_id": 1,
-    "parameter_name": "pm10",
-    "parameter_units": "µg/m³",
-    "pollutant_display_name": "PM10",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "a87ff679a2f3e71d9181a67b7542122c",
-    "parameter_id": 4,
+    "pollutant_key": "9bf31c7ff062936a96d3c8bd1f8f2ff3",
+    "parameter_id": 15,
     "parameter_name": "no2",
     "parameter_units": "ppb",
-    "pollutant_display_name": "Nitrogen Dioxide",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "c81e728d9d4c2f636f067f89cc14862c",
-    "parameter_id": 2,
-    "parameter_name": "pm25",
-    "parameter_units": "µg/m³",
-    "pollutant_display_name": "PM2.5",
-    "has_aqi_support": true
-  },
-  {
-    "pollutant_key": "8f14e45fceea167a5a36dedd4bea2543",
-    "parameter_id": 7,
-    "parameter_name": "no2",
-    "parameter_units": "ppm",
     "pollutant_display_name": "Nitrogen Dioxide",
     "has_aqi_support": true
   },
@@ -64,11 +24,51 @@
     "has_aqi_support": true
   },
   {
-    "pollutant_key": "9bf31c7ff062936a96d3c8bd1f8f2ff3",
-    "parameter_id": 15,
+    "pollutant_key": "c4ca4238a0b923820dcc509a6f75849b",
+    "parameter_id": 1,
+    "parameter_name": "pm10",
+    "parameter_units": "µg/m³",
+    "pollutant_display_name": "PM10",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "c81e728d9d4c2f636f067f89cc14862c",
+    "parameter_id": 2,
+    "parameter_name": "pm25",
+    "parameter_units": "µg/m³",
+    "pollutant_display_name": "PM2.5",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "8f14e45fceea167a5a36dedd4bea2543",
+    "parameter_id": 7,
+    "parameter_name": "no2",
+    "parameter_units": "ppm",
+    "pollutant_display_name": "Nitrogen Dioxide",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "a87ff679a2f3e71d9181a67b7542122c",
+    "parameter_id": 4,
     "parameter_name": "no2",
     "parameter_units": "ppb",
     "pollutant_display_name": "Nitrogen Dioxide",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "e4da3b7fbbce2345d7772b0674a318d5",
+    "parameter_id": 5,
+    "parameter_name": "no2",
+    "parameter_units": "µg/m³",
+    "pollutant_display_name": "Nitrogen Dioxide",
+    "has_aqi_support": true
+  },
+  {
+    "pollutant_key": "1679091c5a880faf6fb5e6087eb1b2dc",
+    "parameter_id": 6,
+    "parameter_name": "so2",
+    "parameter_units": "µg/m³",
+    "pollutant_display_name": "Sulfur Dioxide",
     "has_aqi_support": true
   }
 ]

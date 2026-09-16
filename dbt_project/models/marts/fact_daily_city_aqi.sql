@@ -1,4 +1,4 @@
--- Pre-aggregated daily rollup so the Streamlit dashboard never has to scan
+-- Pre-aggregated daily rollup so the dashboard never has to scan
 -- raw hourly data on every page load. This is the table the dashboard's
 -- map, leaderboard, and trend views query directly.
 with hourly as (
@@ -41,10 +41,10 @@ select
     count(*)                                        as reading_count,
     sum(case when h.has_flags then 1 else 0 end)    as flagged_reading_count,
     avg(avg(h.aqi)) over (
-        partition by l.city_name, h.measured_date, p.pollutant_key
+        partition by l.country_code, coalesce(l.city_name, l.location_name), h.measured_date, p.pollutant_key
     )                                               as city_avg_aqi,
     count(distinct l.location_id) over (
-        partition by l.city_name, h.measured_date, p.pollutant_key
+        partition by l.country_code, coalesce(l.city_name, l.location_name), h.measured_date, p.pollutant_key
     )                                               as city_stations_count
 
 from hourly h

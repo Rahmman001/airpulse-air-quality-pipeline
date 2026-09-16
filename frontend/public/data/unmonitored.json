@@ -56,14 +56,6 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "A23 Südosttangente/Wehlistraße",
-    "country_name": "Austria",
-    "country_code": "AT",
-    "latitude": 48.203060000058315,
-    "longitude": 16.43454999985093,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "Wien Stephansplatz",
     "country_name": "Austria",
     "country_code": "AT",
@@ -80,14 +72,6 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Wiener Neustadt",
-    "country_name": "Austria",
-    "country_code": "AT",
-    "latitude": 47.814166999937704,
-    "longitude": 16.254999999598795,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "42R831 - BERENDRECHT",
     "country_name": "Belgium",
     "country_code": "BE",
@@ -96,67 +80,11 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Praha 2-Legerova",
-    "country_name": "Czech Republic",
-    "country_code": "CZ",
-    "latitude": 50.072387695172175,
-    "longitude": 14.430672645486688,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Praha 2-Riegrovy sady",
-    "country_name": "Czech Republic",
-    "country_code": "CZ",
-    "latitude": 50.0814819336594,
-    "longitude": 14.442691803052586,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Praha 4-Libus",
-    "country_name": "Czech Republic",
-    "country_code": "CZ",
-    "latitude": 50.00730514514777,
-    "longitude": 14.445933342314293,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Praha 9-Vysocany",
-    "country_name": "Czech Republic",
-    "country_code": "CZ",
-    "latitude": 50.11108016953929,
-    "longitude": 14.503095626786267,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Kallio 2",
-    "country_name": "Finland",
-    "country_code": "FI",
-    "latitude": 60.187389999815856,
-    "longitude": 24.95060000011991,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Mannerheimintie",
-    "country_name": "Finland",
-    "country_code": "FI",
-    "latitude": 60.169640000006716,
-    "longitude": 24.939240000258355,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "Mäkelänkatu",
     "country_name": "Finland",
     "country_code": "FI",
     "latitude": 60.19644000005854,
     "longitude": 24.95198000014421,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Vartiokylä Huivipolku",
-    "country_name": "Finland",
-    "country_code": "FI",
-    "latitude": 60.223929999968256,
-    "longitude": 25.102440000281153,
     "data_status": "No recent AQI data"
   },
   {
@@ -176,35 +104,11 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Tsuen Wan",
-    "country_name": "Hong Kong",
-    "country_code": "HK",
-    "latitude": 22.371666666666666,
-    "longitude": 114.11444444444443,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "Tuen Mun",
     "country_name": "Hong Kong",
     "country_code": "HK",
     "latitude": 22.391111111111112,
     "longitude": 113.97666666666667,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Tung Chung",
-    "country_name": "Hong Kong",
-    "country_code": "HK",
-    "latitude": 22.28888888888889,
-    "longitude": 113.94361111111111,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Yuen Long",
-    "country_name": "Hong Kong",
-    "country_code": "HK",
-    "latitude": 22.44527777777778,
-    "longitude": 114.02277777777776,
     "data_status": "No recent AQI data"
   },
   {
@@ -259,16 +163,16 @@
     "location_name": "ICRISAT Patancheru, Hyderabad - TSPCB",
     "country_name": "India",
     "country_code": "IN",
-    "latitude": 17.5184,
-    "longitude": 78.278777,
+    "latitude": 17.305178,
+    "longitude": 78.162863,
     "data_status": "No recent AQI data"
   },
   {
     "location_name": "ICRISAT Patancheru, Hyderabad - TSPCB",
     "country_name": "India",
     "country_code": "IN",
-    "latitude": 17.305178,
-    "longitude": 78.162863,
+    "latitude": 17.5184,
+    "longitude": 78.278777,
     "data_status": "No recent AQI data"
   },
   {
@@ -352,30 +256,6 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Dublin Lucan",
-    "country_name": "Ireland",
-    "country_code": "IE",
-    "latitude": 53.34915799990716,
-    "longitude": -6.450312999845195,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Dublin Pearse St.",
-    "country_name": "Ireland",
-    "country_code": "IE",
-    "latitude": 53.34501652917763,
-    "longitude": -6.2543123763737976,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Dublin Ringsend recycling Centre",
-    "country_name": "Ireland",
-    "country_code": "IE",
-    "latitude": 53.34187500024688,
-    "longitude": -6.2140750004382745,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "תחנה:שכון ל",
     "country_name": "Israel",
     "country_code": "IL",
@@ -436,7 +316,23 @@
     "country_name": "Italy",
     "country_code": "IT",
     "latitude": 41.639666,
-    "longitude": 13.348913,
+    "longitude": 13.348912999999998,
+    "data_status": "No recent AQI data"
+  },
+  {
+    "location_name": "Leonessa",
+    "country_name": "Italy",
+    "country_code": "IT",
+    "latitude": 42.57259299999999,
+    "longitude": 12.961982000000003,
+    "data_status": "No recent AQI data"
+  },
+  {
+    "location_name": "S.Agostino",
+    "country_name": "Italy",
+    "country_code": "IT",
+    "latitude": 42.159946999999995,
+    "longitude": 11.742631000000001,
     "data_status": "No recent AQI data"
   },
   {
@@ -445,30 +341,6 @@
     "country_code": "IT",
     "latitude": 42.422058,
     "longitude": 12.109125,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Beidweiler",
-    "country_name": "Luxembourg",
-    "country_code": "LU",
-    "latitude": 49.72226000000245,
-    "longitude": 6.305330000147759,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Esch/Alzette",
-    "country_name": "Luxembourg",
-    "country_code": "LU",
-    "latitude": 49.50504000003322,
-    "longitude": 5.976939999982496,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Luxembourg Bonnevoie",
-    "country_name": "Luxembourg",
-    "country_code": "LU",
-    "latitude": 49.59769000023517,
-    "longitude": 6.137590000018973,
     "data_status": "No recent AQI data"
   },
   {
@@ -488,14 +360,6 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Taman Tun Dr. Ismail",
-    "country_name": "Malaysia",
-    "country_code": "MY",
-    "latitude": 3.1411106257486976,
-    "longitude": 101.6274985267597,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "iyachart Pattana School, under the royal patronage of Her Royal Highness Princess Maha Chakri Sirindhorn.",
     "country_name": "Malaysia",
     "country_code": "MY",
@@ -504,91 +368,11 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Anzac Square",
-    "country_name": "New Zealand",
-    "country_code": "NZ",
-    "latitude": -44.404486,
-    "longitude": 171.249643,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Christchurch - St Albans EP",
-    "country_name": "New Zealand",
-    "country_code": "NZ",
-    "latitude": -43.508568,
-    "longitude": 172.635835,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Eskdale Reserve Auckland",
-    "country_name": "New Zealand",
-    "country_code": "NZ",
-    "latitude": -36.791,
-    "longitude": 174.715,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Riccarton Road",
-    "country_name": "New Zealand",
-    "country_code": "NZ",
-    "latitude": -43.530356,
-    "longitude": 172.589048,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Washdyke Alpine",
-    "country_name": "New Zealand",
-    "country_code": "NZ",
-    "latitude": -44.356199,
-    "longitude": 171.242334,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Woolston",
-    "country_name": "New Zealand",
-    "country_code": "NZ",
-    "latitude": -43.557532,
-    "longitude": 172.681343,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "SPARTAN - Seoul",
     "country_name": "Republic of Korea",
     "country_code": "KR",
     "latitude": 37.5644,
     "longitude": 126.935,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "화북동",
-    "country_name": "Republic of Korea",
-    "country_code": "KR",
-    "latitude": 33.51733013,
-    "longitude": 126.57045614000002,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "화북면",
-    "country_name": "Republic of Korea",
-    "country_code": "KR",
-    "latitude": 36.112801,
-    "longitude": 128.92785,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "화원읍",
-    "country_name": "Republic of Korea",
-    "country_code": "KR",
-    "latitude": 35.79736,
-    "longitude": 128.50485,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "회원동",
-    "country_name": "Republic of Korea",
-    "country_code": "KR",
-    "latitude": 35.21815,
-    "longitude": 128.57425,
     "data_status": "No recent AQI data"
   },
   {
@@ -672,14 +456,6 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "Barcelona",
-    "country_name": "Spain",
-    "country_code": "ES",
-    "latitude": 41.398724,
-    "longitude": 2.1533988,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "ES1567A",
     "country_name": "Spain",
     "country_code": "ES",
@@ -688,59 +464,11 @@
     "data_status": "No recent AQI data"
   },
   {
-    "location_name": "LLEIDA (IRURITA - PIUS XII)",
-    "country_name": "Spain",
-    "country_code": "ES",
-    "latitude": 41.615800000197815,
-    "longitude": 0.6157000001669202,
-    "data_status": "No recent AQI data"
-  },
-  {
     "location_name": "VALÈNCIA-PISTA DE SILLA",
     "country_name": "Spain",
     "country_code": "ES",
     "latitude": 39.456111109893726,
     "longitude": -0.3758333298316527,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "VILANOVA I LA GELTRÚ (PL. DE LES DANSES DE VILANOVA)",
-    "country_name": "Spain",
-    "country_code": "ES",
-    "latitude": 41.21900000022544,
-    "longitude": 1.7212000004187722,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "高雄市 - 復興",
-    "country_name": "Taiwan",
-    "country_code": "TW",
-    "latitude": 22.608711,
-    "longitude": 120.31201699999998,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "高雄市 - 楠梓",
-    "country_name": "Taiwan",
-    "country_code": "TW",
-    "latitude": 22.733667,
-    "longitude": 120.328289,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "高雄市 - 橋頭",
-    "country_name": "Taiwan",
-    "country_code": "TW",
-    "latitude": 22.757506000000003,
-    "longitude": 120.30568900000002,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "高雄市 - 美濃",
-    "country_name": "Taiwan",
-    "country_code": "TW",
-    "latitude": 22.883583,
-    "longitude": 120.53054199999998,
     "data_status": "No recent AQI data"
   },
   {
@@ -757,14 +485,6 @@
     "country_code": "AE",
     "latitude": 23.652199,
     "longitude": 53.70379,
-    "data_status": "No recent AQI data"
-  },
-  {
-    "location_name": "Dubai Motor City",
-    "country_name": "United Arab Emirates",
-    "country_code": "AE",
-    "latitude": 25.046136176968492,
-    "longitude": 55.24946085563235,
     "data_status": "No recent AQI data"
   },
   {
@@ -789,6 +509,14 @@
     "country_code": "AE",
     "latitude": 24.419899,
     "longitude": 54.57809,
+    "data_status": "No recent AQI data"
+  },
+  {
+    "location_name": "Tilal Al Ghaf, Dubai",
+    "country_name": "United Arab Emirates",
+    "country_code": "AE",
+    "latitude": 25.016218306714453,
+    "longitude": 55.216495643045015,
     "data_status": "No recent AQI data"
   },
   {

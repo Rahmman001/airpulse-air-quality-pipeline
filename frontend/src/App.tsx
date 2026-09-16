@@ -23,6 +23,7 @@ export function App() {
   const [unmonitored, setUnmonitored] = useState<UnmonitoredLocation[]>([]);
   const [pollutants, setPollutants] = useState<Pollutant[]>([]);
   const [selectedStationKey, setSelectedStationKey] = useState<string>('');
+  const [selectedPollutantKey, setSelectedPollutantKey] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [timezone, setTimezone] = useState<string>(() => {
     return localStorage.getItem('airpulse_tz') || 'UTC';
@@ -55,12 +56,14 @@ export function App() {
 
   const handleSelectStation = (station: MapStation | string) => {
     const key = typeof station === 'string' ? station : station.location_key;
+    const param = typeof station === 'string' ? '' : station.parameter_name;
     setSelectedStationKey(key);
+    if (param) setSelectedPollutantKey(param);
     setActiveTab('trends');
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-[#F8FAFC] text-slate-900 selection:bg-slate-950 selection:text-white font-sans antialiased overflow-x-hidden relative">
+    <div className="min-h-[100dvh] flex flex-col bg-[#FFF3E6] text-[#381932] selection:bg-[#381932] selection:text-[#FFF3E6] font-sans antialiased overflow-x-hidden relative">
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -72,9 +75,9 @@ export function App() {
         onTimezoneChange={handleTimezoneChange}
       />
 
-      <main className="max-w-[1360px] mx-auto w-full px-6 py-8 flex-1">
+      <main className="max-w-[1400px] mx-auto w-full px-6 py-8 flex-1">
         {activeTab === 'overview' && (
-          <>
+          <div className="space-y-6 transition-opacity duration-200">
             <KPISection kpis={kpis} loading={loading} timezone={timezone} />
             <RiskMap stations={mapStations} onSelectStation={handleSelectStation} />
             <Leaderboard
@@ -82,33 +85,46 @@ export function App() {
               unmonitored={unmonitored}
               onSelectStation={handleSelectStation}
             />
-          </>
+          </div>
         )}
 
         {activeTab === 'trends' && (
-          <CityTrends
-            locations={locations}
-            pollutants={pollutants}
-            initialLocationKey={selectedStationKey}
-            timezone={timezone}
-          />
+          <div className="transition-opacity duration-200">
+            <CityTrends
+              locations={locations}
+              pollutants={pollutants}
+              initialLocationKey={selectedStationKey}
+              initialPollutantKey={selectedPollutantKey}
+              timezone={timezone}
+            />
+          </div>
         )}
 
-        {activeTab === 'corridors' && <RouteCorridor locations={locations} />}
+        {activeTab === 'corridors' && (
+          <div className="transition-opacity duration-200">
+            <RouteCorridor locations={locations} />
+          </div>
+        )}
 
-        {activeTab === 'alerts' && <Alerts />}
+        {activeTab === 'alerts' && (
+          <div className="transition-opacity duration-200">
+            <Alerts />
+          </div>
+        )}
       </main>
 
-      <footer className="border-t border-slate-200/80 py-6 px-6 text-xs text-slate-500 mt-12 font-sans bg-white/60 backdrop-blur-md">
-        <div className="max-w-[1360px] mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-            <span className="font-display text-sm text-slate-950 tracking-tight font-bold">AirPulse</span>
-            <span className="text-slate-300">/</span>
-            <span className="text-xs text-slate-500 font-mono">Telemetry Console</span>
+      <footer className="border-t border-[#381932]/10 py-8 px-6 text-xs text-[#583351] mt-16 font-sans bg-[#FFF3E6]/95 backdrop-blur-md">
+        <div className="max-w-[1400px] mx-auto flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-[#381932]" />
+            <span className="font-luxury text-base text-[#381932] tracking-wider font-bold">AirPulse</span>
+            <span className="text-[#381932]/30">/</span>
+            <span className="text-xs text-[#583351] tracking-wider uppercase font-semibold">Atmospheric Telemetry &amp; Risk Intelligence</span>
           </div>
-          <div className="font-mono text-[11px] text-slate-500">
-            DuckDB Warehouse + OpenAQ v3
+          <div className="flex items-center gap-4 text-xs font-mono text-[#84657E]">
+            <span>DuckDB Gold Marts + OpenAQ v3 Engine</span>
+            <span className="text-[#381932]/20">•</span>
+            <span>High-Precision Environmental Analytics</span>
           </div>
         </div>
       </footer>

@@ -4,8 +4,6 @@ End-to-end tests for the AirPulse unified pipeline runner.
 
 from __future__ import annotations
 
-import pytest
-
 from warehouse.db import get_connection
 from warehouse.pipeline_runner import has_valid_openaq_key, run_pipeline
 

@@ -67,7 +67,9 @@ def run_bronze_extraction(mode: str) -> None:
         finally:
             sys.argv = orig_argv
     else:
-        logger.info("[1/5] Generating rich global multi-city telemetry seed (25 stations, 6 continents)...")
+        logger.info(
+            "[1/5] Generating rich global multi-city telemetry seed (25 stations, 6 continents)..."
+        )
         from scripts_dev.generate_global_seed import main as generate_seed_main
 
         generate_seed_main()
@@ -87,10 +89,10 @@ def run_raw_loader() -> dict[str, int]:
 def run_dbt() -> None:
     """Execute dbt build (staging views, intermediate views, snapshot, marts, tests)."""
     logger.info("[3/5] Building dbt models and running schema/data quality tests...")
-    
+
     # Ensure dbt executable is located
     dbt_exec = shutil.which("dbt") or str(Path(sys.executable).with_name("dbt"))
-    
+
     # Ensure profiles.yml exists in dbt_project
     profiles_yml = DBT_PROJECT_DIR / "profiles.yml"
     if not profiles_yml.exists():
@@ -104,7 +106,7 @@ def run_dbt() -> None:
     if res.returncode != 0:
         logger.error("dbt build failed:\n%s\n%s", res.stdout, res.stderr)
         raise RuntimeError("dbt build failed during pipeline execution")
-    
+
     logger.info("dbt build completed successfully with all tests passing.")
 
 
@@ -131,8 +133,11 @@ def clear_api_cache() -> None:
         logger.warning("Could not clear in-process cache: %s", e)
 
     import urllib.request
+
     try:
-        req = urllib.request.Request("http://127.0.0.1:8000/api/v1/cache/clear", data=b"", method="POST")
+        req = urllib.request.Request(
+            "http://127.0.0.1:8000/api/v1/cache/clear", data=b"", method="POST"
+        )
         with urllib.request.urlopen(req, timeout=2):
             logger.info("  -> FastAPI server memory cache cleared.")
     except Exception:
@@ -148,27 +153,48 @@ def run_pipeline(force_mode: str | None = None) -> dict[str, int]:
 
     logger.info("Starting AirPulse end-to-end data pipeline in '%s' mode.", mode)
 
+    # 1. Bronze Extraction
     run_bronze_extraction(mode)
-    raw_counts = run_raw_loader()
-    run_dbt()
-    gold_counts = run_gold_export()
-    clear_api_cache()
 
+    # 2. Raw DuckDB Loader
+    run_raw_loader()
+
+    # 3. dbt Model Transformations, SCD2 Snapshots & Data Tests
+    run_dbt()
+
+    # 4. Gold Parquet Snapshot Export & Cloudflare R2 Lakehouse Sync
+    logger.info("[4/5] Syncing snapshots (Cloudflare R2 + local Parquet)...")
+    from warehouse.r2_storage import sync_snapshots
+
+    gold_counts = sync_snapshots()
+
+    # 5. Static Edge JSON Export for Jamstack / Cloudflare Pages
+    logger.info("[5/5] Exporting pre-computed edge JSON datasets...")
     try:
         from warehouse.export_static_data import export_all
+
         export_all()
     except Exception as e:
         logger.warning("Could not export static data: %s", e)
+
+    # 6. Clear Memory Caches
+    clear_api_cache()
 
     logger.info("AirPulse pipeline completed successfully.")
     return gold_counts
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="AirPulse End-to-End Pipeline Orchestrator")
+    parser = argparse.ArgumentParser(
+        description="AirPulse End-to-End Pipeline Orchestrator"
+    )
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--live", action="store_true", help="Force live extraction from OpenAQ API")
-    group.add_argument("--offline", action="store_true", help="Force offline global seed generation")
+    group.add_argument(
+        "--live", action="store_true", help="Force live extraction from OpenAQ API"
+    )
+    group.add_argument(
+        "--offline", action="store_true", help="Force offline global seed generation"
+    )
     args = parser.parse_args()
 
     mode = "live" if args.live else ("offline" if args.offline else None)

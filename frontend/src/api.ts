@@ -148,21 +148,12 @@ async function fetchJsonWithFallback<T>(apiEndpoint: string, staticPath: string)
   try {
     const res = await fetch(`${API_BASE}${apiEndpoint}`);
     if (res.ok) {
-      const data = (await res.json()) as T;
-      if (Array.isArray(data) && data.length === 0) {
-        // Fall back to static dataset if API returned an empty list
-      } else {
-        return data;
-      }
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length > 0) return data as T;
     }
-  } catch {
-    // API server unreachable; fallback to static data
-  }
-
+  } catch {}
   const staticRes = await fetch(staticPath);
-  if (!staticRes.ok) {
-    throw new Error(`Failed to load data from ${staticPath}: ${staticRes.statusText}`);
-  }
+  if (!staticRes.ok) throw new Error(`Failed to load ${staticPath}: ${staticRes.statusText}`);
   return (await staticRes.json()) as T;
 }
 
@@ -173,111 +164,66 @@ function calculateClientCorridor(
   originStation?: MapStation,
   destStation?: MapStation,
 ): CorridorRiskResponse {
-  const lat1 = originLoc.latitude || 0;
-  const lon1 = originLoc.longitude || 0;
-  const lat2 = destLoc.latitude || 0;
-  const lon2 = destLoc.longitude || 0;
+  const { latitude: lat1 = 0, longitude: lon1 = 0 } = originLoc;
+  const { latitude: lat2 = 0, longitude: lon2 = 0 } = destLoc;
 
-  // Haversine distance
-  const r = 6371.0;
-  const phi1 = (lat1 * Math.PI) / 180;
-  const phi2 = (lat2 * Math.PI) / 180;
-  const dphi = ((lat2 - lat1) * Math.PI) / 180;
-  const dlam = ((lon2 - lon1) * Math.PI) / 180;
-  const a = Math.sin(dphi / 2) ** 2 + Math.cos(phi1) * Math.cos(phi2) * Math.sin(dlam / 2) ** 2;
-  const distKm = Math.round(2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dphi = toRad((lat2 || 0) - (lat1 || 0));
+  const dlam = toRad((lon2 || 0) - (lon1 || 0));
+  const a = Math.sin(dphi / 2) ** 2 + Math.cos(toRad(lat1 || 0)) * Math.cos(toRad(lat2 || 0)) * Math.sin(dlam / 2) ** 2;
+  const distKm = Math.round(2 * 6371 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
   const distNm = Math.round(distKm * 0.539957 * 10) / 10;
 
-  const aqi1 = originStation ? originStation.avg_aqi : 0.0;
-  const aqi2 = destStation ? destStation.avg_aqi : 0.0;
-  const tier1 = originStation ? originStation.risk_tier : 'Unmonitored';
-  const tier2 = destStation ? destStation.risk_tier : 'Unmonitored';
-
+  const aqi1 = originStation?.avg_aqi || 0;
+  const aqi2 = destStation?.avg_aqi || 0;
+  const tier1 = originStation?.risk_tier || 'Unmonitored';
+  const tier2 = destStation?.risk_tier || 'Unmonitored';
   const corridorScore = Math.round((0.3 * aqi1 + 0.5 * aqi2 + 0.2 * Math.max(aqi1, aqi2)) * 10) / 10;
 
-  let overallStatus = 'Optimal Flight Conditions';
-  let riskLevel = 'Low';
-  let statusColor = '#059669';
+  const [overallStatus, riskLevel, statusColor] =
+    corridorScore > 200 ? ['Severe Terminal Disruption Alert', 'Critical', '#991B1B'] :
+    corridorScore > 150 ? ['High Operational Impact', 'High', '#DC2626'] :
+    corridorScore > 100 ? ['Elevated Chokepoint Advisory', 'Elevated', '#EA580C'] :
+    corridorScore > 50  ? ['Moderate Transit Risk', 'Moderate', '#D97706'] :
+    ['Optimal Flight Conditions', 'Low', '#059669'];
 
-  if (corridorScore > 200) {
-    overallStatus = 'Severe Terminal Disruption Alert';
-    riskLevel = 'Critical';
-    statusColor = '#991B1B';
-  } else if (corridorScore > 150) {
-    overallStatus = 'High Operational Impact';
-    riskLevel = 'High';
-    statusColor = '#DC2626';
-  } else if (corridorScore > 100) {
-    overallStatus = 'Elevated Chokepoint Advisory';
-    riskLevel = 'Elevated';
-    statusColor = '#EA580C';
-  } else if (corridorScore > 50) {
-    overallStatus = 'Moderate Transit Risk';
-    riskLevel = 'Moderate';
-    statusColor = '#D97706';
-  }
+  const recommendations = [
+    tier1 === 'Unmonitored' && `Notice: Departure terminal '${originLoc.location_name}' is currently unmonitored; deploy portable sensor telemetry.`,
+    tier2 === 'Unmonitored' && `Notice: Arrival terminal '${destLoc.location_name}' is currently unmonitored; verify local regional advisory.`,
+    (aqi2 > 150 || aqi1 > 150) && 'Mandate N95 respirator PPE for outdoor cargo ramp and tarmac operations.',
+    aqi2 > 200 && 'Trigger Aircraft Environmental Control (ECS) cabin HEPA filter inspection upon arrival.',
+    Math.max(aqi1, aqi2) > 175 && 'Anticipate ground turnaround delays (+30 to 45 mins) due to reduced ground visibility.',
+    aqi2 > 100 && aqi2 <= 150 && 'Notify dispatch to activate sensitive-group ramp crew rotation intervals.',
+  ].filter(Boolean) as string[];
 
-  const recommendations: string[] = [];
-  if (tier1 === 'Unmonitored') {
-    recommendations.push(
-      `Notice: Departure terminal '${originLoc.location_name}' is currently unmonitored; deploy portable sensor telemetry.`
-    );
-  }
-  if (tier2 === 'Unmonitored') {
-    recommendations.push(`Notice: Arrival terminal '${destLoc.location_name}' is currently unmonitored; verify local regional advisory.`);
-  }
-  if (aqi2 > 150 || aqi1 > 150) {
-    recommendations.push('Mandate N95 respirator PPE for outdoor cargo ramp and tarmac operations.');
-  }
-  if (aqi2 > 200) {
-    recommendations.push('Trigger Aircraft Environmental Control (ECS) cabin HEPA filter inspection upon arrival.');
-  }
-  if (Math.max(aqi1, aqi2) > 175) {
-    recommendations.push('Anticipate ground turnaround delays (+30 to 45 mins) due to reduced ground visibility.');
-  }
-  if (aqi2 > 100 && aqi2 <= 150) {
-    recommendations.push('Notify dispatch to activate sensitive-group ramp crew rotation intervals.');
-  }
-  if (recommendations.length === 0) {
+  if (!recommendations.length) {
     recommendations.push('Standard dispatch parameters: No environmental operational restrictions along flight path.');
   }
 
-  // Generate 40 Great-Circle intermediate waypoints
-  const waypoints: Waypoint[] = [];
-  const numPoints = 40;
-  for (let i = 0; i <= numPoints; i++) {
-    const f = i / numPoints;
-    // Linear intermediate interpolation with slight curvature
-    const lat = lat1 + f * (lat2 - lat1) + Math.sin(f * Math.PI) * Math.min(12, distKm / 800);
-    const lon = lon1 + f * (lon2 - lon1);
-    waypoints.push({ lat: Math.round(lat * 10000) / 10000, lon: Math.round(lon * 10000) / 10000 });
-  }
+  const waypoints: Waypoint[] = Array.from({ length: 41 }, (_, i) => {
+    const f = i / 40;
+    return {
+      lat: +((lat1 || 0) + f * ((lat2 || 0) - (lat1 || 0)) + Math.sin(f * Math.PI) * Math.min(12, distKm / 800)).toFixed(4),
+      lon: +((lon1 || 0) + f * ((lon2 || 0) - (lon1 || 0))).toFixed(4),
+    };
+  });
+
+  const createHub = (loc: LocationItem, st?: MapStation, aqi = 0, tier = 'Unmonitored'): CorridorHub => ({
+    location_key: loc.location_key,
+    location_name: loc.location_name,
+    country_name: loc.country_name,
+    country_code: loc.country_code,
+    latitude: loc.latitude || 0,
+    longitude: loc.longitude || 0,
+    parameter_name: st?.parameter_name || 'unmonitored',
+    avg_aqi: aqi,
+    risk_tier: tier,
+    color_hex: RISK_COLORS[tier] || '#94A3B8',
+  });
 
   return {
-    origin: {
-      location_key: originLoc.location_key,
-      location_name: originLoc.location_name,
-      country_name: originLoc.country_name,
-      country_code: originLoc.country_code,
-      latitude: lat1,
-      longitude: lon1,
-      parameter_name: originStation?.parameter_name || 'unmonitored',
-      avg_aqi: aqi1,
-      risk_tier: tier1,
-      color_hex: RISK_COLORS[tier1] || '#94A3B8',
-    },
-    destination: {
-      location_key: destLoc.location_key,
-      location_name: destLoc.location_name,
-      country_name: destLoc.country_name,
-      country_code: destLoc.country_code,
-      latitude: lat2,
-      longitude: lon2,
-      parameter_name: destStation?.parameter_name || 'unmonitored',
-      avg_aqi: aqi2,
-      risk_tier: tier2,
-      color_hex: RISK_COLORS[tier2] || '#94A3B8',
-    },
+    origin: createHub(originLoc, originStation, aqi1, tier1),
+    destination: createHub(destLoc, destStation, aqi2, tier2),
     distance_km: distKm,
     distance_nm: distNm,
     corridor_risk_score: corridorScore,
@@ -291,120 +237,47 @@ function calculateClientCorridor(
 
 export const api = {
   getKpis: () => fetchJsonWithFallback<KpiData>('/kpis', '/data/kpis.json'),
-
-  getLocations: async (): Promise<LocationItem[]> => {
-    if (!_cachedLocations) {
-      _cachedLocations = await fetchJsonWithFallback<LocationItem[]>('/locations', '/data/locations.json');
-    }
-    return _cachedLocations;
-  },
-
-  getUnmonitoredLocations: () =>
-    fetchJsonWithFallback<UnmonitoredLocation[]>('/locations/unmonitored', '/data/unmonitored.json'),
-
+  getLocations: async () => (_cachedLocations ??= await fetchJsonWithFallback<LocationItem[]>('/locations', '/data/locations.json')),
+  getUnmonitoredLocations: () => fetchJsonWithFallback<UnmonitoredLocation[]>('/locations/unmonitored', '/data/unmonitored.json'),
   getPollutants: () => fetchJsonWithFallback<Pollutant[]>('/pollutants', '/data/pollutants.json'),
+  getMapStations: async () => (_cachedStations ??= await fetchJsonWithFallback<MapStation[]>('/aqi/map', '/data/map_stations.json')),
 
-  getMapStations: async (): Promise<MapStation[]> => {
-    if (!_cachedStations) {
-      _cachedStations = await fetchJsonWithFallback<MapStation[]>('/aqi/map', '/data/map_stations.json');
-    }
-    return _cachedStations;
-  },
-
-  getTrends: async (locationKey: string, pollutantKey: string): Promise<TrendPoint[]> => {
+  getTrends: async (loc: string, pol: string): Promise<TrendPoint[]> => {
     try {
-      const res = await fetch(
-        `${API_BASE}/aqi/trends?location_key=${encodeURIComponent(locationKey)}&pollutant_key=${encodeURIComponent(pollutantKey)}`,
-      );
-      if (res.ok) {
-        return (await res.json()) as TrendPoint[];
-      }
-    } catch {
-      // Fallback
-    }
-
-    if (!_cachedTrends) {
-      const res = await fetch('/data/trends.json');
-      if (res.ok) {
-        _cachedTrends = (await res.json()) as Record<string, TrendPoint[]>;
-      } else {
-        _cachedTrends = {};
-      }
-    }
-
-    const key = `${locationKey}_${pollutantKey}`;
-    return _cachedTrends[key] || [];
+      const res = await fetch(`${API_BASE}/aqi/trends?location_key=${encodeURIComponent(loc)}&pollutant_key=${encodeURIComponent(pol)}`);
+      if (res.ok) return (await res.json()) as TrendPoint[];
+    } catch {}
+    _cachedTrends ??= await fetch('/data/trends.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
+    return _cachedTrends?.[`${loc}_${pol}`] || [];
   },
 
   getAlerts: async (minTier: string): Promise<AlertsResponse> => {
     try {
       const res = await fetch(`${API_BASE}/alerts?min_tier=${encodeURIComponent(minTier)}`);
-      if (res.ok) {
-        return (await res.json()) as AlertsResponse;
-      }
-    } catch {
-      // Fallback
-    }
-
-    if (!_cachedAlerts) {
-      const res = await fetch('/data/alerts.json');
-      if (res.ok) {
-        _cachedAlerts = (await res.json()) as Record<string, AlertsResponse>;
-      } else {
-        _cachedAlerts = {};
-      }
-    }
-
-    return (
-      _cachedAlerts[minTier] || {
-        min_tier: minTier,
-        threshold_aqi: 100,
-        alert_count: 0,
-        alerts: [],
-      }
-    );
+      if (res.ok) return (await res.json()) as AlertsResponse;
+    } catch {}
+    _cachedAlerts ??= await fetch('/data/alerts.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
+    return _cachedAlerts?.[minTier] || { min_tier: minTier, threshold_aqi: 100, alert_count: 0, alerts: [] };
   },
 
   getExportUrl: (minTier: string) => `${API_BASE}/alerts/export?min_tier=${encodeURIComponent(minTier)}`,
 
-  getCorridorRisk: async (originKey: string, destinationKey: string): Promise<CorridorRiskResponse> => {
+  getCorridorRisk: async (originKey: string, destKey: string): Promise<CorridorRiskResponse> => {
     try {
-      const res = await fetch(
-        `${API_BASE}/corridors/risk?origin_key=${encodeURIComponent(originKey)}&destination_key=${encodeURIComponent(destinationKey)}`,
-      );
-      if (res.ok) {
-        return (await res.json()) as CorridorRiskResponse;
-      }
-    } catch {
-      // Live server unavailable; calculate client-side
-    }
+      const res = await fetch(`${API_BASE}/corridors/risk?origin_key=${encodeURIComponent(originKey)}&destination_key=${encodeURIComponent(destKey)}`);
+      if (res.ok) return (await res.json()) as CorridorRiskResponse;
+    } catch {}
 
-    // Client-side fallback calculation
-    const locations = await api.getLocations();
-    const stations = await api.getMapStations();
+    const [locations, stations] = await Promise.all([api.getLocations(), api.getMapStations()]);
+    const originLoc = locations.find((l) => l.location_key === originKey || l.location_name.toLowerCase() === originKey.toLowerCase())
+      || locations.find((l) => /london/i.test(l.location_name)) || locations[0];
+    const destLoc = locations.find((l) => l.location_key === destKey || l.location_name.toLowerCase() === destKey.toLowerCase())
+      || locations.find((l) => /delhi/i.test(l.location_name)) || locations[1];
 
-    let originLoc = locations.find(
-      (l) => l.location_key === originKey || l.location_name.toLowerCase() === originKey.toLowerCase(),
-    );
-    let destLoc = locations.find(
-      (l) => l.location_key === destinationKey || l.location_name.toLowerCase() === destinationKey.toLowerCase(),
-    );
+    if (!originLoc || !destLoc) throw new Error(`Terminals not found: ${originKey} -> ${destKey}`);
 
-    // If an obsolete surrogate key was passed from an old browser session, fall back gracefully
-    if (!originLoc && locations.length > 0) {
-      originLoc = locations.find((l) => l.location_name.toLowerCase().includes('london')) || locations[0];
-    }
-    if (!destLoc && locations.length > 1) {
-      destLoc = locations.find((l) => l.location_name.toLowerCase().includes('delhi')) || locations[1];
-    }
-
-    if (!originLoc || !destLoc) {
-      throw new Error(`Corridor terminals not found: ${originKey} -> ${destinationKey}`);
-    }
-
-    const originStation = stations.find((s) => s.location_key === originLoc!.location_key);
-    const destStation = stations.find((s) => s.location_key === destLoc!.location_key);
-
-    return calculateClientCorridor(originLoc!, destLoc!, originStation, destStation);
+    const originSt = stations.find((s) => s.location_key === originLoc.location_key);
+    const destSt = stations.find((s) => s.location_key === destLoc.location_key);
+    return calculateClientCorridor(originLoc, destLoc, originSt, destSt);
   },
 };

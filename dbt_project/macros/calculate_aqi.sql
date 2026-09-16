@@ -33,7 +33,7 @@
         -- a valid value, so a range check alone can't catch this class of
         -- bug) -- a good example of why eyeballing real output still
         -- matters even when every automated test is green.
-        when {{ value_column }} is null then null
+        when {{ value_column }} is null or {{ value_column }} < 0 then null
 
         -- PM2.5, µg/m³, 24-hr breakpoints (EPA)
         when {{ parameter_name_column }} = 'pm25' then

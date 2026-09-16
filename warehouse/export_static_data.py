@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import logging
-from pathlib import Path
 from typing import Any
 
 from ingestion.config import PROJECT_ROOT
@@ -20,11 +19,12 @@ from app.api.main import (
     get_map_stations,
     get_latest_aqi,
     get_alerts,
-    get_trends,
     MIN_AQI_BY_TIER,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 DATA_OUTPUT_DIR = PROJECT_ROOT / "frontend" / "public" / "data"
@@ -67,6 +67,7 @@ def export_all() -> None:
     # 8. Pre-computed Hourly Trends map: {location_key}_{pollutant_key} -> trend points
     from app.utils.data import _query
     from app.api.main import _df_to_records
+
     trend_rows = _query("""
         SELECT location_key, pollutant_key, measured_at_utc, aqi, raw_value, value_ugm3, risk_tier
         FROM mart.fact_air_quality_hourly
@@ -82,13 +83,19 @@ def export_all() -> None:
     _save_json("trends.json", trends_index)
     logger.info("Pre-computed %d location-pollutant trend series.", len(trends_index))
 
-    logger.info("Static analytical snapshot export complete! All datasets written to %s", DATA_OUTPUT_DIR)
+    logger.info(
+        "Static analytical snapshot export complete! All datasets written to %s",
+        DATA_OUTPUT_DIR,
+    )
 
 
 def _save_json(filename: str, data: Any) -> None:
+    from app.api.main import _sanitize_for_json
+
     filepath = DATA_OUTPUT_DIR / filename
+    sanitized = _sanitize_for_json(data)
     with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(sanitized, f, ensure_ascii=False, indent=2, allow_nan=False)
     size_kb = filepath.stat().st_size / 1024
     logger.info("  ✓ %-18s (%.1f KB)", filename, size_kb)
 

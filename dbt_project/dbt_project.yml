@@ -18,7 +18,7 @@ clean-targets:
 #   staging / intermediate -> views. They're cheap to recompute, and keeping
 #     them as views means there's no duplicated storage for data that's
 #     really just "raw, but typed and renamed."
-#   marts -> tables. These are what Streamlit queries directly, so they're
+#   marts -> tables. These are what downstream queries directly, so they're
 #     materialized for read speed rather than recomputed on every query.
 models:
   airpulse:

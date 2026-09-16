@@ -1,0 +1,8 @@
+name = "airpulse"
+pages_build_output_dir = "frontend/dist"
+compatibility_date = "2024-09-01"
+
+# Optional Cloudflare R2 lakehouse bucket binding for Cloudflare Pages Functions
+# [[r2_buckets]]
+# binding = "R2_BUCKET"
+# bucket_name = "airpulse-lakehouse"

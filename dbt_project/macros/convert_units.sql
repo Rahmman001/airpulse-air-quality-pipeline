@@ -18,7 +18,7 @@
 #}
 {% macro convert_to_ugm3(value_column, units_column, parameter_column) %}
     case
-        when {{ units_column }} = 'µg/m³' then {{ value_column }}
+        when {{ units_column }} in ('µg/m³', 'ug/m3', 'ug/m^3', 'µg/m3') then {{ value_column }}
         when {{ units_column }} = 'ppm' and {{ parameter_column }} = 'o3'  then {{ value_column }} * (48.00 / 24.45) * 1000
         when {{ units_column }} = 'ppm' and {{ parameter_column }} = 'no2' then {{ value_column }} * (46.01 / 24.45) * 1000
         when {{ units_column }} = 'ppm' and {{ parameter_column }} = 'so2' then {{ value_column }} * (64.07 / 24.45) * 1000
@@ -43,33 +43,33 @@
 {% macro convert_to_epa_aqi_units(value_column, units_column, parameter_column) %}
     case
         when {{ parameter_column }} in ('pm25', 'pm10') then
-            case when {{ units_column }} = 'µg/m³' then {{ value_column }} else null end
+            case when {{ units_column }} in ('µg/m³', 'ug/m3', 'ug/m^3', 'µg/m3') then {{ value_column }} else null end
         when {{ parameter_column }} = 'o3' then
             case
                 when {{ units_column }} = 'ppm' then {{ value_column }}
                 when {{ units_column }} = 'ppb' then {{ value_column }} / 1000.0
-                when {{ units_column }} = 'µg/m³' then {{ value_column }} / ((48.00 / 24.45) * 1000)
+                when {{ units_column }} in ('µg/m³', 'ug/m3', 'ug/m^3', 'µg/m3') then {{ value_column }} / ((48.00 / 24.45) * 1000)
                 else null
             end
         when {{ parameter_column }} = 'no2' then
             case
                 when {{ units_column }} = 'ppm' then {{ value_column }}
                 when {{ units_column }} = 'ppb' then {{ value_column }} / 1000.0
-                when {{ units_column }} = 'µg/m³' then {{ value_column }} / ((46.01 / 24.45) * 1000)
+                when {{ units_column }} in ('µg/m³', 'ug/m3', 'ug/m^3', 'µg/m3') then {{ value_column }} / ((46.01 / 24.45) * 1000)
                 else null
             end
         when {{ parameter_column }} = 'so2' then
             case
                 when {{ units_column }} = 'ppm' then {{ value_column }}
                 when {{ units_column }} = 'ppb' then {{ value_column }} / 1000.0
-                when {{ units_column }} = 'µg/m³' then {{ value_column }} / ((64.07 / 24.45) * 1000)
+                when {{ units_column }} in ('µg/m³', 'ug/m3', 'ug/m^3', 'µg/m3') then {{ value_column }} / ((64.07 / 24.45) * 1000)
                 else null
             end
         when {{ parameter_column }} = 'co' then
             case
                 when {{ units_column }} = 'ppm' then {{ value_column }}
                 when {{ units_column }} = 'ppb' then {{ value_column }} / 1000.0
-                when {{ units_column }} = 'µg/m³' then {{ value_column }} / ((28.01 / 24.45) * 1000)
+                when {{ units_column }} in ('µg/m³', 'ug/m3', 'ug/m^3', 'µg/m3') then {{ value_column }} / ((28.01 / 24.45) * 1000)
                 else null
             end
         else null

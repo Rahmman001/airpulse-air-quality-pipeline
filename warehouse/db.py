@@ -3,8 +3,7 @@ DuckDB connection management.
 
 DuckDB is an embedded OLAP engine — there's no separate server process.
 A .duckdb file acts like a SQLite file: it's just a local file that holds
-the database. This simplifies deployment (especially for Streamlit on Community
-Cloud, which can't run a persistent server process), but it means you need to
+the database. This simplifies deployment, but it means you need to
 be thoughtful about concurrent access:
 
   - WRITES: only one writer at a time (DuckDB's MVCC model enforces this)
@@ -12,13 +11,9 @@ be thoughtful about concurrent access:
            but not with a write
 
 In practice, for this project:
-  - Dagster orchestrates the write (ingestion + dbt models)
-  - Streamlit only reads — it never writes
-  - We sidestep the single-writer limit by treating reads as read-only
-    queries against a snapshot (gold-layer Parquet exports, not the live file)
-
-For a real production system: use Snowflake / BigQuery / Redshift instead,
-where server-based MVCC handles concurrent reads and writes elegantly.
+  - Batch runners or Dagster orchestrate the write (ingestion + dbt models)
+  - Serving layers treat reads as read-only queries against the live file
+    or against gold-layer Parquet snapshots
 """
 
 from __future__ import annotations
@@ -36,7 +31,7 @@ def get_connection(read_only: bool = False) -> duckdb.DuckDBPyConnection:
     Get a DuckDB connection.
 
     Args:
-        read_only: if True, forbid writes (useful for Streamlit to fail fast
+        read_only: if True, forbid writes (useful for read-only serving to fail fast
                    if code accidentally tries to write). Default False for batch
                    processes that intentionally write.
 

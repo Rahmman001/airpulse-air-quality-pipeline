@@ -15,12 +15,9 @@ dagster>=1.12,<1.13
 dagster-dbt>=0.28,<0.29
 dagster-webserver>=1.12,<1.13
 
-# --- Serving (modern API + legacy UI) ---
+# --- Serving (FastAPI Analytical Engine) ---
 fastapi>=0.110
 uvicorn[standard]>=0.28
-streamlit>=1.32
-pydeck>=0.8
-altair>=5.2
 
 # --- Dev / test ---
 pytest>=8.0

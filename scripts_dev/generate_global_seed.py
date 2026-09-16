@@ -206,7 +206,7 @@ def main() -> None:
     today = date(2026, 6, 30)
     loc_path = write_locations_bronze(locations, ingest_date=today)
     meas_path = write_measurements_bronze(measurements, ingest_date=today)
-    print(f"Global seed successfully generated:")
+    print("Global seed successfully generated:")
     print(f"  - Locations: {len(locations)} stations -> {loc_path}")
     print(f"  - Measurements: {len(measurements)} hourly points -> {meas_path}")
 

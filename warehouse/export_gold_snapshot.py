@@ -1,14 +1,8 @@
 """
 Exports the mart layer to Parquet files under data/gold_snapshot/.
 
-This is the concrete implementation of the "hybrid deployment" pattern
-documented back in Phase 3: Streamlit Community Cloud can't run a persistent
-Dagster process, and the local airpulse.duckdb file is gitignored (it's
-fully rebuildable from bronze, so there's no reason to commit it). So the
-actual deployed dashboard doesn't read the live DuckDB file at all -- it
-reads a committed snapshot of just the mart tables, refreshed on a schedule
-by a GitHub Actions job (Phase 6) that runs the pipeline and re-commits
-these files.
+These Parquet snapshots provide an offline, portable fallback for the FastAPI server,
+unit tests, and edge exporters without requiring a live DuckDB file on disk.
 
 Run:
     python -m warehouse.export_gold_snapshot
@@ -18,6 +12,8 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+
+import duckdb
 
 from ingestion.config import PROJECT_ROOT
 from warehouse.db import get_connection
@@ -40,6 +36,27 @@ TABLES_TO_EXPORT = [
 
 def export_gold_snapshot(output_dir: Path = GOLD_SNAPSHOT_DIR) -> dict[str, int]:
     output_dir.mkdir(parents=True, exist_ok=True)
+    from warehouse.db import DB_PATH
+
+    if not DB_PATH.exists():
+        logger.info(
+            "Live warehouse %s does not exist; inspecting existing snapshots in %s",
+            DB_PATH,
+            output_dir,
+        )
+        results: dict[str, int] = {}
+        for qualified_name in TABLES_TO_EXPORT:
+            table_name = qualified_name.split(".")[-1]
+            out_path = output_dir / f"{table_name}.parquet"
+            if out_path.exists():
+                c = duckdb.connect()
+                count = c.execute(
+                    f"SELECT COUNT(*) FROM read_parquet('{out_path}')"
+                ).fetchone()[0]
+                results[table_name] = int(count)
+                c.close()
+        return results
+
     conn = get_connection(read_only=True)
     results: dict[str, int] = {}
     try:

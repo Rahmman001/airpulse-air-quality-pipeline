@@ -58,6 +58,18 @@ MIN_AQI_BY_TIER: dict[str, int] = {
 }
 
 
+def _sanitize_for_json(obj: Any) -> Any:
+    if isinstance(obj, float):
+        import math
+
+        return None if math.isnan(obj) or math.isinf(obj) else obj
+    if isinstance(obj, dict):
+        return {k: _sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_sanitize_for_json(v) for v in obj]
+    return obj
+
+
 def _df_to_records(df: pd.DataFrame) -> list[dict[str, Any]]:
     """Convert DataFrame to JSON-safe list of dicts, replacing NaNs and formatting timestamps."""
     if df.empty:
@@ -69,7 +81,8 @@ def _df_to_records(df: pd.DataFrame) -> list[dict[str, Any]]:
         clean_df[col] = clean_df[col].apply(
             lambda x: x.isoformat() if hasattr(x, "isoformat") else x
         )
-    return clean_df.where(pd.notnull(clean_df), None).to_dict(orient="records")
+    records = clean_df.to_dict(orient="records")
+    return _sanitize_for_json(records)
 
 
 # ---------------------------------------------------------------------------
