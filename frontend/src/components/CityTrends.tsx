@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TrendUp, WarningCircle } from '@phosphor-icons/react';
+import { TrendUp, WarningCircle, MapPin } from '@phosphor-icons/react';
 import { api, RISK_COLORS } from '../api';
 import type { LocationItem, Pollutant, TrendPoint } from '../api';
 import { formatIsoTimestamp, getTzShortLabel } from '../timezone';
+import { SearchableHubSelect } from './SearchableHubSelect';
 
 interface CityTrendsProps {
   locations: LocationItem[];
@@ -92,7 +93,7 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
   return (
     <div className="space-y-8 mb-12">
       {/* Control Bar */}
-      <div className="minimal-card p-6 md:p-8 flex flex-wrap items-center justify-between gap-6">
+      <div className="minimal-card p-6 md:p-8 flex flex-wrap items-center justify-between gap-6 relative z-20">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-full bg-[#381932] text-[#FFF3E6] flex items-center justify-center shadow-xs">
             <TrendUp size={18} weight="bold" />
@@ -103,26 +104,23 @@ export const CityTrends: React.FC<CityTrendsProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <div>
-            <label className="block text-[10px] font-mono text-[#84657E] uppercase tracking-wider mb-1 font-bold">Geohub</label>
-            <select
-              value={selectedLoc}
-              onChange={(e) => setSelectedLoc(e.target.value)}
-              className="text-xs bg-white border border-[#381932]/15 rounded-full px-4 py-2 outline-none font-semibold text-[#381932] shadow-2xs focus:border-[#381932] cursor-pointer"
-            >
-              {locations.map((l) => (
-                <option key={l.location_key} value={l.location_key}>{l.location_name} ({l.country_code})</option>
-              ))}
-            </select>
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="w-64 sm:w-72">
+            <SearchableHubSelect
+              label="Geohub"
+              icon={MapPin}
+              val={selectedLoc}
+              setVal={setSelectedLoc}
+              locations={locations}
+            />
           </div>
 
-          <div>
-            <label className="block text-[10px] font-mono text-[#84657E] uppercase tracking-wider mb-1 font-bold">Parameter</label>
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-mono uppercase tracking-wider text-[#84657E] font-bold">Parameter</label>
             <select
               value={selectedPol}
               onChange={(e) => setSelectedPol(e.target.value)}
-              className="text-xs bg-white border border-[#381932]/15 rounded-full px-4 py-2 outline-none font-semibold text-[#381932] shadow-2xs focus:border-[#381932] cursor-pointer"
+              className="text-xs bg-white border border-[#381932]/15 rounded-full px-4 py-2 outline-none font-semibold text-[#381932] shadow-2xs focus:border-[#381932] focus:ring-1 focus:ring-[#381932]/10 transition-all cursor-pointer"
             >
               {pollutants.map((p) => (
                 <option key={p.pollutant_key} value={p.pollutant_key}>{p.pollutant_display_name || p.parameter_name.toUpperCase()}</option>

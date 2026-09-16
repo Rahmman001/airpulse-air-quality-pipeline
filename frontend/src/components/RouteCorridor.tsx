@@ -11,38 +11,11 @@ import {
   ArrowClockwise,
 } from '@phosphor-icons/react';
 import { api, type LocationItem, type CorridorRiskResponse } from '../api';
+import { SearchableHubSelect } from './SearchableHubSelect';
 
 interface RouteCorridorProps {
   locations: LocationItem[];
 }
-
-interface HubSelectProps {
-  label: string;
-  icon: React.ElementType;
-  val: string;
-  setVal: (v: string) => void;
-  locations: LocationItem[];
-}
-
-const HubSelect: React.FC<HubSelectProps> = ({ label, icon: Icon, val, setVal, locations }) => (
-  <div className="space-y-2">
-    <label className="text-[11px] font-mono uppercase tracking-wider text-[#84657E] font-bold flex items-center gap-1.5">
-      <Icon size={14} className="text-[#381932]" />
-      {label}
-    </label>
-    <select
-      value={val}
-      onChange={(e) => setVal(e.target.value)}
-      className="w-full bg-white border border-[#381932]/15 rounded-full px-5 py-2.5 text-xs font-semibold text-[#381932] focus:outline-none focus:border-[#381932] focus:ring-1 focus:ring-[#381932]/10 transition-all cursor-pointer shadow-2xs"
-    >
-      {locations.map((l) => (
-        <option key={l.location_key} value={l.location_key} className="text-[#381932]">
-          {l.location_name} ({l.country_code})
-        </option>
-      ))}
-    </select>
-  </div>
-);
 
 export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
   const [origin, setOrigin] = useState('');
@@ -150,7 +123,7 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
   return (
     <div className="space-y-6 mb-12">
       {/* Route Control Header */}
-      <div className="minimal-card p-6 md:p-8">
+      <div className="minimal-card p-6 md:p-8 relative z-20">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-[#381932]/10">
           <div>
             <div className="flex items-center gap-3">
@@ -192,7 +165,13 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
 
         {/* Hub Selectors */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] items-center gap-4 mt-6">
-          <HubSelect label="Departure Hub (Origin)" icon={AirplaneTakeoff} val={originKey} setVal={setOrigin} locations={locations} />
+          <SearchableHubSelect
+            label="Departure Hub (Origin)"
+            icon={AirplaneTakeoff}
+            val={originKey}
+            setVal={setOrigin}
+            locations={locations}
+          />
           <div className="flex justify-center md:pt-6">
             <button 
               onClick={handleSwap} 
@@ -202,7 +181,13 @@ export const RouteCorridor: React.FC<RouteCorridorProps> = ({ locations }) => {
               <ArrowsLeftRight size={18} weight="bold" />
             </button>
           </div>
-          <HubSelect label="Arrival Terminal (Destination)" icon={AirplaneLanding} val={destKey} setVal={setDest} locations={locations} />
+          <SearchableHubSelect
+            label="Arrival Terminal (Destination)"
+            icon={AirplaneLanding}
+            val={destKey}
+            setVal={setDest}
+            locations={locations}
+          />
         </div>
       </div>
 
