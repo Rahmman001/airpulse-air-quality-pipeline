@@ -459,23 +459,6 @@
     "radius": 10
   },
   {
-    "location_key": "bf9bba306236ac8e046a9a811d90ea4d",
-    "city_name": "Mumbai",
-    "location_name": "Mumbai (12 stations)",
-    "country_code": "IN",
-    "country_name": "India",
-    "latitude": 18.69136,
-    "longitude": 73.12569,
-    "parameter_name": "pm10",
-    "pollutant_display_name": "PM10",
-    "avg_aqi": 83.9,
-    "city_avg_aqi": 83.9,
-    "city_stations_count": 12,
-    "risk_tier": "Moderate",
-    "color_hex": "#ffff00",
-    "radius": 10
-  },
-  {
     "location_key": "92b15f6bd39cc8396ab8fd383d584e30",
     "city_name": "Chennai",
     "location_name": "Chennai (4 stations)",
@@ -493,7 +476,7 @@
     "radius": 10
   },
   {
-    "location_key": "4a7e8c3e11403a4ed41d7a3bae394eed",
+    "location_key": "d17879d409859d6d264e6d83d19435a0",
     "city_name": "Hyderabad",
     "location_name": "Hyderabad (6 stations)",
     "country_code": "IN",
@@ -522,6 +505,23 @@
     "avg_aqi": 81.7,
     "city_avg_aqi": 81.7,
     "city_stations_count": 9,
+    "risk_tier": "Moderate",
+    "color_hex": "#ffff00",
+    "radius": 10
+  },
+  {
+    "location_key": "3cb9999d2d0f803a3b4b93fadd343a0e",
+    "city_name": "Mumbai",
+    "location_name": "Mumbai (12 stations)",
+    "country_code": "IN",
+    "country_name": "India",
+    "latitude": 18.69136,
+    "longitude": 73.12569,
+    "parameter_name": "o3",
+    "pollutant_display_name": "Ozone",
+    "avg_aqi": 81.7,
+    "city_avg_aqi": 81.7,
+    "city_stations_count": 12,
     "risk_tier": "Moderate",
     "color_hex": "#ffff00",
     "radius": 10
@@ -573,23 +573,6 @@
     "avg_aqi": 75.0,
     "city_avg_aqi": 75.0,
     "city_stations_count": 1,
-    "risk_tier": "Moderate",
-    "color_hex": "#ffff00",
-    "radius": 10
-  },
-  {
-    "location_key": "3f5f10effbfb32fdd48708bcd2d458a2",
-    "city_name": "Rotterdam",
-    "location_name": "Rotterdam (5 stations)",
-    "country_code": "NL",
-    "country_name": "Netherlands",
-    "latitude": 51.91115,
-    "longitude": 4.47896,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 66.3,
-    "city_avg_aqi": 66.3,
-    "city_stations_count": 5,
     "risk_tier": "Moderate",
     "color_hex": "#ffff00",
     "radius": 10
@@ -816,23 +799,6 @@
     "radius": 10
   },
   {
-    "location_key": "80e048e350b0140ef10f557f64fec8f7",
-    "city_name": "Berlin",
-    "location_name": "Berlin (4 stations)",
-    "country_code": "DE",
-    "country_name": "Germany",
-    "latitude": 52.50793,
-    "longitude": 13.42765,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 47.9,
-    "city_avg_aqi": 47.9,
-    "city_stations_count": 4,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
     "location_key": "48e58e30bf39cc05a37591cde0f22d63",
     "city_name": "Tokyo",
     "location_name": "Tokyo",
@@ -986,6 +952,23 @@
     "radius": 10
   },
   {
+    "location_key": "80e048e350b0140ef10f557f64fec8f7",
+    "city_name": "Berlin",
+    "location_name": "Berlin (4 stations)",
+    "country_code": "DE",
+    "country_name": "Germany",
+    "latitude": 52.50793,
+    "longitude": 13.42765,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 40.8,
+    "city_avg_aqi": 40.8,
+    "city_stations_count": 4,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
     "location_key": "202d3fdd330a69d24210fc9e27761892",
     "city_name": "Bernau bei Berlin",
     "location_name": "Bernau bei Berlin",
@@ -1066,6 +1049,23 @@
     "avg_aqi": 35.5,
     "city_avg_aqi": 35.5,
     "city_stations_count": 1,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
+    "location_key": "3f5f10effbfb32fdd48708bcd2d458a2",
+    "city_name": "Rotterdam",
+    "location_name": "Rotterdam (5 stations)",
+    "country_code": "NL",
+    "country_name": "Netherlands",
+    "latitude": 51.91115,
+    "longitude": 4.47896,
+    "parameter_name": "o3",
+    "pollutant_display_name": "Ozone",
+    "avg_aqi": 35.5,
+    "city_avg_aqi": 35.5,
+    "city_stations_count": 5,
     "risk_tier": "Good",
     "color_hex": "#00e400",
     "radius": 10
@@ -1700,6 +1700,23 @@
     "radius": 10
   },
   {
+    "location_key": "ce838bd67fd48014c74c1f054dd3959d",
+    "city_name": "Stockholm",
+    "location_name": "Stockholm (4 stations)",
+    "country_code": "SE",
+    "country_name": "Sweden",
+    "latitude": 59.33071,
+    "longitude": 18.03937,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 21.5,
+    "city_avg_aqi": 21.5,
+    "city_stations_count": 4,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
     "location_key": "ea04ce8472162b35e7078e67a2147f4a",
     "city_name": "VILANOVA I LA GELTRÚ",
     "location_name": "VILANOVA I LA GELTRÚ",
@@ -1746,23 +1763,6 @@
     "avg_aqi": 21.0,
     "city_avg_aqi": 21.0,
     "city_stations_count": 1,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "ce838bd67fd48014c74c1f054dd3959d",
-    "city_name": "Stockholm",
-    "location_name": "Stockholm (4 stations)",
-    "country_code": "SE",
-    "country_name": "Sweden",
-    "latitude": 59.33071,
-    "longitude": 18.03937,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 21.0,
-    "city_avg_aqi": 21.0,
-    "city_stations_count": 4,
     "risk_tier": "Good",
     "color_hex": "#00e400",
     "radius": 10
@@ -1865,23 +1865,6 @@
     "avg_aqi": 20.0,
     "city_avg_aqi": 20.0,
     "city_stations_count": 1,
-    "risk_tier": "Good",
-    "color_hex": "#00e400",
-    "radius": 10
-  },
-  {
-    "location_key": "6f94a0d007f9e82203a5da8d8866c3b4",
-    "city_name": "Oslo",
-    "location_name": "Oslo (6 stations)",
-    "country_code": "NO",
-    "country_name": "Norway",
-    "latitude": 59.92338,
-    "longitude": 10.75661,
-    "parameter_name": "pm25",
-    "pollutant_display_name": "PM2.5",
-    "avg_aqi": 19.9,
-    "city_avg_aqi": 19.9,
-    "city_stations_count": 6,
     "risk_tier": "Good",
     "color_hex": "#00e400",
     "radius": 10
@@ -2006,6 +1989,23 @@
     "radius": 10
   },
   {
+    "location_key": "6f94a0d007f9e82203a5da8d8866c3b4",
+    "city_name": "Oslo",
+    "location_name": "Oslo (6 stations)",
+    "country_code": "NO",
+    "country_name": "Norway",
+    "latitude": 59.92338,
+    "longitude": 10.75661,
+    "parameter_name": "pm25",
+    "pollutant_display_name": "PM2.5",
+    "avg_aqi": 18.0,
+    "city_avg_aqi": 18.0,
+    "city_stations_count": 6,
+    "risk_tier": "Good",
+    "color_hex": "#00e400",
+    "radius": 10
+  },
+  {
     "location_key": "f2b23cb45d23f99a410855371fa071e1",
     "city_name": "Columbus",
     "location_name": "Columbus",
@@ -2057,7 +2057,7 @@
     "radius": 10
   },
   {
-    "location_key": "a1168aa29ce2905bb625ae70da345eb4",
+    "location_key": "c8d1a0dda3cb4c5b8736cf421b0940c8",
     "city_name": "South East Queensland",
     "location_name": "South East Queensland (9 stations)",
     "country_code": "AU",
@@ -2244,7 +2244,7 @@
     "radius": 10
   },
   {
-    "location_key": "6c75c1bb5b824bc4dae01c511c182f57",
+    "location_key": "4817b1c3a17d36cec954018fb9f3e1bf",
     "city_name": "NOVA SCOTIA",
     "location_name": "NOVA SCOTIA (3 stations)",
     "country_code": "CA",
@@ -2423,8 +2423,8 @@
     "longitude": 6.6223,
     "parameter_name": "pm10",
     "pollutant_display_name": "PM10",
-    "avg_aqi": 7.1,
-    "city_avg_aqi": 7.1,
+    "avg_aqi": 7.3,
+    "city_avg_aqi": 7.3,
     "city_stations_count": 2,
     "risk_tier": "Good",
     "color_hex": "#00e400",
